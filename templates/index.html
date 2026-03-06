@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<title>QRShield Security Scanner</title>
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+
+<style>
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+text-align:center;
+padding:30px;
+}
+
+h1{
+color:#38bdf8;
+}
+
+.container{
+background:#1e293b;
+padding:25px;
+border-radius:12px;
+width:420px;
+margin:auto;
+box-shadow:0 0 12px rgba(0,0,0,0.6);
+}
+
+video{
+border-radius:8px;
+margin-top:10px;
+}
+
+button{
+background:#2563eb;
+color:white;
+border:none;
+padding:10px 20px;
+margin-top:10px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1d4ed8;
+}
+
+input{
+margin-top:10px;
+}
+
+#resultBox{
+margin-top:20px;
+padding:15px;
+border-radius:8px;
+background:#334155;
+}
+
+.safe{
+color:#22c55e;
+font-weight:bold;
+font-size:18px;
+}
+
+.danger{
+color:#ef4444;
+font-weight:bold;
+font-size:18px;
+}
+
+.suspicious{
+color:#f59e0b;
+font-weight:bold;
+font-size:18px;
+}
+
+.loader{
+border:5px solid #334155;
+border-top:5px solid #38bdf8;
+border-radius:50%;
+width:40px;
+height:40px;
+animation:spin 1s linear infinite;
+margin:auto;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg)}
+100%{transform:rotate(360deg)}
+}
+</style>
+
+</head>
+
+<body>
+
+<h1>QRShield Malware Scanner</h1>
+
+<div class="container">
+
+<h3>Scan QR using Camera</h3>
+
+<video id="video" width="350" height="220" autoplay></video> <br> <button onclick="startCamera()">Start Scanner</button>
+
+<br><br>
+
+<h3>Upload QR Image</h3>
+<input type="file" id="fileInput">
+
+<div id="resultBox">
+<p id="urlText"></p>
+<p id="result"></p>
+<div id="loader" class="loader" style="display:none"></div>
+</div>
+
+</div>
+
+<script>
+
+const video = document.getElementById("video")
+const result = document.getElementById("result")
+const loader = document.getElementById("loader")
+const urlText = document.getElementById("urlText")
+
+let stream = null
+let scanning = false
+
+function startCamera(){
+
+navigator.mediaDevices.getUserMedia({
+video:{facingMode:"environment"}
+})
+.then(function(s){
+
+stream = s
+video.srcObject = s
+scanning = true
+scanFrame()
+
+})
+.catch(function(){
+
+result.innerText="Camera permission denied"
+
+})
+
+}
+
+function stopCamera(){
+
+if(stream){
+stream.getTracks().forEach(track=>track.stop())
+}
+
+scanning=false
+
+}
+
+function scanFrame(){
+
+if(!scanning) return
+
+const canvas=document.createElement("canvas")
+const ctx=canvas.getContext("2d")
+
+canvas.width=video.videoWidth
+canvas.height=video.videoHeight
+
+ctx.drawImage(video,0,0)
+
+const imageData=ctx.getImageData(0,0,canvas.width,canvas.height)
+
+const code=jsQR(imageData.data,canvas.width,canvas.height)
+
+if(code){
+
+stopCamera()
+checkURL(code.data)
+
+}else{
+
+requestAnimationFrame(scanFrame)
+
+}
+
+}
+
+document.getElementById("fileInput").addEventListener("change",function(e){
+
+const file=e.target.files[0]
+
+if(!file) return
+
+const reader=new FileReader()
+
+reader.onload=function(){
+
+const img=new Image()
+
+img.onload=function(){
+
+const canvas=document.createElement("canvas")
+const ctx=canvas.getContext("2d")
+
+canvas.width=img.width
+canvas.height=img.height
+
+ctx.drawImage(img,0,0)
+
+const imageData=ctx.getImageData(0,0,canvas.width,canvas.height)
+
+const code=jsQR(imageData.data,canvas.width,canvas.height)
+
+if(code){
+
+checkURL(code.data)
+
+}else{
+
+result.innerText="No QR code detected"
+
+}
+
+}
+
+img.src=reader.result
+
+}
+
+reader.readAsDataURL(file)
+
+})
+
+function checkURL(url){
+
+urlText.innerText="Scanned URL: "+url
+result.innerText=""
+loader.style.display="block"
+
+fetch("/check",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({url:url})
+})
+.then(res=>res.json())
+.then(data=>{
+
+loader.style.display="none"
+
+if(data.status==="Dangerous"){
+
+result.innerHTML="<span class='danger'>Dangerous</span><br>Risk Score: "+data.danger_score+"%<br>Reason: "+data.reason
+
+}
+else if(data.status==="Suspicious"){
+
+result.innerHTML="<span class='suspicious'>Suspicious</span><br>Risk Score: "+data.danger_score+"%<br>Reason: "+data.reason
+
+}
+else if(data.status==="Safe"){
+
+result.innerHTML="<span class='safe'>Safe</span><br>Risk Score: "+data.danger_score+"%"
+
+}
+else{
+
+result.innerText="Error scanning URL"
+
+}
+
+})
+.catch(function(){
+
+loader.style.display="none"
+result.innerText="Server error"
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
