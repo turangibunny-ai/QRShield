@@ -1,186 +1,285 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html>
 <head>
 <title>QRShield Security Scanner</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 
 <style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
 body{
-font-family:Arial;
-background:#0f172a;
-color:white;
+font-family:Segoe UI;
+background:linear-gradient(135deg,#0c1428,#111827,#0f172a);
+color:#e2e8f0;
+min-height:100vh;
+padding:20px;
+}
+
+.main-header{
 text-align:center;
-padding:30px;
+margin-bottom:20px;
 }
 
 h1{
-color:#38bdf8;
+font-size:2.5rem;
+background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+-webkit-background-clip:text;
+-webkit-text-fill-color:transparent;
+}
+
+.subtitle{
+color:#94a3b8;
+margin-top:5px;
+}
+
+.badge{
+display:inline-block;
+padding:6px 12px;
+background:rgba(16,185,129,0.15);
+border:1px solid rgba(16,185,129,0.4);
+border-radius:8px;
+font-size:0.8rem;
+color:#10b981;
+margin-top:8px;
+}
+
+.status-bar{
+background:rgba(15,23,42,0.8);
+border:1px solid rgba(255,255,255,0.08);
+padding:12px;
+border-radius:10px;
+text-align:center;
+margin-bottom:20px;
+color:#94a3b8;
 }
 
 .container{
-background:#1e293b;
-padding:25px;
-border-radius:12px;
-width:420px;
+background:rgba(30,41,59,0.95);
+padding:30px;
+border-radius:20px;
+max-width:480px;
 margin:auto;
-box-shadow:0 0 12px rgba(0,0,0,0.6);
+box-shadow:0 20px 40px rgba(0,0,0,0.4);
 }
 
-video{
-border-radius:8px;
+.section-title{
+margin-top:20px;
+margin-bottom:10px;
+font-size:1.2rem;
+text-align:center;
+}
+
+#reader{
+width:100%!important;
+height:280px;
+margin:auto;
+border-radius:14px;
+background:black;
+position:relative;
+overflow:hidden;
+}
+
+#reader::after{
+content:"";
+position:absolute;
+top:50%;
+left:50%;
+width:200px;
+height:200px;
+transform:translate(-50%,-50%);
+border:3px solid #3b82f6;
+border-radius:12px;
+box-shadow:0 0 20px rgba(59,130,246,0.4);
+pointer-events:none;
+}
+
+.button-group{
+display:flex;
+justify-content:center;
+gap:10px;
+flex-wrap:wrap;
 margin-top:10px;
 }
 
 button{
-background:#2563eb;
-color:white;
 border:none;
-padding:10px 20px;
-margin-top:10px;
-border-radius:6px;
+padding:12px 20px;
+border-radius:10px;
 cursor:pointer;
+font-weight:600;
 }
 
-button:hover{
-background:#1d4ed8;
+.btn-primary{
+background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+color:white;
+}
+
+.btn-secondary{
+background:linear-gradient(135deg,#6b7280,#4b5563);
+color:white;
 }
 
 input{
+width:100%;
+padding:14px;
 margin-top:10px;
+border-radius:10px;
+border:1px solid rgba(255,255,255,0.1);
+background:#0f172a;
+color:white;
+}
+
+.divider{
+height:1px;
+background:rgba(255,255,255,0.08);
+margin:25px 0;
 }
 
 #resultBox{
-margin-top:20px;
-padding:15px;
-border-radius:8px;
-background:#334155;
+margin-top:25px;
+padding:25px;
+border-radius:15px;
+background:rgba(15,23,42,0.9);
+border:1px solid rgba(255,255,255,0.08);
+text-align:center;
 }
 
-.safe{
-color:#22c55e;
-font-weight:bold;
-font-size:18px;
+#urlText{
+font-size:0.9rem;
+color:#94a3b8;
+word-break:break-all;
+margin-bottom:10px;
 }
 
-.danger{
-color:#ef4444;
-font-weight:bold;
-font-size:18px;
+#result{
+font-size:1.5rem;
+margin-top:5px;
 }
 
-.suspicious{
-color:#f59e0b;
-font-weight:bold;
-font-size:18px;
+.safe{color:#10b981}
+.danger{color:#ef4444}
+.suspicious{color:#f59e0b}
+
+#causes{
+margin-top:10px;
+font-size:0.9rem;
+color:#fca5a5;
 }
 
 .loader{
-border:5px solid #334155;
-border-top:5px solid #38bdf8;
+border:4px solid rgba(255,255,255,0.1);
+border-top:4px solid #3b82f6;
 border-radius:50%;
 width:40px;
 height:40px;
 animation:spin 1s linear infinite;
-margin:auto;
+margin:15px auto;
 }
 
 @keyframes spin{
-0%{transform:rotate(0deg)}
+0%{transform:rotate(0)}
 100%{transform:rotate(360deg)}
 }
-</style>
 
+</style>
 </head>
 
 <body>
 
-<h1>QRShield Malware Scanner</h1>
+<div class="main-header">
+
+<h1>QRShield</h1>
+<p class="subtitle">Advanced Malware & Phishing Scanner</p>
+<p class="badge">Real-Time Threat Detection</p>
+
+</div>
 
 <div class="container">
 
-<h3>Scan QR using Camera</h3>
+<div class="status-bar">
+<span id="scanStatus">System Ready</span>
+</div>
 
-<video id="video" width="350" height="220" autoplay></video> <br> <button onclick="startCamera()">Start Scanner</button>
+<h3 class="section-title">Camera QR Scanner</h3>
 
-<br><br>
+<div id="reader"></div>
 
-<h3>Upload QR Image</h3>
-<input type="file" id="fileInput">
+<div class="button-group">
+<button class="btn-primary" onclick="startCamera()">Start Scanner</button>
+</div>
+
+<div class="divider"></div>
+
+<h3 class="section-title">Upload QR Image</h3>
+
+<input type="file" id="fileInput" accept="image/*">
+
+<div class="divider"></div>
+
+<h3 class="section-title">Direct URL Scan</h3>
+
+<input type="text" id="manualURL" placeholder="Paste URL here">
+
+<div class="button-group">
+<button class="btn-secondary" onclick="scanManualURL()">Scan URL</button>
+</div>
 
 <div id="resultBox">
+
 <p id="urlText"></p>
 <p id="result"></p>
+<p id="causes"></p>
+
 <div id="loader" class="loader" style="display:none"></div>
+
 </div>
 
 </div>
 
 <script>
 
-const video = document.getElementById("video")
-const result = document.getElementById("result")
-const loader = document.getElementById("loader")
-const urlText = document.getElementById("urlText")
+const result=document.getElementById("result")
+const loader=document.getElementById("loader")
+const urlText=document.getElementById("urlText")
+const causes=document.getElementById("causes")
 
-let stream = null
-let scanning = false
+let scanner
 
-function startCamera(){
+async function startCamera(){
 
-navigator.mediaDevices.getUserMedia({
-video:{facingMode:"environment"}
+document.getElementById("scanStatus").innerText="Scanning QR Code..."
+
+try{
+
+scanner=new Html5Qrcode("reader")
+
+await scanner.start(
+{ facingMode:"environment" },
+{ fps:10 },
+(decodedText)=>{
+
+console.log("QR detected:",decodedText)
+
+scanner.stop().then(()=>{
+checkURL(decodedText)
 })
-.then(function(s){
 
-stream = s
-video.srcObject = s
-scanning = true
-scanFrame()
+},
+(err)=>{}
 
-})
-.catch(function(){
+)
 
-result.innerText="Camera permission denied"
+}catch(err){
 
-})
-
-}
-
-function stopCamera(){
-
-if(stream){
-stream.getTracks().forEach(track=>track.stop())
-}
-
-scanning=false
-
-}
-
-function scanFrame(){
-
-if(!scanning) return
-
-const canvas=document.createElement("canvas")
-const ctx=canvas.getContext("2d")
-
-canvas.width=video.videoWidth
-canvas.height=video.videoHeight
-
-ctx.drawImage(video,0,0)
-
-const imageData=ctx.getImageData(0,0,canvas.width,canvas.height)
-
-const code=jsQR(imageData.data,canvas.width,canvas.height)
-
-if(code){
-
-stopCamera()
-checkURL(code.data)
-
-}else{
-
-requestAnimationFrame(scanFrame)
+result.innerHTML="<span class='danger'>Camera access denied</span>"
 
 }
 
@@ -190,7 +289,7 @@ document.getElementById("fileInput").addEventListener("change",function(e){
 
 const file=e.target.files[0]
 
-if(!file) return
+if(!file)return
 
 const reader=new FileReader()
 
@@ -201,6 +300,7 @@ const img=new Image()
 img.onload=function(){
 
 const canvas=document.createElement("canvas")
+
 const ctx=canvas.getContext("2d")
 
 canvas.width=img.width
@@ -208,9 +308,9 @@ canvas.height=img.height
 
 ctx.drawImage(img,0,0)
 
-const imageData=ctx.getImageData(0,0,canvas.width,canvas.height)
+const imageData=ctx.getImageData(0,0,img.width,img.height)
 
-const code=jsQR(imageData.data,canvas.width,canvas.height)
+const code=jsQR(imageData.data,imageData.width,imageData.height)
 
 if(code){
 
@@ -218,7 +318,7 @@ checkURL(code.data)
 
 }else{
 
-result.innerText="No QR code detected"
+result.innerHTML="<span class='suspicious'>No QR code detected</span>"
 
 }
 
@@ -232,50 +332,86 @@ reader.readAsDataURL(file)
 
 })
 
+function scanManualURL(){
+
+let url=document.getElementById("manualURL").value.trim()
+
+if(!url){
+
+result.innerHTML="<span class='suspicious'>Enter URL</span>"
+return
+
+}
+
+if(!url.startsWith("http")){
+
+url="https://"+url
+
+}
+
+checkURL(url)
+
+}
+
 function checkURL(url){
 
-urlText.innerText="Scanned URL: "+url
-result.innerText=""
+document.getElementById("scanStatus").innerText="Scanning Link..."
+
+urlText.innerHTML="Scanning: "+url
+
+result.innerHTML=""
+causes.innerHTML=""
+
 loader.style.display="block"
 
 fetch("/check",{
+
 method:"POST",
+
 headers:{
 "Content-Type":"application/json"
 },
+
 body:JSON.stringify({url:url})
+
 })
 .then(res=>res.json())
+
 .then(data=>{
 
 loader.style.display="none"
 
+document.getElementById("scanStatus").innerText="Scan Complete"
+
 if(data.status==="Dangerous"){
 
-result.innerHTML="<span class='danger'>Dangerous</span><br>Risk Score: "+data.danger_score+"%<br>Reason: "+data.reason
+result.innerHTML="<span class='danger'>DANGEROUS</span><br>Risk Score "+data.danger_score+"%"
+
+causes.innerHTML="Cause: "+data.reason
 
 }
+
 else if(data.status==="Suspicious"){
 
-result.innerHTML="<span class='suspicious'>Suspicious</span><br>Risk Score: "+data.danger_score+"%<br>Reason: "+data.reason
+result.innerHTML="<span class='suspicious'>SUSPICIOUS</span><br>Risk Score "+data.danger_score+"%"
+
+causes.innerHTML="Cause: "+data.reason
 
 }
-else if(data.status==="Safe"){
 
-result.innerHTML="<span class='safe'>Safe</span><br>Risk Score: "+data.danger_score+"%"
-
-}
 else{
 
-result.innerText="Error scanning URL"
+result.innerHTML="<span class='safe'>SAFE</span><br>Risk Score "+data.danger_score+"%"
 
 }
 
 })
-.catch(function(){
+
+.catch(()=>{
 
 loader.style.display="none"
-result.innerText="Server error"
+
+result.innerHTML="<span class='danger'>Server Error</span>"
 
 })
 
