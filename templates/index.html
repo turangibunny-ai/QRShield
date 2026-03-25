@@ -27,11 +27,15 @@ text-align:center;
 margin-bottom:20px;
 }
 
-h1{
-font-size:2.5rem;
-background:linear-gradient(135deg,#3b82f6,#8b5cf6);
--webkit-background-clip:text;
--webkit-text-fill-color:transparent;
+h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+
+  background-clip: text;          /* Standard */
+  -webkit-background-clip: text;  /* Chrome, Safari */
+
+  color: transparent;
+  -webkit-text-fill-color: transparent; /* Fix for mobile */
 }
 
 .subtitle{
@@ -149,6 +153,7 @@ border-radius:15px;
 background:rgba(15,23,42,0.9);
 border:1px solid rgba(255,255,255,0.08);
 text-align:center;
+transition:0.3s;
 }
 
 #urlText{
@@ -159,13 +164,9 @@ margin-bottom:10px;
 }
 
 #result{
-font-size:1.5rem;
+font-size:1.6rem;
 margin-top:5px;
 }
-
-.safe{color:#10b981}
-.danger{color:#ef4444}
-.suspicious{color:#f59e0b}
 
 #causes{
 margin-top:10px;
@@ -173,6 +174,29 @@ font-size:0.9rem;
 color:#fca5a5;
 }
 
+/* Progress Bar */
+.progress{
+width:100%;
+height:12px;
+background:rgba(255,255,255,0.08);
+border-radius:10px;
+margin-top:15px;
+overflow:hidden;
+}
+
+#progressBar{
+height:100%;
+width:0%;
+transition:0.6s ease;
+border-radius:10px;
+}
+
+/* Glow Effects */
+.safe-glow{ box-shadow:0 0 20px rgba(34,197,94,0.4); }
+.warn-glow{ box-shadow:0 0 20px rgba(245,158,11,0.4); }
+.danger-glow{ box-shadow:0 0 25px rgba(239,68,68,0.5); }
+
+/* Loader */
 .loader{
 border:4px solid rgba(255,255,255,0.1);
 border-top:4px solid #3b82f6;
@@ -194,11 +218,9 @@ margin:15px auto;
 <body>
 
 <div class="main-header">
-
 <h1>QRShield</h1>
 <p class="subtitle">Advanced Malware & Phishing Scanner</p>
 <p class="badge">Real-Time Threat Detection</p>
-
 </div>
 
 <div class="container">
@@ -208,7 +230,6 @@ margin:15px auto;
 </div>
 
 <h3 class="section-title">Camera QR Scanner</h3>
-
 <div id="reader"></div>
 
 <div class="button-group">
@@ -218,13 +239,11 @@ margin:15px auto;
 <div class="divider"></div>
 
 <h3 class="section-title">Upload QR Image</h3>
-
 <input type="file" id="fileInput" accept="image/*">
 
 <div class="divider"></div>
 
 <h3 class="section-title">Direct URL Scan</h3>
-
 <input type="text" id="manualURL" placeholder="Paste URL here">
 
 <div class="button-group">
@@ -232,13 +251,15 @@ margin:15px auto;
 </div>
 
 <div id="resultBox">
-
 <p id="urlText"></p>
 <p id="result"></p>
+
+<div class="progress">
+  <div id="progressBar"></div>
+</div>
+
 <p id="causes"></p>
-
 <div id="loader" class="loader" style="display:none"></div>
-
 </div>
 
 </div>
@@ -253,53 +274,39 @@ const causes=document.getElementById("causes")
 let scanner
 
 async function startCamera(){
-
 document.getElementById("scanStatus").innerText="Scanning QR Code..."
 
 try{
-
 scanner=new Html5Qrcode("reader")
 
 await scanner.start(
 { facingMode:"environment" },
 { fps:10 },
 (decodedText)=>{
-
-console.log("QR detected:",decodedText)
-
 scanner.stop().then(()=>{
 checkURL(decodedText)
 })
-
 },
 (err)=>{}
-
 )
 
 }catch(err){
-
-result.innerHTML="<span class='danger'>Camera access denied</span>"
-
+result.innerHTML="<span style='color:red'>Camera access denied</span>"
 }
-
 }
 
 document.getElementById("fileInput").addEventListener("change",function(e){
 
 const file=e.target.files[0]
-
 if(!file)return
 
 const reader=new FileReader()
 
 reader.onload=function(){
-
 const img=new Image()
 
 img.onload=function(){
-
 const canvas=document.createElement("canvas")
-
 const ctx=canvas.getContext("2d")
 
 canvas.width=img.width
@@ -308,23 +315,16 @@ canvas.height=img.height
 ctx.drawImage(img,0,0)
 
 const imageData=ctx.getImageData(0,0,img.width,img.height)
-
 const code=jsQR(imageData.data,imageData.width,imageData.height)
 
 if(code){
-
 checkURL(code.data)
-
 }else{
-
-result.innerHTML="<span class='suspicious'>No QR code detected</span>"
-
+result.innerHTML="<span style='color:orange'>No QR code detected</span>"
 }
-
 }
 
 img.src=reader.result
-
 }
 
 reader.readAsDataURL(file)
@@ -336,84 +336,78 @@ function scanManualURL(){
 let url=document.getElementById("manualURL").value.trim()
 
 if(!url){
-
-result.innerHTML="<span class='suspicious'>Enter URL</span>"
+result.innerHTML="<span style='color:orange'>Enter URL</span>"
 return
-
 }
 
 if(!url.startsWith("http")){
-
 url="https://"+url
-
 }
 
 checkURL(url)
-
 }
 
 function checkURL(url){
 
 document.getElementById("scanStatus").innerText="Scanning Link..."
-
 urlText.innerHTML="Scanning: "+url
 
 result.innerHTML=""
 causes.innerHTML=""
-
 loader.style.display="block"
 
 fetch("/check",{
-
 method:"POST",
-
-headers:{
-"Content-Type":"application/json"
-},
-
+headers:{ "Content-Type":"application/json" },
 body:JSON.stringify({url:url})
-
 })
 .then(res=>res.json())
-
 .then(data=>{
 
 loader.style.display="none"
-
 document.getElementById("scanStatus").innerText="Scan Complete"
 
+const risk = data.risk_score ?? 0
+
+let color=""
+let label=""
+
 if(data.status==="Dangerous"){
-
-result.innerHTML="<span class='danger'>DANGEROUS</span><br>Risk Score "+data.danger_score+"%"
-
-causes.innerHTML="Cause: "+data.reason
-
+color="#ef4444"
+label="DANGEROUS"
 }
-
 else if(data.status==="Suspicious"){
-
-result.innerHTML="<span class='suspicious'>SUSPICIOUS</span><br>Risk Score "+data.danger_score+"%"
-
-causes.innerHTML="Cause: "+data.reason
-
+color="#f59e0b"
+label="SUSPICIOUS"
 }
-
 else{
-
-result.innerHTML="<span class='safe'>SAFE</span><br>Risk Score "+data.danger_score+"%"
-
+color="#22c55e"
+label="SAFE"
 }
 
-})
+result.innerHTML = `
+<span style="color:${color}; font-weight:bold;">${label}</span><br>
+Risk Score: <b>${risk}%</b>
+`
 
+causes.innerHTML = data.reason ? "Cause: "+data.reason : ""
+
+const bar = document.getElementById("progressBar")
+bar.style.width = risk + "%"
+bar.style.background = color
+
+const box = document.getElementById("resultBox")
+box.classList.remove("safe-glow","warn-glow","danger-glow")
+
+if(risk < 40) box.classList.add("safe-glow")
+else if(risk < 70) box.classList.add("warn-glow")
+else box.classList.add("danger-glow")
+
+})
 .catch(()=>{
-
 loader.style.display="none"
-
-result.innerHTML="<span class='danger'>Server Error</span>"
-
+result.innerHTML="<span style='color:red'>Server Error</span>"
 })
-
 }
 
 </script>
