@@ -55,7 +55,7 @@ def heuristic_check(url):
     for word in suspicious_keywords:
         if word in url.lower():
             score += 8
-            reasons.append(f'Contains suspicious keyword "{word}"')
+            reasons.append(f'Suspicious keyword detected: "{word}"')
 
     parsed = urlparse(url)
     domain = parsed.netloc
@@ -66,7 +66,7 @@ def heuristic_check(url):
 
     if len(domain) > 30:
         score += 8
-        reasons.append("Unusually long domain name")
+        reasons.append("Very long domain name")
 
     if not url.startswith("https"):
         score += 10
@@ -188,7 +188,6 @@ def check():
     if cached:
         return jsonify(cached)
 
-
     parsed=urlparse(url)
     domain=parsed.netloc
 
@@ -200,33 +199,25 @@ def check():
 
     malicious,suspicious,vt_score=check_virustotal(url)
 
-
-    # ---------------- STRICT RISK SCORE ----------------
-
     risk_score=0
     reasons=[]
 
-    # VirusTotal malicious
     if malicious>0:
         risk_score+=70
         reasons.append(f"Flagged by {malicious} VirusTotal engines")
 
-    # VirusTotal suspicious
     if suspicious>0:
         risk_score+=30
         reasons.append(f"{suspicious} engines marked URL suspicious")
 
-    # Heuristic
     if heuristic_reasons:
         risk_score+=heuristic_score
         reasons.extend(heuristic_reasons)
 
-    # Google Safe Browsing
     if google_flag:
         risk_score=max(risk_score,90)
         reasons.append("Google Safe Browsing flagged this URL")
 
-    # Website unreachable
     if status_code is None:
         risk_score=max(risk_score,50)
         reasons.append("Website unreachable")
@@ -236,32 +227,24 @@ def check():
     if not reasons:
         reasons.append("No suspicious indicators detected")
 
+    if risk_score>=80:
+        risk_level="Malicious"
+        advice="Do NOT open this link"
 
-    # ---------------- RISK LEVEL ----------------
-
-    if risk_score>=75:
-        risk_level="High"
-        advice="Do not proceed"
-
-    elif risk_score>=40:
-        risk_level="Medium"
-        advice="Proceed with caution"
+    elif risk_score>=50:
+        risk_level="Dangerous"
+        advice="Proceed with extreme caution"
 
     else:
-        risk_level="Low"
+        risk_level="Safe"
         advice="URL appears safe"
-
 
     response={
 
         "risk_level":risk_level,
-
         "scan_score":risk_score,
-
         "url_details":domain,
-
         "reasons":reasons,
-
         "advice":advice,
 
         "engine_data":{
@@ -279,7 +262,6 @@ def check():
     return jsonify(response)
 
 
-# ---------------- RUN ----------------
 if __name__=="__main__":
 
     port=int(os.getenv("PORT",5000))

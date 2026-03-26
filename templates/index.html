@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>QRShield Security Scanner</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 
 <style>
 
@@ -35,7 +36,6 @@ background:linear-gradient(135deg,#3b82f6,#8b5cf6);
 -webkit-background-clip:text;
 background-clip:text;
 color:transparent;
--webkit-text-fill-color:transparent;
 }
 
 .subtitle{
@@ -55,7 +55,6 @@ box-shadow:0 20px 40px rgba(0,0,0,0.4);
 .section-title{
 margin-top:20px;
 margin-bottom:10px;
-font-size:1.1rem;
 text-align:center;
 }
 
@@ -114,19 +113,6 @@ margin-top:20px;
 padding:20px;
 border-radius:15px;
 background:rgba(15,23,42,0.9);
-border:1px solid rgba(255,255,255,0.08);
-}
-
-#urlText{
-font-size:0.9rem;
-color:#94a3b8;
-word-break:break-all;
-margin-bottom:8px;
-}
-
-#result{
-font-size:1.4rem;
-margin-bottom:10px;
 }
 
 .progress{
@@ -167,33 +153,12 @@ width:40px;
 height:40px;
 animation:spin 1s linear infinite;
 margin:15px auto;
+display:none;
 }
 
 @keyframes spin{
 0%{transform:rotate(0)}
 100%{transform:rotate(360deg)}
-}
-
-/* Mobile responsive */
-
-@media(max-width:600px){
-
-.container{
-padding:18px;
-}
-
-h1{
-font-size:2rem;
-}
-
-#reader{
-height:220px;
-}
-
-button{
-padding:10px 16px;
-}
-
 }
 
 </style>
@@ -202,31 +167,54 @@ padding:10px 16px;
 <body>
 
 <div class="main-header">
+
 <h1>QRShield</h1>
-<p class="subtitle">Advanced Malware & Phishing Scanner</p>
+
+<p class="subtitle">
+Advanced Malware & Phishing Scanner
+</p>
+
 </div>
 
 <div class="container">
 
 <h3 class="section-title">Camera QR Scanner</h3>
+
 <div id="reader"></div>
 
 <div class="button-group">
-<button class="btn-primary" onclick="startCamera()">Start Scanner</button>
+
+<button class="btn-primary" onclick="startCamera()">
+Start Scanner
+</button>
+
+<button class="btn-secondary" onclick="stopCamera()">
+Stop Scanner
+</button>
+
 </div>
 
 <div class="divider"></div>
 
-<h3 class="section-title">Upload QR Image</h3>
-<input type="file" id="fileInput" accept="image/*">
-
-<div class="divider"></div>
-
 <h3 class="section-title">Direct URL Scan</h3>
-<input type="text" id="manualURL" placeholder="Paste URL here">
+
+<input
+type="text"
+id="manualURL"
+placeholder="Paste URL here"
+/>
 
 <div class="button-group">
-<button class="btn-secondary" onclick="scanManualURL()">Scan URL</button>
+
+<button
+class="btn-secondary"
+onclick="scanManualURL()"
+>
+
+Scan URL
+
+</button>
+
 </div>
 
 <div id="resultBox">
@@ -236,14 +224,16 @@ padding:10px 16px;
 <p id="result"></p>
 
 <div class="progress">
+
 <div id="progressBar"></div>
+
 </div>
 
 <div id="reasons" class="reason-list"></div>
 
 <div id="advice" class="advice-list"></div>
 
-<div id="loader" class="loader" style="display:none"></div>
+<div id="loader" class="loader"></div>
 
 </div>
 
@@ -251,26 +241,92 @@ padding:10px 16px;
 
 <script>
 
+let qrScanner=null
+
 const result=document.getElementById("result")
+
 const loader=document.getElementById("loader")
+
 const urlText=document.getElementById("urlText")
 
-function scanManualURL(){
 
-let url=document.getElementById("manualURL").value.trim()
+function startCamera(){
 
-if(!url){
-result.innerHTML="Enter URL"
+if(qrScanner){
 return
 }
 
+qrScanner=new Html5Qrcode("reader")
+
+qrScanner.start(
+
+{ facingMode:"environment" },
+
+{ fps:10, qrbox:250 },
+
+(qrText)=>{
+
+stopCamera()
+
+checkURL(qrText)
+
+}
+
+)
+
+}
+
+
+function stopCamera(){
+
+if(qrScanner){
+
+qrScanner.stop()
+
+.then(()=>{
+
+qrScanner.clear()
+
+qrScanner=null
+
+})
+
+.catch(err=>{
+
+console.log(err)
+
+})
+
+}
+
+}
+
+
+function scanManualURL(){
+
+let url=document
+.getElementById("manualURL")
+.value
+.trim()
+
+if(!url){
+
+result.innerHTML="Enter URL"
+
+return
+
+}
+
 if(!url.startsWith("http")){
+
 url="https://"+url
+
 }
 
 checkURL(url)
 
 }
+
 
 function checkURL(url){
 
@@ -279,57 +335,90 @@ urlText.innerHTML="Scanning: "+url
 loader.style.display="block"
 
 fetch("/check",{
+
 method:"POST",
-headers:{"Content-Type":"application/json"},
+
+headers:{
+"Content-Type":"application/json"
+},
+
 body:JSON.stringify({url:url})
+
 })
+
 .then(res=>res.json())
+
 .then(data=>{
 
 loader.style.display="none"
 
-const risk=data.scan_score || 0
-const level=data.risk_level || "Unknown"
+const risk=data.scan_score||0
+
+let level="Safe"
 
 let color="#22c55e"
 
-if(level==="High") color="#ef4444"
-else if(level==="Medium") color="#f59e0b"
+if(risk>=80){
 
-result.innerHTML=`
-<b style="color:${color}">${level} Risk</b><br>
-Scan Score: ${risk}%
-`
+level="Malicious"
 
-const bar=document.getElementById("progressBar")
+color="#ef4444"
+
+}
+
+else if(risk>=50){
+
+level="Dangerous"
+
+color="#f59e0b"
+
+}
+
+result.innerHTML=
+
+"<b style='color:"+color+"'>"
+
++level+
+
+"</b><br>Score : "
+
++risk+
+
+"%"
+
+const bar=document
+.getElementById("progressBar")
+
 bar.style.width=risk+"%"
+
 bar.style.background=color
 
-document.getElementById("reasons").innerHTML=""
-document.getElementById("advice").innerHTML=""
 
-if(data.reasons){
-let r="<b>Reasons:</b><ul>"
+let r="<b>Reasons</b><ul>"
+
 data.reasons.forEach(i=>{
+
 r+="<li>"+i+"</li>"
+
 })
+
 r+="</ul>"
+
 document.getElementById("reasons").innerHTML=r
-}
 
-if(data.advice){
-let a="<b>Advice:</b><ul>"
-data.advice.forEach(i=>{
-a+="<li>"+i+"</li>"
-})
-a+="</ul>"
-document.getElementById("advice").innerHTML=a
-}
+
+document.getElementById("advice").innerHTML=
+
+"<b>Advice</b><p>"+data.advice+"</p>"
 
 })
+
 .catch(()=>{
+
 loader.style.display="none"
+
 result.innerHTML="Server Error"
+
 })
 
 }
