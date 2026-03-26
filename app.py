@@ -13,7 +13,7 @@ VT_API = os.getenv("VT_API_KEY")
 GSB_API = os.getenv("GSB_API_KEY")
 
 scan_cache = {}
-CACHE_TTL = 300  # 5 minutes cache
+CACHE_TTL = 300
 
 
 # ---------------- HOME ----------------
@@ -42,172 +42,246 @@ def check_url_status(url):
 
 # ---------------- HEURISTIC CHECK ----------------
 def heuristic_check(url):
+
     suspicious_keywords = [
-        "login", "verify", "secure", "account",
-        "update", "bank", "paypal", "icloud",
-        "signin", "confirm", "password"
+        "login","verify","secure","account",
+        "update","bank","paypal","icloud",
+        "signin","confirm","password"
     ]
 
     score = 0
+    reasons = []
+
     for word in suspicious_keywords:
         if word in url.lower():
-            score += 10
+            score += 8
+            reasons.append(f'Contains suspicious keyword "{word}"')
 
-    return min(score, 50)  # max 50 from heuristic
+    parsed = urlparse(url)
+    domain = parsed.netloc
+
+    if "-" in domain:
+        score += 6
+        reasons.append("Hyphen used in domain")
+
+    if len(domain) > 30:
+        score += 8
+        reasons.append("Unusually long domain name")
+
+    if not url.startswith("https"):
+        score += 10
+        reasons.append("Website not using HTTPS")
+
+    return min(score,40), reasons
 
 
 # ---------------- GOOGLE SAFE BROWSING ----------------
 def check_google_safe_browsing(url):
-    try:
-        endpoint = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={GSB_API}"
 
-        payload = {
-            "client": {"clientId": "qrshield", "clientVersion": "1.0"},
-            "threatInfo": {
-                "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING"],
-                "platformTypes": ["ANY_PLATFORM"],
-                "threatEntryTypes": ["URL"],
-                "threatEntries": [{"url": url}]
+    try:
+
+        endpoint=f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={GSB_API}"
+
+        payload={
+            "client":{"clientId":"qrshield","clientVersion":"1.0"},
+            "threatInfo":{
+                "threatTypes":["MALWARE","SOCIAL_ENGINEERING"],
+                "platformTypes":["ANY_PLATFORM"],
+                "threatEntryTypes":["URL"],
+                "threatEntries":[{"url":url}]
             }
         }
 
-        response = requests.post(endpoint, json=payload, timeout=5)
-        data = response.json()
+        response=requests.post(endpoint,json=payload,timeout=5)
+
+        data=response.json()
 
         return "matches" in data
+
     except:
         return False
 
 
 # ---------------- VIRUSTOTAL ----------------
 def check_virustotal(url):
-    try:
-        headers = {"x-apikey": VT_API}
 
-        # Submit URL
-        submit = requests.post(
+    try:
+
+        headers={"x-apikey":VT_API}
+
+        submit=requests.post(
             "https://www.virustotal.com/api/v3/urls",
             headers=headers,
-            data={"url": url},
+            data={"url":url},
             timeout=10
         )
 
-        analysis_id = submit.json()["data"]["id"]
+        analysis_id=submit.json()["data"]["id"]
 
-        # Wait for result
         for _ in range(6):
-            report = requests.get(
+
+            report=requests.get(
                 f"https://www.virustotal.com/api/v3/analyses/{analysis_id}",
                 headers=headers,
                 timeout=10
             )
-            result = report.json()
 
-            if result["data"]["attributes"]["status"] == "completed":
+            result=report.json()
+
+            if result["data"]["attributes"]["status"]=="completed":
                 break
+
             time.sleep(2)
 
-        stats = result["data"]["attributes"]["stats"]
+        stats=result["data"]["attributes"]["stats"]
 
-        malicious = stats.get("malicious", 0)
-        suspicious = stats.get("suspicious", 0)
-        harmless = stats.get("harmless", 0)
-        undetected = stats.get("undetected", 0)
+        malicious=stats.get("malicious",0)
+        suspicious=stats.get("suspicious",0)
+        harmless=stats.get("harmless",0)
+        undetected=stats.get("undetected",0)
 
-        total = malicious + suspicious + harmless + undetected
+        total=malicious+suspicious+harmless+undetected
 
-        risk_score = int((malicious / max(total, 1)) * 100)
+        vt_score=int((malicious/max(total,1))*100)
 
-        return malicious, suspicious, risk_score
+        return malicious,suspicious,vt_score
 
     except:
-        return 0, 0, 0
+        return 0,0,0
 
 
 # ---------------- CACHE ----------------
 def get_cached(url):
-    data = scan_cache.get(url)
-    if data and (time.time() - data["time"] < CACHE_TTL):
+
+    data=scan_cache.get(url)
+
+    if data and (time.time()-data["time"]<CACHE_TTL):
         return data["result"]
+
     return None
 
 
-def set_cache(url, result):
-    scan_cache[url] = {
-        "result": result,
-        "time": time.time()
+def set_cache(url,result):
+
+    scan_cache[url]={
+        "result":result,
+        "time":time.time()
     }
 
 
 # ---------------- MAIN CHECK ----------------
-@app.route("/check", methods=["POST"])
+@app.route("/check",methods=["POST"])
 def check():
-    data = request.json
-    url = data.get("url", "").strip()
+
+    data=request.json
+    url=data.get("url","").strip()
 
     if not url or not is_valid_url(url):
+
         return jsonify({
-            "status": "error",
-            "message": "Invalid URL"
+            "status":"error",
+            "message":"Invalid URL"
         })
 
-    # Cache check
-    cached = get_cached(url)
+    cached=get_cached(url)
+
     if cached:
         return jsonify(cached)
 
-    # Run checks
-    status_code = check_url_status(url)
-    heuristic_score = heuristic_check(url)
-    google_flag = check_google_safe_browsing(url)
-    malicious, suspicious, vt_score = check_virustotal(url)
 
-    # ---------------- FINAL RISK SCORE ----------------
-    risk_score = vt_score + heuristic_score
+    parsed=urlparse(url)
+    domain=parsed.netloc
 
+    status_code=check_url_status(url)
+
+    heuristic_score,heuristic_reasons=heuristic_check(url)
+
+    google_flag=check_google_safe_browsing(url)
+
+    malicious,suspicious,vt_score=check_virustotal(url)
+
+
+    # ---------------- STRICT RISK SCORE ----------------
+
+    risk_score=0
+    reasons=[]
+
+    # VirusTotal malicious
+    if malicious>0:
+        risk_score+=70
+        reasons.append(f"Flagged by {malicious} VirusTotal engines")
+
+    # VirusTotal suspicious
+    if suspicious>0:
+        risk_score+=30
+        reasons.append(f"{suspicious} engines marked URL suspicious")
+
+    # Heuristic
+    if heuristic_reasons:
+        risk_score+=heuristic_score
+        reasons.extend(heuristic_reasons)
+
+    # Google Safe Browsing
     if google_flag:
-        risk_score = max(risk_score, 90)
+        risk_score=max(risk_score,90)
+        reasons.append("Google Safe Browsing flagged this URL")
 
+    # Website unreachable
     if status_code is None:
-        risk_score = max(risk_score, 50)
+        risk_score=max(risk_score,50)
+        reasons.append("Website unreachable")
 
-    risk_score = min(risk_score, 100)
+    risk_score=min(risk_score,100)
 
-    # ---------------- FINAL STATUS ----------------
-    if google_flag or malicious > 0:
-        status = "Dangerous"
-        reason = "Detected as phishing/malware"
+    if not reasons:
+        reasons.append("No suspicious indicators detected")
 
-    elif suspicious > 0 or heuristic_score > 20:
-        status = "Suspicious"
-        reason = "Suspicious patterns detected"
 
-    elif status_code is None:
-        status = "Suspicious"
-        reason = "Website unreachable"
+    # ---------------- RISK LEVEL ----------------
+
+    if risk_score>=75:
+        risk_level="High"
+        advice="Do not proceed"
+
+    elif risk_score>=40:
+        risk_level="Medium"
+        advice="Proceed with caution"
 
     else:
-        status = "Safe"
-        reason = "No threats detected"
+        risk_level="Low"
+        advice="URL appears safe"
 
-    response = {
-        "status": status,
-        "risk_score": risk_score,
-        "reason": reason,
-        "details": {
-            "virustotal_malicious": malicious,
-            "virustotal_suspicious": suspicious,
-            "heuristic_score": heuristic_score,
-            "google_safe": google_flag,
-            "status_code": status_code
+
+    response={
+
+        "risk_level":risk_level,
+
+        "scan_score":risk_score,
+
+        "url_details":domain,
+
+        "reasons":reasons,
+
+        "advice":advice,
+
+        "engine_data":{
+            "virustotal_malicious":malicious,
+            "virustotal_suspicious":suspicious,
+            "heuristic_score":heuristic_score,
+            "google_safe":google_flag,
+            "status_code":status_code
         }
+
     }
 
-    set_cache(url, response)
+    set_cache(url,response)
+
     return jsonify(response)
 
 
 # ---------------- RUN ----------------
-if __name__ == "__main__":
-    port = int(os.getenv("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+if __name__=="__main__":
+
+    port=int(os.getenv("PORT",5000))
+
+    app.run(host="0.0.0.0",port=port,debug=True)

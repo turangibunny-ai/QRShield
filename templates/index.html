@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>QRShield Security Scanner</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
@@ -27,15 +29,13 @@ text-align:center;
 margin-bottom:20px;
 }
 
-h1 {
-  font-size: 2.5rem;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-
-  background-clip: text;          /* Standard */
-  -webkit-background-clip: text;  /* Chrome, Safari */
-
-  color: transparent;
-  -webkit-text-fill-color: transparent; /* Fix for mobile */
+h1{
+font-size:2.5rem;
+background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+-webkit-background-clip:text;
+background-clip:text;
+color:transparent;
+-webkit-text-fill-color:transparent;
 }
 
 .subtitle{
@@ -43,32 +43,11 @@ color:#94a3b8;
 margin-top:5px;
 }
 
-.badge{
-display:inline-block;
-padding:6px 12px;
-background:rgba(16,185,129,0.15);
-border:1px solid rgba(16,185,129,0.4);
-border-radius:8px;
-font-size:0.8rem;
-color:#10b981;
-margin-top:8px;
-}
-
-.status-bar{
-background:rgba(15,23,42,0.8);
-border:1px solid rgba(255,255,255,0.08);
-padding:12px;
-border-radius:10px;
-text-align:center;
-margin-bottom:20px;
-color:#94a3b8;
-}
-
 .container{
 background:rgba(30,41,59,0.95);
-padding:30px;
+padding:25px;
 border-radius:20px;
-max-width:480px;
+max-width:500px;
 margin:auto;
 box-shadow:0 20px 40px rgba(0,0,0,0.4);
 }
@@ -76,32 +55,16 @@ box-shadow:0 20px 40px rgba(0,0,0,0.4);
 .section-title{
 margin-top:20px;
 margin-bottom:10px;
-font-size:1.2rem;
+font-size:1.1rem;
 text-align:center;
 }
 
 #reader{
-width:100%!important;
-height:280px;
-margin:auto;
-border-radius:14px;
-background:black;
-position:relative;
-overflow:hidden;
-}
-
-#reader::after{
-content:"";
-position:absolute;
-top:50%;
-left:50%;
-width:200px;
-height:200px;
-transform:translate(-50%,-50%);
-border:3px solid #3b82f6;
+width:100%;
+height:260px;
 border-radius:12px;
-box-shadow:0 0 20px rgba(59,130,246,0.4);
-pointer-events:none;
+overflow:hidden;
+background:black;
 }
 
 .button-group{
@@ -121,18 +84,18 @@ font-weight:600;
 }
 
 .btn-primary{
-background:linear-gradient(135deg,#3b82f6,#1d4ed8);
+background:#3b82f6;
 color:white;
 }
 
 .btn-secondary{
-background:linear-gradient(135deg,#6b7280,#4b5563);
+background:#6b7280;
 color:white;
 }
 
 input{
 width:100%;
-padding:14px;
+padding:12px;
 margin-top:10px;
 border-radius:10px;
 border:1px solid rgba(255,255,255,0.1);
@@ -143,60 +106,59 @@ color:white;
 .divider{
 height:1px;
 background:rgba(255,255,255,0.08);
-margin:25px 0;
+margin:20px 0;
 }
 
 #resultBox{
-margin-top:25px;
-padding:25px;
+margin-top:20px;
+padding:20px;
 border-radius:15px;
 background:rgba(15,23,42,0.9);
 border:1px solid rgba(255,255,255,0.08);
-text-align:center;
-transition:0.3s;
 }
 
 #urlText{
 font-size:0.9rem;
 color:#94a3b8;
 word-break:break-all;
-margin-bottom:10px;
+margin-bottom:8px;
 }
 
 #result{
-font-size:1.6rem;
-margin-top:5px;
+font-size:1.4rem;
+margin-bottom:10px;
 }
 
-#causes{
-margin-top:10px;
-font-size:0.9rem;
-color:#fca5a5;
-}
-
-/* Progress Bar */
 .progress{
 width:100%;
 height:12px;
 background:rgba(255,255,255,0.08);
 border-radius:10px;
-margin-top:15px;
+margin-top:10px;
 overflow:hidden;
 }
 
 #progressBar{
 height:100%;
 width:0%;
-transition:0.6s ease;
 border-radius:10px;
+transition:0.5s;
 }
 
-/* Glow Effects */
-.safe-glow{ box-shadow:0 0 20px rgba(34,197,94,0.4); }
-.warn-glow{ box-shadow:0 0 20px rgba(245,158,11,0.4); }
-.danger-glow{ box-shadow:0 0 25px rgba(239,68,68,0.5); }
+.reason-list{
+margin-top:10px;
+font-size:0.9rem;
+color:#fca5a5;
+text-align:left;
+}
 
-/* Loader */
+.advice-list{
+margin-top:10px;
+font-size:0.9rem;
+color:#93c5fd;
+text-align:left;
+}
+
 .loader{
 border:4px solid rgba(255,255,255,0.1);
 border-top:4px solid #3b82f6;
@@ -212,6 +174,28 @@ margin:15px auto;
 100%{transform:rotate(360deg)}
 }
 
+/* Mobile responsive */
+
+@media(max-width:600px){
+
+.container{
+padding:18px;
+}
+
+h1{
+font-size:2rem;
+}
+
+#reader{
+height:220px;
+}
+
+button{
+padding:10px 16px;
+}
+
+}
+
 </style>
 </head>
 
@@ -220,14 +204,9 @@ margin:15px auto;
 <div class="main-header">
 <h1>QRShield</h1>
 <p class="subtitle">Advanced Malware & Phishing Scanner</p>
-<p class="badge">Real-Time Threat Detection</p>
 </div>
 
 <div class="container">
-
-<div class="status-bar">
-<span id="scanStatus">System Ready</span>
-</div>
 
 <h3 class="section-title">Camera QR Scanner</h3>
 <div id="reader"></div>
@@ -251,15 +230,21 @@ margin:15px auto;
 </div>
 
 <div id="resultBox">
+
 <p id="urlText"></p>
+
 <p id="result"></p>
 
 <div class="progress">
-  <div id="progressBar"></div>
+<div id="progressBar"></div>
 </div>
 
-<p id="causes"></p>
+<div id="reasons" class="reason-list"></div>
+
+<div id="advice" class="advice-list"></div>
+
 <div id="loader" class="loader" style="display:none"></div>
+
 </div>
 
 </div>
@@ -269,74 +254,13 @@ margin:15px auto;
 const result=document.getElementById("result")
 const loader=document.getElementById("loader")
 const urlText=document.getElementById("urlText")
-const causes=document.getElementById("causes")
-
-let scanner
-
-async function startCamera(){
-document.getElementById("scanStatus").innerText="Scanning QR Code..."
-
-try{
-scanner=new Html5Qrcode("reader")
-
-await scanner.start(
-{ facingMode:"environment" },
-{ fps:10 },
-(decodedText)=>{
-scanner.stop().then(()=>{
-checkURL(decodedText)
-})
-},
-(err)=>{}
-)
-
-}catch(err){
-result.innerHTML="<span style='color:red'>Camera access denied</span>"
-}
-}
-
-document.getElementById("fileInput").addEventListener("change",function(e){
-
-const file=e.target.files[0]
-if(!file)return
-
-const reader=new FileReader()
-
-reader.onload=function(){
-const img=new Image()
-
-img.onload=function(){
-const canvas=document.createElement("canvas")
-const ctx=canvas.getContext("2d")
-
-canvas.width=img.width
-canvas.height=img.height
-
-ctx.drawImage(img,0,0)
-
-const imageData=ctx.getImageData(0,0,img.width,img.height)
-const code=jsQR(imageData.data,imageData.width,imageData.height)
-
-if(code){
-checkURL(code.data)
-}else{
-result.innerHTML="<span style='color:orange'>No QR code detected</span>"
-}
-}
-
-img.src=reader.result
-}
-
-reader.readAsDataURL(file)
-
-})
 
 function scanManualURL(){
 
 let url=document.getElementById("manualURL").value.trim()
 
 if(!url){
-result.innerHTML="<span style='color:orange'>Enter URL</span>"
+result.innerHTML="Enter URL"
 return
 }
 
@@ -345,69 +269,69 @@ url="https://"+url
 }
 
 checkURL(url)
+
 }
 
 function checkURL(url){
 
-document.getElementById("scanStatus").innerText="Scanning Link..."
 urlText.innerHTML="Scanning: "+url
 
-result.innerHTML=""
-causes.innerHTML=""
 loader.style.display="block"
 
 fetch("/check",{
 method:"POST",
-headers:{ "Content-Type":"application/json" },
+headers:{"Content-Type":"application/json"},
 body:JSON.stringify({url:url})
 })
 .then(res=>res.json())
 .then(data=>{
 
 loader.style.display="none"
-document.getElementById("scanStatus").innerText="Scan Complete"
 
-const risk = data.risk_score ?? 0
+const risk=data.scan_score || 0
+const level=data.risk_level || "Unknown"
 
-let color=""
-let label=""
+let color="#22c55e"
 
-if(data.status==="Dangerous"){
-color="#ef4444"
-label="DANGEROUS"
-}
-else if(data.status==="Suspicious"){
-color="#f59e0b"
-label="SUSPICIOUS"
-}
-else{
-color="#22c55e"
-label="SAFE"
-}
+if(level==="High") color="#ef4444"
+else if(level==="Medium") color="#f59e0b"
 
-result.innerHTML = `
-<span style="color:${color}; font-weight:bold;">${label}</span><br>
-Risk Score: <b>${risk}%</b>
+result.innerHTML=`
+<b style="color:${color}">${level} Risk</b><br>
+Scan Score: ${risk}%
 `
 
-causes.innerHTML = data.reason ? "Cause: "+data.reason : ""
+const bar=document.getElementById("progressBar")
+bar.style.width=risk+"%"
+bar.style.background=color
 
-const bar = document.getElementById("progressBar")
-bar.style.width = risk + "%"
-bar.style.background = color
+document.getElementById("reasons").innerHTML=""
+document.getElementById("advice").innerHTML=""
 
-const box = document.getElementById("resultBox")
-box.classList.remove("safe-glow","warn-glow","danger-glow")
+if(data.reasons){
+let r="<b>Reasons:</b><ul>"
+data.reasons.forEach(i=>{
+r+="<li>"+i+"</li>"
+})
+r+="</ul>"
+document.getElementById("reasons").innerHTML=r
+}
 
-if(risk < 40) box.classList.add("safe-glow")
-else if(risk < 70) box.classList.add("warn-glow")
-else box.classList.add("danger-glow")
+if(data.advice){
+let a="<b>Advice:</b><ul>"
+data.advice.forEach(i=>{
+a+="<li>"+i+"</li>"
+})
+a+="</ul>"
+document.getElementById("advice").innerHTML=a
+}
 
 })
 .catch(()=>{
 loader.style.display="none"
-result.innerHTML="<span style='color:red'>Server Error</span>"
+result.innerHTML="Server Error"
 })
+
 }
 
 </script>
