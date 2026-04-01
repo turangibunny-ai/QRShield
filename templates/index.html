@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>QR SHIELD — ULTRA SCAN v5.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<!-- html5-qrcode library -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <style>
 :root{
@@ -25,24 +24,16 @@
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;cursor:none;}
-
-/* CURSOR */
 #cur{position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:screen;}
 #cur canvas{display:block;}
-
-/* GLOBAL BG */
 #bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:1;animation:scrollLines 10s linear infinite;}
 @keyframes scrollLines{to{background-position:0 100px;}}
-
-/* VERDICT OVERLAY */
 #verdictOverlay{position:fixed;inset:0;z-index:800;display:none;align-items:center;justify-content:center;background:rgba(2,5,9,0);transition:background .5s;}
 #verdictOverlay.active{display:flex;background:rgba(2,5,9,0.95);}
 #verdictCanvas{position:absolute;inset:0;width:100%;height:100%;}
 .verdict-dismiss{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;color:rgba(0,245,255,.3);text-transform:uppercase;pointer-events:none;animation:blinkDismiss 1.5s ease infinite;}
 @keyframes blinkDismiss{0%,100%{opacity:1;}50%{opacity:.2;}}
-
-/* HEADER */
 header{position:sticky;top:0;z-index:500;border-bottom:1px solid var(--border);background:rgba(2,5,9,0.97);backdrop-filter:blur(20px);}
 .hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 36px;gap:16px;flex-wrap:wrap;position:relative;}
 .hdr::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:linear-gradient(90deg,var(--cyan),var(--purple));animation:hdrLine 4s ease infinite;}
@@ -59,8 +50,6 @@ header{position:sticky;top:0;z-index:500;border-bottom:1px solid var(--border);b
 .pill-on::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin-right:6px;animation:blink 1.4s infinite;box-shadow:0 0 5px var(--green);}
 .pill-info{color:var(--cyan2);border-color:rgba(0,200,255,0.2);background:rgba(0,200,255,0.04);}
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:0.15;}}
-
-/* HERO */
 .hero{padding:44px 36px 24px;text-align:center;position:relative;z-index:2;}
 .eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.18em;color:var(--cyan);background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.2);padding:6px 16px;border-radius:2px;margin-bottom:20px;position:relative;overflow:hidden;}
 .eyebrow::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,245,255,0.12),transparent);animation:sweep 2.5s linear infinite;}
@@ -70,8 +59,6 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .h1b{display:block;color:var(--cyan);text-shadow:var(--glow);animation:glitch1 6s ease infinite;}
 @keyframes glitch1{0%,88%,100%{text-shadow:var(--glow);}90%{text-shadow:5px 0 0 var(--red),-5px 0 0 var(--cyan),var(--glow);}92%{text-shadow:-4px 0 0 var(--purple),4px 0 0 var(--cyan),var(--glow);}94%{text-shadow:var(--glow);}}
 .hero-p{color:var(--text2);font-size:0.95rem;max-width:520px;margin:0 auto 28px;line-height:1.7;}
-
-/* TABS */
 .tabs-outer{display:flex;justify-content:center;margin-bottom:28px;}
 .tabs{display:flex;background:rgba(0,8,18,0.9);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
 .tbtn{font-family:var(--hud);font-size:0.68rem;font-weight:700;letter-spacing:0.12em;padding:11px 22px;border:none;background:transparent;color:var(--text2);cursor:none;border-right:1px solid var(--border);text-transform:uppercase;transition:all 0.25s;display:flex;align-items:center;gap:7px;position:relative;overflow:hidden;}
@@ -79,14 +66,10 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .tbtn.active{background:rgba(0,245,255,0.08);color:var(--cyan);}
 .tbtn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--cyan);box-shadow:0 0 12px var(--cyan),0 0 30px rgba(0,245,255,0.4);}
 .tbtn:hover:not(.active){background:rgba(255,255,255,0.02);color:var(--text);}
-
-/* MAIN */
 .main-wrap{max-width:820px;margin:0 auto;padding:0 36px 44px;position:relative;z-index:2;}
 .panel{display:none;animation:pIn 0.4s cubic-bezier(0.23,1,0.32,1);}
 .panel.active{display:block;}
 @keyframes pIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-
-/* CARD BASE */
 .card{background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:24px;position:relative;overflow:hidden;backdrop-filter:blur(20px);}
 .card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,245,255,0.03),transparent 60%);pointer-events:none;}
 .cnr{position:absolute;width:16px;height:16px;border-color:var(--cyan);border-style:solid;box-shadow:0 0 8px rgba(0,245,255,0.4);}
@@ -94,8 +77,6 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .cnr-tr{top:-1px;right:-1px;border-width:2px 2px 0 0;}
 .cnr-bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px;}
 .cnr-br{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
-
-/* UPLOAD ZONE */
 .upload-zone{position:relative;border:1px dashed rgba(0,245,255,0.25);border-radius:3px;overflow:hidden;background:rgba(0,12,24,0.6);}
 .upload-zone input{position:absolute;inset:0;opacity:0;cursor:none;z-index:10;}
 #uploadCanvas{display:block;width:100%;height:320px;}
@@ -109,20 +90,14 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .uz-preview img{max-width:200px;max-height:200px;border-radius:4px;border:1px solid var(--border2);box-shadow:var(--glow);}
 .scan-stage{position:absolute;inset:0;z-index:20;display:none;pointer-events:none;}
 #scanCanvas{display:block;width:100%;height:100%;}
-
-/* CAMERA — html5-qrcode renders its own video */
 .cam-wrap{position:relative;border-radius:3px;overflow:hidden;background:#000;max-width:540px;margin:0 auto;border:1px solid var(--border);}
-/* html5-qrcode injects #html5-qrcode-reader here */
 #html5-qrcode-reader{width:100%;}
 #html5-qrcode-reader video{width:100%!important;height:auto!important;display:block;}
-/* hide the default html5-qrcode UI chrome we don't need */
 #html5-qrcode-reader img{display:none!important;}
 #html5-qrcode-reader__dashboard{display:none!important;}
 #html5-qrcode-reader__status_span{display:none!important;}
 .cam-canvas-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10;}
 .cam-actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
-
-/* BUTTONS */
 .btn{font-family:var(--hud);font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:12px 22px;border:1px solid;border-radius:3px;cursor:none;transition:all 0.22s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;position:relative;overflow:hidden;}
 .btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04),transparent);pointer-events:none;}
 .btn-p{background:rgba(0,245,255,0.08);border-color:rgba(0,245,255,0.45);color:var(--cyan);box-shadow:0 0 16px rgba(0,245,255,0.12);}
@@ -133,14 +108,10 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .btn-d:hover:not(:disabled){background:rgba(255,0,64,0.14);box-shadow:var(--glow-r);}
 .btn-full{width:100%;justify-content:center;margin-top:16px;}
 .btn:disabled{opacity:0.25;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
-
-/* URL */
 .url-row{display:flex;gap:10px;}
 .url-in{flex:1;background:rgba(0,8,18,0.85);border:1px solid var(--border);border-radius:3px;padding:13px 16px;color:var(--text);font-family:var(--mono);font-size:0.82rem;outline:none;transition:all 0.22s;letter-spacing:0.04em;}
 .url-in::placeholder{color:rgba(74,122,148,0.5);}
 .url-in:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,245,255,0.07),var(--glow);}
-
-/* LOADING */
 .loading{display:none;padding:50px 0;text-align:center;position:relative;}
 .loading.show{display:block;}
 #analyzeCanvas{display:block;margin:0 auto;border-radius:4px;}
@@ -149,12 +120,8 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .load-step-row.done{opacity:1;color:var(--green);}
 .load-step-row.active{opacity:1;color:var(--cyan);animation:stepPulse 0.8s ease infinite;}
 @keyframes stepPulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-
-/* ERROR */
 .err{background:rgba(255,0,64,0.07);border:1px solid rgba(255,0,64,0.25);border-left:3px solid var(--red);border-radius:3px;padding:10px 14px;color:#ff6080;font-family:var(--mono);font-size:0.72rem;margin-top:10px;display:none;}
 .err.show{display:block;}
-
-/* RESULT */
 .result{display:none;margin-top:28px;animation:rIn 0.7s cubic-bezier(0.23,1,0.32,1);}
 .result.show{display:block;}
 @keyframes rIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
@@ -234,12 +201,6 @@ h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-
 .r-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
 .mc{font-family:var(--mono);font-size:0.63rem;color:var(--text2);background:rgba(0,8,18,0.7);border:1px solid var(--border);border-radius:2px;padding:4px 9px;display:flex;align-items:center;gap:4px;}
 .mc b{color:var(--cyan);font-weight:400;}
-
-/* BACKEND STATUS BADGE */
-.be-badge{font-family:var(--mono);font-size:0.6rem;padding:3px 10px;border-radius:2px;letter-spacing:0.08em;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;}
-.be-server{color:#a78bfa;border:1px solid rgba(167,139,250,0.3);background:rgba(167,139,250,0.07);}
-.be-local{color:var(--cyan2);border:1px solid rgba(0,200,255,0.2);background:rgba(0,200,255,0.04);}
-
 footer{border-top:1px solid var(--border);padding:18px 36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:relative;z-index:2;}
 .ft{font-family:var(--hud);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--cyan);}
 .fi{font-family:var(--mono);font-size:0.6rem;color:var(--text2);}
@@ -257,7 +218,6 @@ footer{border-top:1px solid var(--border);padding:18px 36px;display:flex;justify
 <canvas id="bgCanvas"></canvas>
 <div id="cur"><canvas id="curCanvas" width="60" height="60"></canvas></div>
 
-<!-- VERDICT OVERLAY -->
 <div id="verdictOverlay">
   <canvas id="verdictCanvas"></canvas>
   <div class="verdict-dismiss" id="dismissHint" style="display:none;">◈ CLICK ANYWHERE TO DISMISS ◈</div>
@@ -287,7 +247,7 @@ footer{border-top:1px solid var(--border);padding:18px 36px;display:flex;justify
   <div class="hero">
     <div class="eyebrow"> ADVANCED THREAT DETECTION SYSTEM v5.0 </div>
     <h1><span class="h1a">QR SCAN ANALYZE</span><span class="h1b">DANGEROUS MALWARE DETECTION</span></h1>
-    <p>Upload a QR image or scan with camera. Backend-powered deep scan + offline heuristics — zero data stored.</p>
+    <p class="hero-p">Upload a QR image or scan with camera. Backend-powered deep scan + offline heuristics — zero data stored.</p>
     <div class="tabs-outer">
       <div class="tabs">
         <button class="tbtn active" onclick="switchTab('upload')">📁 UPLOAD QR</button>
@@ -316,7 +276,7 @@ footer{border-top:1px solid var(--border);padding:18px 36px;display:flex;justify
       <div class="err" id="uploadErr"></div>
     </div>
 
-    <!-- CAMERA — html5-qrcode renders inside cam-wrap -->
+    <!-- CAMERA -->
     <div class="panel card" id="panel-camera">
       <div class="cnr cnr-tl"></div><div class="cnr cnr-tr"></div><div class="cnr cnr-bl"></div><div class="cnr cnr-br"></div>
       <div class="cam-wrap">
@@ -364,107 +324,126 @@ footer{border-top:1px solid var(--border);padding:18px 36px;display:flex;justify
 'use strict';
 
 // ═══════════════════════════════════════════════
-// BACKEND CONFIG
-// Change BACKEND_URL to your Flask server address
+// BACKEND CONFIG — change this to your Flask URL
+// e.g. 'http://localhost:5000' or 'http://192.168.1.x:5000'
+// Leave empty '' if serving HTML from Flask itself
 // ═══════════════════════════════════════════════
-const BACKEND_URL = ''; // empty = same origin (recommended for Flask)
+const BACKEND_URL = '';
 const CHECK_ENDPOINT = BACKEND_URL + '/check-url';
 
-// Ping backend on load to show status
-async function pingBackend(){
+// ── URL Normalizer ────────────────────────────────────────────────
+// Adds https:// if no scheme present (fixes QR codes & plain domains)
+function normalizeUrl(url) {
+  url = (url || '').trim();
+  if (!url) return url;
+  if (/^[a-z][a-z0-9+\-.]*:\/\//i.test(url)) return url; // already has scheme
+  return 'https://' + url;
+}
+
+// ── Backend ping ──────────────────────────────────────────────────
+async function pingBackend() {
   const pill = document.getElementById('backendPill');
-  try{
-    const r = await fetch(CHECK_ENDPOINT, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({url:'https://example.com'}),
-      signal:AbortSignal.timeout(4000)
-    });
-    if(r.ok){
+  try {
+    let ok = false;
+    // Try /health first (lightweight)
+    try {
+      const h = await fetch(BACKEND_URL + '/health', { signal: AbortSignal.timeout(4000) });
+      ok = h.ok;
+    } catch (_) {}
+
+    if (!ok) {
+      // Fallback: POST to /check-url — even a 400 means server is alive
+      const r = await fetch(CHECK_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: 'https://example.com' }),
+        signal: AbortSignal.timeout(5000),
+      });
+      ok = r.ok || r.status === 400;
+    }
+
+    if (ok) {
       pill.textContent = '✓ Backend Online';
+      pill.classList.remove('pill-info');
       pill.classList.add('pill-on');
     } else {
-      pill.textContent = 'Backend Error';
+      pill.textContent = '⚠ Backend Error';
     }
-  } catch(e){
+  } catch (e) {
     pill.textContent = 'Offline — Local Mode';
   }
 }
 pingBackend();
 
-// ═══════════════════════════════════════════════
-// BACKEND API CALL
-// POST /check-url  →  {url}
-// Response: {status, malicious_count, ...}
-// ═══════════════════════════════════════════════
-async function callBackend(url){
+// ── Backend API call ──────────────────────────────────────────────
+async function callBackend(url) {
+  url = normalizeUrl(url);
   const res = await fetch(CHECK_ENDPOINT, {
     method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({url: url})
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ url }),
   });
-  if(!res.ok) throw new Error('Backend returned ' + res.status);
-  return await res.json();
+  if (!res.ok) {
+    let errMsg = 'Backend returned ' + res.status;
+    try {
+      const errData = await res.json();
+      if (errData.message) errMsg = errData.message;
+    } catch (_) {}
+    throw new Error(errMsg);
+  }
+  return res.json();
 }
 
-// Map backend response → internal analysis object
-// Supports both your Flask format AND the /check-url contract
-function mapBackendToResult(backendData, rawUrl, startTime){
+// ── Map backend response → internal result object ─────────────────
+function mapBackendToResult(backendData, rawUrl, startTime) {
   const data = backendData;
-
-  // ── normalise fields ────────────────────────────────────────────
-  // /check-url contract uses: status, malicious_count
-  // Flask /check uses: risk_level, scan_score, reasons, advice, engine_data
-  // We handle BOTH gracefully
   const maliciousCount = data.malicious_count ?? data.engine_data?.virustotal_malicious ?? 0;
   const suspiciousCount = data.engine_data?.virustotal_suspicious ?? 0;
-  const rawScore   = data.scan_score ?? data.risk_score ?? 0;
-  const riskLevel  = (data.status || data.risk_level || 'Unknown').toLowerCase();
-  const reasons    = Array.isArray(data.reasons) ? data.reasons : [];
-  const advice     = data.advice || data.message || '';
-  const domain     = data.url_details || (() => { try{ return new URL(rawUrl).hostname; }catch(e){ return rawUrl; } })();
+  const rawScore = data.scan_score ?? data.risk_score ?? 0;
+  const riskLevel = (data.status || data.risk_level || 'Unknown').toLowerCase();
+  const reasons = Array.isArray(data.reasons) ? data.reasons : [];
+  const advice = data.advice || data.message || '';
+  const domain = data.url_details || (() => { try { return new URL(normalizeUrl(rawUrl)).hostname; } catch (e) { return rawUrl; } })();
 
-  // ── verdict mapping ─────────────────────────────────────────────
   let verdict;
-  if(riskLevel.includes('malicious') || maliciousCount > 5)        verdict = 'phishing';
-  else if(riskLevel.includes('dangerous') || rawScore >= 60)       verdict = 'dangerous';
-  else if(riskLevel.includes('suspicious') || rawScore >= 35)      verdict = 'suspicious';
-  else if(rawScore >= 15)                                           verdict = 'likely';
-  else                                                              verdict = 'safe';
+  if (riskLevel.includes('malicious') || maliciousCount > 5)      verdict = 'phishing';
+  else if (riskLevel.includes('dangerous') || rawScore >= 60)     verdict = 'dangerous';
+  else if (riskLevel.includes('suspicious') || rawScore >= 35)    verdict = 'suspicious';
+  else if (rawScore >= 15)                                         verdict = 'likely';
+  else                                                             verdict = 'safe';
 
-  // ── build findings from reasons ─────────────────────────────────
   const findings = reasons.map(r => {
     let sev = 'low', pts = 5;
     const lo = r.toLowerCase();
-    if(lo.includes('virustotal') || lo.includes('google safe') || lo.includes('malicious')){ sev='critical'; pts=40; }
-    else if(lo.includes('dangerous') || lo.includes('unreachable') || lo.includes('suspicious keyword')){ sev='high'; pts=22; }
-    else if(lo.includes('https') || lo.includes('long domain') || lo.includes('hyphen')){ sev='medium'; pts=10; }
+    if (lo.includes('virustotal') || lo.includes('google safe') || lo.includes('malicious')) { sev = 'critical'; pts = 40; }
+    else if (lo.includes('dangerous') || lo.includes('unreachable') || lo.includes('suspicious keyword')) { sev = 'high'; pts = 22; }
+    else if (lo.includes('https') || lo.includes('long domain') || lo.includes('hyphen')) { sev = 'medium'; pts = 10; }
     return { sev, rule: 'BACKEND_RULE', detail: r, pts };
   });
 
   const fc = {
-    critical: findings.filter(f=>f.sev==='critical').length,
-    high:     findings.filter(f=>f.sev==='high').length,
-    medium:   findings.filter(f=>f.sev==='medium').length,
-    low:      findings.filter(f=>f.sev==='low').length
+    critical: findings.filter(f => f.sev === 'critical').length,
+    high:     findings.filter(f => f.sev === 'high').length,
+    medium:   findings.filter(f => f.sev === 'medium').length,
+    low:      findings.filter(f => f.sev === 'low').length,
   };
 
-  const confMap = { phishing:95, dangerous:85, suspicious:72, likely:75, safe:92 };
+  const confMap = { phishing: 95, dangerous: 85, suspicious: 72, likely: 75, safe: 92 };
   const summaryMap = {
     phishing:  'THREAT CONFIRMED — Backend engines flagged this URL. Do not engage.',
     dangerous: 'High-risk target. Strong threat indicators from server-side scan.',
     suspicious:'Suspicious patterns found. Do not transmit credentials.',
     likely:    'Minor anomalies detected. Proceed with caution.',
-    safe:      'No threats detected by backend engines. Appears safe.'
+    safe:      'No threats detected by backend engines. Appears safe.',
   };
 
   let parsed = null;
-  try{ let u=rawUrl; if(!/^[a-z]+:\/\//i.test(u))u='http://'+u; parsed=new URL(u); }catch(e){}
+  try { parsed = new URL(normalizeUrl(rawUrl)); } catch (e) {}
 
   return {
     url:        rawUrl,
-    domain:     domain,
-    scheme:     parsed ? parsed.protocol.replace(':','') : '?',
+    domain,
+    scheme:     parsed ? parsed.protocol.replace(':', '') : '?',
     verdict,
     risk_score: Math.min(rawScore, 100),
     confidence: confMap[verdict] || 80,
@@ -474,33 +453,32 @@ function mapBackendToResult(backendData, rawUrl, startTime){
     time:       (performance.now() - startTime).toFixed(0),
     ts:         new Date().toISOString(),
     hash:       simpleHash(rawUrl),
-    // extra backend fields stored for display
     _malicious: maliciousCount,
     _suspicious: suspiciousCount,
     _vtScore:   rawScore,
-    _source:    'backend'
+    _source:    'backend',
   };
 }
 
 // ═══════════════════════════════════════════════
 // CUSTOM CURSOR
 // ═══════════════════════════════════════════════
-const curEl=document.getElementById('cur');
-const curCv=document.getElementById('curCanvas');
-const curCtx=curCv.getContext('2d');
-let mx=0,my=0,curAngle=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;curEl.style.left=(mx-30)+'px';curEl.style.top=(my-30)+'px';});
-function drawCursor(){
-  curCtx.clearRect(0,0,60,60);curAngle+=0.04;
-  curCtx.save();curCtx.translate(30,30);curCtx.rotate(curAngle);
-  curCtx.beginPath();curCtx.arc(0,0,18,0,Math.PI*1.5);curCtx.strokeStyle='rgba(0,245,255,0.7)';curCtx.lineWidth=1.5;curCtx.stroke();
-  curCtx.beginPath();curCtx.arc(0,0,18,Math.PI*1.6,Math.PI*1.9);curCtx.strokeStyle='rgba(0,245,255,0.3)';curCtx.lineWidth=1.5;curCtx.stroke();
+const curEl = document.getElementById('cur');
+const curCv = document.getElementById('curCanvas');
+const curCtx = curCv.getContext('2d');
+let mx = 0, my = 0, curAngle = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; curEl.style.left = (mx - 30) + 'px'; curEl.style.top = (my - 30) + 'px'; });
+function drawCursor() {
+  curCtx.clearRect(0, 0, 60, 60); curAngle += 0.04;
+  curCtx.save(); curCtx.translate(30, 30); curCtx.rotate(curAngle);
+  curCtx.beginPath(); curCtx.arc(0, 0, 18, 0, Math.PI * 1.5); curCtx.strokeStyle = 'rgba(0,245,255,0.7)'; curCtx.lineWidth = 1.5; curCtx.stroke();
+  curCtx.beginPath(); curCtx.arc(0, 0, 18, Math.PI * 1.6, Math.PI * 1.9); curCtx.strokeStyle = 'rgba(0,245,255,0.3)'; curCtx.lineWidth = 1.5; curCtx.stroke();
   curCtx.restore();
-  curCtx.save();curCtx.translate(30,30);curCtx.rotate(-curAngle*1.5);
-  curCtx.beginPath();curCtx.arc(0,0,10,0,Math.PI);curCtx.strokeStyle='rgba(0,245,255,0.4)';curCtx.lineWidth=1;curCtx.stroke();
+  curCtx.save(); curCtx.translate(30, 30); curCtx.rotate(-curAngle * 1.5);
+  curCtx.beginPath(); curCtx.arc(0, 0, 10, 0, Math.PI); curCtx.strokeStyle = 'rgba(0,245,255,0.4)'; curCtx.lineWidth = 1; curCtx.stroke();
   curCtx.restore();
-  curCtx.beginPath();curCtx.arc(30,30,2.5,0,Math.PI*2);curCtx.fillStyle='rgba(0,245,255,0.95)';curCtx.fill();
-  curCtx.shadowBlur=8;curCtx.shadowColor='rgba(0,245,255,0.8)';curCtx.fill();curCtx.shadowBlur=0;
+  curCtx.beginPath(); curCtx.arc(30, 30, 2.5, 0, Math.PI * 2); curCtx.fillStyle = 'rgba(0,245,255,0.95)'; curCtx.fill();
+  curCtx.shadowBlur = 8; curCtx.shadowColor = 'rgba(0,245,255,0.8)'; curCtx.fill(); curCtx.shadowBlur = 0;
   requestAnimationFrame(drawCursor);
 }
 drawCursor();
@@ -508,165 +486,141 @@ drawCursor();
 // ═══════════════════════════════════════════════
 // BACKGROUND
 // ═══════════════════════════════════════════════
-const bgCv=document.getElementById('bgCanvas');
-const bgCtx=bgCv.getContext('2d');
-let bgW,bgH,bgParticles=[],bgT=0;
-function bgResize(){bgW=bgCv.width=window.innerWidth;bgH=bgCv.height=window.innerHeight;}
-bgResize();window.addEventListener('resize',bgResize);
-class BgParticle{constructor(){this.reset();}reset(){this.x=Math.random()*bgW;this.y=Math.random()*bgH;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*1.2+.3;this.a=Math.random()*.4+.1;this.col=Math.random()>.6?'0,245,255':'0,255,136';}}
-for(let i=0;i<70;i++)bgParticles.push(new BgParticle());
-function drawBg(){
-  bgCtx.clearRect(0,0,bgW,bgH);bgT+=0.005;
-  const gs=60,pulse=.5+.5*Math.sin(bgT);
-  bgCtx.strokeStyle=`rgba(0,245,255,${0.025*pulse+0.01})`;bgCtx.lineWidth=1;
-  for(let x=0;x<bgW;x+=gs){bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,bgH);bgCtx.stroke();}
-  for(let y=0;y<bgH;y+=gs){bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(bgW,y);bgCtx.stroke();}
-  bgParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=bgW;if(p.x>bgW)p.x=0;if(p.y<0)p.y=bgH;if(p.y>bgH)p.y=0;bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.r,0,Math.PI*2);bgCtx.fillStyle=`rgba(${p.col},${p.a})`;bgCtx.fill();});
-  bgParticles.forEach((p,i)=>{for(let j=i+1;j<bgParticles.length;j++){const d=Math.hypot(p.x-bgParticles[j].x,p.y-bgParticles[j].y);if(d<110){bgCtx.beginPath();bgCtx.moveTo(p.x,p.y);bgCtx.lineTo(bgParticles[j].x,bgParticles[j].y);bgCtx.strokeStyle=`rgba(0,245,255,${(1-d/110)*.06})`;bgCtx.lineWidth=1;bgCtx.stroke();}}});
+const bgCv = document.getElementById('bgCanvas');
+const bgCtx = bgCv.getContext('2d');
+let bgW, bgH, bgParticles = [], bgT = 0;
+function bgResize() { bgW = bgCv.width = window.innerWidth; bgH = bgCv.height = window.innerHeight; }
+bgResize(); window.addEventListener('resize', bgResize);
+class BgParticle { constructor() { this.reset(); } reset() { this.x = Math.random() * bgW; this.y = Math.random() * bgH; this.vx = (Math.random() - .5) * .25; this.vy = (Math.random() - .5) * .25; this.r = Math.random() * 1.2 + .3; this.a = Math.random() * .4 + .1; this.col = Math.random() > .6 ? '0,245,255' : '0,255,136'; } }
+for (let i = 0; i < 70; i++) bgParticles.push(new BgParticle());
+function drawBg() {
+  bgCtx.clearRect(0, 0, bgW, bgH); bgT += 0.005;
+  const gs = 60, pulse = .5 + .5 * Math.sin(bgT);
+  bgCtx.strokeStyle = `rgba(0,245,255,${0.025 * pulse + 0.01})`; bgCtx.lineWidth = 1;
+  for (let x = 0; x < bgW; x += gs) { bgCtx.beginPath(); bgCtx.moveTo(x, 0); bgCtx.lineTo(x, bgH); bgCtx.stroke(); }
+  for (let y = 0; y < bgH; y += gs) { bgCtx.beginPath(); bgCtx.moveTo(0, y); bgCtx.lineTo(bgW, y); bgCtx.stroke(); }
+  bgParticles.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = bgW; if (p.x > bgW) p.x = 0; if (p.y < 0) p.y = bgH; if (p.y > bgH) p.y = 0; bgCtx.beginPath(); bgCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2); bgCtx.fillStyle = `rgba(${p.col},${p.a})`; bgCtx.fill(); });
+  bgParticles.forEach((p, i) => { for (let j = i + 1; j < bgParticles.length; j++) { const d = Math.hypot(p.x - bgParticles[j].x, p.y - bgParticles[j].y); if (d < 110) { bgCtx.beginPath(); bgCtx.moveTo(p.x, p.y); bgCtx.lineTo(bgParticles[j].x, bgParticles[j].y); bgCtx.strokeStyle = `rgba(0,245,255,${(1 - d / 110) * .06})`; bgCtx.lineWidth = 1; bgCtx.stroke(); } } });
   requestAnimationFrame(drawBg);
-}drawBg();
+} drawBg();
 
 // ═══════════════════════════════════════════════
 // UPLOAD CANVAS IDLE
 // ═══════════════════════════════════════════════
-const upCv=document.getElementById('uploadCanvas');
-const upCtx=upCv.getContext('2d');
-let upT=0,upAnimId=null,upHasFile=false;
-function resizeUpCv(){const r=upCv.parentElement.getBoundingClientRect();upCv.width=r.width;upCv.height=320;}
-window.addEventListener('resize',resizeUpCv);setTimeout(resizeUpCv,50);
-function drawUploadIdle(){
-  if(upHasFile){cancelAnimationFrame(upAnimId);return;}
-  const W=upCv.width,H=upCv.height;upCtx.clearRect(0,0,W,H);upT+=0.012;
-  const cx2=W/2,cy2=H/2;
-  for(let ring=0;ring<3;ring++){const r=60+ring*32;const sides=6;const angle=upT*(ring%2===0?1:-1)+ring*0.4;upCtx.beginPath();for(let i=0;i<=sides;i++){const a=angle+(i/sides)*Math.PI*2;upCtx.lineTo(cx2+r*Math.cos(a),cy2+r*Math.sin(a));}upCtx.strokeStyle=`rgba(0,245,255,${0.15-ring*.04})`;upCtx.lineWidth=1;upCtx.stroke();}
-  const scanY=cy2+Math.sin(upT*2)*60;
-  const grad=upCtx.createLinearGradient(cx2-100,scanY,cx2+100,scanY);grad.addColorStop(0,'transparent');grad.addColorStop(.5,'rgba(0,245,255,0.5)');grad.addColorStop(1,'transparent');upCtx.fillStyle=grad;upCtx.fillRect(cx2-100,scanY-1,200,2);
-  const bx=cx2-90,by=cy2-60,bw=180,bh=120,bl=20;
-  upCtx.strokeStyle='rgba(0,245,255,0.5)';upCtx.lineWidth=2;
-  upCtx.beginPath();upCtx.moveTo(bx+bl,by);upCtx.lineTo(bx,by);upCtx.lineTo(bx,by+bl);upCtx.stroke();
-  upCtx.beginPath();upCtx.moveTo(bx+bw-bl,by);upCtx.lineTo(bx+bw,by);upCtx.lineTo(bx+bw,by+bl);upCtx.stroke();
-  upCtx.beginPath();upCtx.moveTo(bx+bl,by+bh);upCtx.lineTo(bx,by+bh);upCtx.lineTo(bx,by+bh-bl);upCtx.stroke();
-  upCtx.beginPath();upCtx.moveTo(bx+bw-bl,by+bh);upCtx.lineTo(bx+bw,by+bh);upCtx.lineTo(bx+bw,by+bh-bl);upCtx.stroke();
-  for(let d=0;d<6;d++){const a=upT*1.5+d*(Math.PI/3);const r2=95;const px=cx2+r2*Math.cos(a),py=cy2+r2*Math.sin(a);upCtx.beginPath();upCtx.arc(px,py,2.5,0,Math.PI*2);upCtx.fillStyle=`rgba(0,245,255,${.4+.4*Math.sin(upT*3+d)})`;upCtx.fill();}
-  if(Math.random()<.06){upCtx.font='10px Share Tech Mono';upCtx.fillStyle=`rgba(0,245,255,${Math.random()*.2+.05})`;upCtx.fillText(Math.floor(Math.random()*16).toString(16).toUpperCase(),Math.random()*W,Math.random()*H);}
-  upAnimId=requestAnimationFrame(drawUploadIdle);
+const upCv = document.getElementById('uploadCanvas');
+const upCtx = upCv.getContext('2d');
+let upT = 0, upAnimId = null, upHasFile = false;
+function resizeUpCv() { const r = upCv.parentElement.getBoundingClientRect(); upCv.width = r.width; upCv.height = 320; }
+window.addEventListener('resize', resizeUpCv); setTimeout(resizeUpCv, 50);
+function drawUploadIdle() {
+  if (upHasFile) { cancelAnimationFrame(upAnimId); return; }
+  const W = upCv.width, H = upCv.height; upCtx.clearRect(0, 0, W, H); upT += 0.012;
+  const cx2 = W / 2, cy2 = H / 2;
+  for (let ring = 0; ring < 3; ring++) { const r = 60 + ring * 32; const sides = 6; const angle = upT * (ring % 2 === 0 ? 1 : -1) + ring * 0.4; upCtx.beginPath(); for (let i = 0; i <= sides; i++) { const a = angle + (i / sides) * Math.PI * 2; upCtx.lineTo(cx2 + r * Math.cos(a), cy2 + r * Math.sin(a)); } upCtx.strokeStyle = `rgba(0,245,255,${0.15 - ring * .04})`; upCtx.lineWidth = 1; upCtx.stroke(); }
+  const scanY = cy2 + Math.sin(upT * 2) * 60;
+  const grad = upCtx.createLinearGradient(cx2 - 100, scanY, cx2 + 100, scanY); grad.addColorStop(0, 'transparent'); grad.addColorStop(.5, 'rgba(0,245,255,0.5)'); grad.addColorStop(1, 'transparent'); upCtx.fillStyle = grad; upCtx.fillRect(cx2 - 100, scanY - 1, 200, 2);
+  const bx = cx2 - 90, by = cy2 - 60, bw = 180, bh = 120, bl = 20;
+  upCtx.strokeStyle = 'rgba(0,245,255,0.5)'; upCtx.lineWidth = 2;
+  upCtx.beginPath(); upCtx.moveTo(bx + bl, by); upCtx.lineTo(bx, by); upCtx.lineTo(bx, by + bl); upCtx.stroke();
+  upCtx.beginPath(); upCtx.moveTo(bx + bw - bl, by); upCtx.lineTo(bx + bw, by); upCtx.lineTo(bx + bw, by + bl); upCtx.stroke();
+  upCtx.beginPath(); upCtx.moveTo(bx + bl, by + bh); upCtx.lineTo(bx, by + bh); upCtx.lineTo(bx, by + bh - bl); upCtx.stroke();
+  upCtx.beginPath(); upCtx.moveTo(bx + bw - bl, by + bh); upCtx.lineTo(bx + bw, by + bh); upCtx.lineTo(bx + bw, by + bh - bl); upCtx.stroke();
+  for (let d = 0; d < 6; d++) { const a = upT * 1.5 + d * (Math.PI / 3); const r2 = 95; const px = cx2 + r2 * Math.cos(a), py = cy2 + r2 * Math.sin(a); upCtx.beginPath(); upCtx.arc(px, py, 2.5, 0, Math.PI * 2); upCtx.fillStyle = `rgba(0,245,255,${.4 + .4 * Math.sin(upT * 3 + d)})`; upCtx.fill(); }
+  if (Math.random() < .06) { upCtx.font = '10px Share Tech Mono'; upCtx.fillStyle = `rgba(0,245,255,${Math.random() * .2 + .05})`; upCtx.fillText(Math.floor(Math.random() * 16).toString(16).toUpperCase(), Math.random() * W, Math.random() * H); }
+  upAnimId = requestAnimationFrame(drawUploadIdle);
 }
-upAnimId=requestAnimationFrame(drawUploadIdle);
+upAnimId = requestAnimationFrame(drawUploadIdle);
 
 // ═══════════════════════════════════════════════
-// CAMERA OVERLAY (drawn on top of html5-qrcode video)
+// CAMERA OVERLAY
 // ═══════════════════════════════════════════════
-const camOvCv=document.getElementById('camOverlayCanvas');
-const camOvCtx=camOvCv.getContext('2d');
-let camOvT=0,camActive=false;
-function resizeCamOv(){
-  const wrap=document.querySelector('.cam-wrap');
-  if(!wrap)return;
-  const r=wrap.getBoundingClientRect();
-  camOvCv.width=r.width||540;camOvCv.height=r.height||400;
-}
-window.addEventListener('resize',resizeCamOv);setTimeout(resizeCamOv,300);
-function drawCamOverlay(){
-  const W=camOvCv.width||540,H=camOvCv.height||400;camOvCtx.clearRect(0,0,W,H);camOvT+=0.018;
-  const cx=W/2,cy=H/2;
-  const vig=camOvCtx.createRadialGradient(cx,cy,Math.min(W,H)*.2,cx,cy,Math.min(W,H)*.7);
-  vig.addColorStop(0,'transparent');vig.addColorStop(1,'rgba(2,5,9,0.5)');
-  camOvCtx.fillStyle=vig;camOvCtx.fillRect(0,0,W,H);
-  const bpad=20,blen=30;
-  camOvCtx.strokeStyle='rgba(0,245,255,0.8)';camOvCtx.lineWidth=2.5;
-  camOvCtx.shadowColor='rgba(0,245,255,0.6)';camOvCtx.shadowBlur=8;
-  camOvCtx.beginPath();camOvCtx.moveTo(bpad+blen,bpad);camOvCtx.lineTo(bpad,bpad);camOvCtx.lineTo(bpad,bpad+blen);camOvCtx.stroke();
-  camOvCtx.beginPath();camOvCtx.moveTo(W-bpad-blen,bpad);camOvCtx.lineTo(W-bpad,bpad);camOvCtx.lineTo(W-bpad,bpad+blen);camOvCtx.stroke();
-  camOvCtx.beginPath();camOvCtx.moveTo(bpad+blen,H-bpad);camOvCtx.lineTo(bpad,H-bpad);camOvCtx.lineTo(bpad,H-bpad-blen);camOvCtx.stroke();
-  camOvCtx.beginPath();camOvCtx.moveTo(W-bpad-blen,H-bpad);camOvCtx.lineTo(W-bpad,H-bpad);camOvCtx.lineTo(W-bpad,H-bpad-blen);camOvCtx.stroke();
-  camOvCtx.shadowBlur=0;
-  const scanY=bpad+(Math.sin(camOvT)+1)/2*(H-bpad*2);
-  const sg=camOvCtx.createLinearGradient(0,scanY-12,0,scanY+12);sg.addColorStop(0,'transparent');sg.addColorStop(.5,'rgba(0,245,255,0.55)');sg.addColorStop(1,'transparent');camOvCtx.fillStyle=sg;camOvCtx.fillRect(0,scanY-12,W,24);
-  camOvCtx.beginPath();camOvCtx.moveTo(0,scanY);camOvCtx.lineTo(W,scanY);camOvCtx.strokeStyle='rgba(0,245,255,0.9)';camOvCtx.lineWidth=1.5;camOvCtx.shadowColor='rgba(0,245,255,0.7)';camOvCtx.shadowBlur=10;camOvCtx.stroke();camOvCtx.shadowBlur=0;
-  const tw=160,th=160,tx=cx-tw/2,ty=cy-th/2;camOvCtx.strokeStyle=`rgba(0,245,255,${.3+.15*Math.sin(camOvT*3)})`;camOvCtx.lineWidth=1;camOvCtx.strokeRect(tx,ty,tw,th);
-  camOvCtx.strokeStyle='rgba(0,245,255,0.35)';camOvCtx.lineWidth=1;camOvCtx.beginPath();camOvCtx.moveTo(cx-15,cy);camOvCtx.lineTo(cx+15,cy);camOvCtx.stroke();camOvCtx.beginPath();camOvCtx.moveTo(cx,cy-15);camOvCtx.lineTo(cx,cy+15);camOvCtx.stroke();
-  camOvCtx.save();camOvCtx.translate(cx,cy);camOvCtx.rotate(camOvT);camOvCtx.beginPath();camOvCtx.arc(0,0,30,0,Math.PI*.7);camOvCtx.strokeStyle='rgba(0,245,255,0.5)';camOvCtx.lineWidth=1.5;camOvCtx.stroke();camOvCtx.restore();
-  camOvCtx.font='9px Share Tech Mono';camOvCtx.fillStyle='rgba(0,245,255,0.55)';
-  camOvCtx.fillText(camActive?'CAM://LIVE_FEED':'CAM://STANDBY',bpad+5,bpad+14);
-  camOvCtx.fillText(camActive?'QR SCANNING...':'AWAITING INPUT',W-bpad-(camActive?84:90),bpad+14);
+const camOvCv = document.getElementById('camOverlayCanvas');
+const camOvCtx = camOvCv.getContext('2d');
+let camOvT = 0, camActive = false;
+function resizeCamOv() { const wrap = document.querySelector('.cam-wrap'); if (!wrap) return; const r = wrap.getBoundingClientRect(); camOvCv.width = r.width || 540; camOvCv.height = r.height || 400; }
+window.addEventListener('resize', resizeCamOv); setTimeout(resizeCamOv, 300);
+function drawCamOverlay() {
+  const W = camOvCv.width || 540, H = camOvCv.height || 400; camOvCtx.clearRect(0, 0, W, H); camOvT += 0.018;
+  const cx = W / 2, cy = H / 2;
+  const vig = camOvCtx.createRadialGradient(cx, cy, Math.min(W, H) * .2, cx, cy, Math.min(W, H) * .7); vig.addColorStop(0, 'transparent'); vig.addColorStop(1, 'rgba(2,5,9,0.5)'); camOvCtx.fillStyle = vig; camOvCtx.fillRect(0, 0, W, H);
+  const bpad = 20, blen = 30; camOvCtx.strokeStyle = 'rgba(0,245,255,0.8)'; camOvCtx.lineWidth = 2.5; camOvCtx.shadowColor = 'rgba(0,245,255,0.6)'; camOvCtx.shadowBlur = 8;
+  camOvCtx.beginPath(); camOvCtx.moveTo(bpad + blen, bpad); camOvCtx.lineTo(bpad, bpad); camOvCtx.lineTo(bpad, bpad + blen); camOvCtx.stroke();
+  camOvCtx.beginPath(); camOvCtx.moveTo(W - bpad - blen, bpad); camOvCtx.lineTo(W - bpad, bpad); camOvCtx.lineTo(W - bpad, bpad + blen); camOvCtx.stroke();
+  camOvCtx.beginPath(); camOvCtx.moveTo(bpad + blen, H - bpad); camOvCtx.lineTo(bpad, H - bpad); camOvCtx.lineTo(bpad, H - bpad - blen); camOvCtx.stroke();
+  camOvCtx.beginPath(); camOvCtx.moveTo(W - bpad - blen, H - bpad); camOvCtx.lineTo(W - bpad, H - bpad); camOvCtx.lineTo(W - bpad, H - bpad - blen); camOvCtx.stroke();
+  camOvCtx.shadowBlur = 0;
+  const scanY = bpad + (Math.sin(camOvT) + 1) / 2 * (H - bpad * 2);
+  const sg = camOvCtx.createLinearGradient(0, scanY - 12, 0, scanY + 12); sg.addColorStop(0, 'transparent'); sg.addColorStop(.5, 'rgba(0,245,255,0.55)'); sg.addColorStop(1, 'transparent'); camOvCtx.fillStyle = sg; camOvCtx.fillRect(0, scanY - 12, W, 24);
+  camOvCtx.beginPath(); camOvCtx.moveTo(0, scanY); camOvCtx.lineTo(W, scanY); camOvCtx.strokeStyle = 'rgba(0,245,255,0.9)'; camOvCtx.lineWidth = 1.5; camOvCtx.shadowColor = 'rgba(0,245,255,0.7)'; camOvCtx.shadowBlur = 10; camOvCtx.stroke(); camOvCtx.shadowBlur = 0;
+  const tw = 160, th = 160, tx = cx - tw / 2, ty = cy - th / 2; camOvCtx.strokeStyle = `rgba(0,245,255,${.3 + .15 * Math.sin(camOvT * 3)})`; camOvCtx.lineWidth = 1; camOvCtx.strokeRect(tx, ty, tw, th);
+  camOvCtx.strokeStyle = 'rgba(0,245,255,0.35)'; camOvCtx.lineWidth = 1; camOvCtx.beginPath(); camOvCtx.moveTo(cx - 15, cy); camOvCtx.lineTo(cx + 15, cy); camOvCtx.stroke(); camOvCtx.beginPath(); camOvCtx.moveTo(cx, cy - 15); camOvCtx.lineTo(cx, cy + 15); camOvCtx.stroke();
+  camOvCtx.save(); camOvCtx.translate(cx, cy); camOvCtx.rotate(camOvT); camOvCtx.beginPath(); camOvCtx.arc(0, 0, 30, 0, Math.PI * .7); camOvCtx.strokeStyle = 'rgba(0,245,255,0.5)'; camOvCtx.lineWidth = 1.5; camOvCtx.stroke(); camOvCtx.restore();
+  camOvCtx.font = '9px Share Tech Mono'; camOvCtx.fillStyle = 'rgba(0,245,255,0.55)';
+  camOvCtx.fillText(camActive ? 'CAM://LIVE_FEED' : 'CAM://STANDBY', bpad + 5, bpad + 14);
+  camOvCtx.fillText(camActive ? 'QR SCANNING...' : 'AWAITING INPUT', W - bpad - (camActive ? 84 : 90), bpad + 14);
   requestAnimationFrame(drawCamOverlay);
 }
 drawCamOverlay();
 
 // ═══════════════════════════════════════════════
-// SCAN STAGE (over upload image)
+// SCAN STAGE
 // ═══════════════════════════════════════════════
-const scanStage=document.getElementById('scanStage');
-const scanCv=document.getElementById('scanCanvas');
-const scanCtx=scanCv.getContext('2d');
-let scanAnimId=null,scanT=0,scanPhase=0,scanOnDone=null;
-function resizeScanCv(){const r=document.getElementById('uploadZone').getBoundingClientRect();scanCv.width=r.width;scanCv.height=r.height;}
-function drawLCorner(ctx,x,y,dirX,dirY,len){ctx.beginPath();ctx.moveTo(x+dirX*len,y);ctx.lineTo(x,y);ctx.lineTo(x,y+dirY*len);ctx.stroke();}
-function drawScanAnim(){
-  const W=scanCv.width,H=scanCv.height;scanCtx.clearRect(0,0,W,H);scanT+=0.022;
-  const cx=W/2,cy=H/2;const phase=scanPhase;
-  if(phase<=1){const alpha=Math.min(1,scanT*2);scanCtx.fillStyle=`rgba(0,245,255,${(1-scanT*.5)*.06})`;scanCtx.fillRect(0,0,W,H);const gs=24;for(let x=0;x<W;x+=gs){for(let y=0;y<H;y+=gs){const d=Math.hypot(x-cx,y-cy);const wave=Math.sin(d*.05-scanT*4);if(wave>.5){scanCtx.fillStyle=`rgba(0,245,255,${(wave-.5)*alpha*.3})`;scanCtx.fillRect(x,y,gs-1,gs-1);}}}}
-  if(phase===2){
-    scanCtx.fillStyle='rgba(2,5,9,0.55)';scanCtx.fillRect(0,0,W,H);
-    const scanY=(scanT%2)/2*H;
-    const beam=scanCtx.createLinearGradient(0,scanY-20,0,scanY+20);beam.addColorStop(0,'transparent');beam.addColorStop(.4,'rgba(0,245,255,0.15)');beam.addColorStop(.5,'rgba(0,245,255,0.8)');beam.addColorStop(.6,'rgba(0,245,255,0.15)');beam.addColorStop(1,'transparent');scanCtx.fillStyle=beam;scanCtx.fillRect(0,scanY-20,W,40);
-    scanCtx.beginPath();scanCtx.moveTo(0,scanY);scanCtx.lineTo(W,scanY);scanCtx.strokeStyle='rgba(0,245,255,1)';scanCtx.lineWidth=2;scanCtx.shadowColor='rgba(0,245,255,0.9)';scanCtx.shadowBlur=20;scanCtx.stroke();scanCtx.shadowBlur=0;
-    const blen2=24,bpad2=12;
-    scanCtx.strokeStyle='rgba(0,245,255,0.9)';scanCtx.lineWidth=2;
-    scanCtx.shadowColor='rgba(0,245,255,0.7)';scanCtx.shadowBlur=8;
-    drawLCorner(scanCtx,bpad2,bpad2,1,1,blen2);
-    drawLCorner(scanCtx,W-bpad2,bpad2,-1,1,blen2);
-    drawLCorner(scanCtx,bpad2,H-bpad2,1,-1,blen2);
-    drawLCorner(scanCtx,W-bpad2,H-bpad2,-1,-1,blen2);
-    scanCtx.shadowBlur=0;
-  }
-  if(phase===3){scanCtx.fillStyle='rgba(2,5,9,0.7)';scanCtx.fillRect(0,0,W,H);for(let r=0;r<4;r++){const radius=((scanT*80+r*40)%200);const alpha=1-radius/200;scanCtx.beginPath();scanCtx.arc(cx,cy,radius,0,Math.PI*2);scanCtx.strokeStyle=`rgba(0,245,255,${alpha*.5})`;scanCtx.lineWidth=1.5;scanCtx.stroke();}scanCtx.save();scanCtx.translate(cx,cy);scanCtx.rotate(scanT*2);scanCtx.beginPath();scanCtx.arc(0,0,70,0,Math.PI*1.5);scanCtx.strokeStyle='rgba(0,245,255,0.7)';scanCtx.lineWidth=2;scanCtx.shadowColor='rgba(0,245,255,0.5)';scanCtx.shadowBlur=10;scanCtx.stroke();scanCtx.shadowBlur=0;scanCtx.restore();const pr=8+4*Math.sin(scanT*8);scanCtx.beginPath();scanCtx.arc(cx,cy,pr,0,Math.PI*2);const rg=scanCtx.createRadialGradient(cx,cy,0,cx,cy,pr);rg.addColorStop(0,'rgba(0,245,255,0.9)');rg.addColorStop(1,'rgba(0,245,255,0)');scanCtx.fillStyle=rg;scanCtx.fill();}
-  if(phase===4){const t2=Math.min(1,scanT*.8);scanCtx.fillStyle=`rgba(0,255,136,${(1-t2)*.15})`;scanCtx.fillRect(0,0,W,H);const r2=t2*Math.max(W,H);scanCtx.beginPath();scanCtx.arc(cx,cy,r2,0,Math.PI*2);scanCtx.strokeStyle=`rgba(0,255,136,${(1-t2)*.8})`;scanCtx.lineWidth=3;scanCtx.shadowColor='rgba(0,255,136,0.7)';scanCtx.shadowBlur=20;scanCtx.stroke();scanCtx.shadowBlur=0;if(t2>0.9&&scanOnDone){const cb=scanOnDone;scanOnDone=null;cancelAnimationFrame(scanAnimId);scanStage.style.display='none';cb();}}
-  scanAnimId=requestAnimationFrame(drawScanAnim);
+const scanStage = document.getElementById('scanStage');
+const scanCv = document.getElementById('scanCanvas');
+const scanCtx = scanCv.getContext('2d');
+let scanAnimId = null, scanT = 0, scanPhase = 0, scanOnDone = null;
+function resizeScanCv() { const r = document.getElementById('uploadZone').getBoundingClientRect(); scanCv.width = r.width; scanCv.height = r.height; }
+function drawLCorner(ctx, x, y, dirX, dirY, len) { ctx.beginPath(); ctx.moveTo(x + dirX * len, y); ctx.lineTo(x, y); ctx.lineTo(x, y + dirY * len); ctx.stroke(); }
+function drawScanAnim() {
+  const W = scanCv.width, H = scanCv.height; scanCtx.clearRect(0, 0, W, H); scanT += 0.022;
+  const cx = W / 2, cy = H / 2; const phase = scanPhase;
+  if (phase <= 1) { const alpha = Math.min(1, scanT * 2); scanCtx.fillStyle = `rgba(0,245,255,${(1 - scanT * .5) * .06})`; scanCtx.fillRect(0, 0, W, H); const gs = 24; for (let x = 0; x < W; x += gs) { for (let y = 0; y < H; y += gs) { const d = Math.hypot(x - cx, y - cy); const wave = Math.sin(d * .05 - scanT * 4); if (wave > .5) { scanCtx.fillStyle = `rgba(0,245,255,${(wave - .5) * alpha * .3})`; scanCtx.fillRect(x, y, gs - 1, gs - 1); } } } }
+  if (phase === 2) { scanCtx.fillStyle = 'rgba(2,5,9,0.55)'; scanCtx.fillRect(0, 0, W, H); const scanY = (scanT % 2) / 2 * H; const beam = scanCtx.createLinearGradient(0, scanY - 20, 0, scanY + 20); beam.addColorStop(0, 'transparent'); beam.addColorStop(.4, 'rgba(0,245,255,0.15)'); beam.addColorStop(.5, 'rgba(0,245,255,0.8)'); beam.addColorStop(.6, 'rgba(0,245,255,0.15)'); beam.addColorStop(1, 'transparent'); scanCtx.fillStyle = beam; scanCtx.fillRect(0, scanY - 20, W, 40); scanCtx.beginPath(); scanCtx.moveTo(0, scanY); scanCtx.lineTo(W, scanY); scanCtx.strokeStyle = 'rgba(0,245,255,1)'; scanCtx.lineWidth = 2; scanCtx.shadowColor = 'rgba(0,245,255,0.9)'; scanCtx.shadowBlur = 20; scanCtx.stroke(); scanCtx.shadowBlur = 0; const blen2 = 24, bpad2 = 12; scanCtx.strokeStyle = 'rgba(0,245,255,0.9)'; scanCtx.lineWidth = 2; scanCtx.shadowColor = 'rgba(0,245,255,0.7)'; scanCtx.shadowBlur = 8; drawLCorner(scanCtx, bpad2, bpad2, 1, 1, blen2); drawLCorner(scanCtx, W - bpad2, bpad2, -1, 1, blen2); drawLCorner(scanCtx, bpad2, H - bpad2, 1, -1, blen2); drawLCorner(scanCtx, W - bpad2, H - bpad2, -1, -1, blen2); scanCtx.shadowBlur = 0; }
+  if (phase === 3) { scanCtx.fillStyle = 'rgba(2,5,9,0.7)'; scanCtx.fillRect(0, 0, W, H); for (let r = 0; r < 4; r++) { const radius = ((scanT * 80 + r * 40) % 200); const alpha = 1 - radius / 200; scanCtx.beginPath(); scanCtx.arc(cx, cy, radius, 0, Math.PI * 2); scanCtx.strokeStyle = `rgba(0,245,255,${alpha * .5})`; scanCtx.lineWidth = 1.5; scanCtx.stroke(); } scanCtx.save(); scanCtx.translate(cx, cy); scanCtx.rotate(scanT * 2); scanCtx.beginPath(); scanCtx.arc(0, 0, 70, 0, Math.PI * 1.5); scanCtx.strokeStyle = 'rgba(0,245,255,0.7)'; scanCtx.lineWidth = 2; scanCtx.shadowColor = 'rgba(0,245,255,0.5)'; scanCtx.shadowBlur = 10; scanCtx.stroke(); scanCtx.shadowBlur = 0; scanCtx.restore(); const pr = 8 + 4 * Math.sin(scanT * 8); scanCtx.beginPath(); scanCtx.arc(cx, cy, pr, 0, Math.PI * 2); const rg = scanCtx.createRadialGradient(cx, cy, 0, cx, cy, pr); rg.addColorStop(0, 'rgba(0,245,255,0.9)'); rg.addColorStop(1, 'rgba(0,245,255,0)'); scanCtx.fillStyle = rg; scanCtx.fill(); }
+  if (phase === 4) { const t2 = Math.min(1, scanT * .8); scanCtx.fillStyle = `rgba(0,255,136,${(1 - t2) * .15})`; scanCtx.fillRect(0, 0, W, H); const r2 = t2 * Math.max(W, H); scanCtx.beginPath(); scanCtx.arc(cx, cy, r2, 0, Math.PI * 2); scanCtx.strokeStyle = `rgba(0,255,136,${(1 - t2) * .8})`; scanCtx.lineWidth = 3; scanCtx.shadowColor = 'rgba(0,255,136,0.7)'; scanCtx.shadowBlur = 20; scanCtx.stroke(); scanCtx.shadowBlur = 0; if (t2 > 0.9 && scanOnDone) { const cb = scanOnDone; scanOnDone = null; cancelAnimationFrame(scanAnimId); scanStage.style.display = 'none'; cb(); } }
+  scanAnimId = requestAnimationFrame(drawScanAnim);
 }
-function startScanAnim(onDone){resizeScanCv();scanStage.style.display='block';scanT=0;scanPhase=0;scanOnDone=onDone;cancelAnimationFrame(scanAnimId);scanAnimId=requestAnimationFrame(drawScanAnim);setTimeout(()=>{scanPhase=1;scanT=0;},400);setTimeout(()=>{scanPhase=2;scanT=0;},900);setTimeout(()=>{scanPhase=3;scanT=0;},2200);setTimeout(()=>{scanPhase=4;scanT=0;},3400);}
+function startScanAnim(onDone) { resizeScanCv(); scanStage.style.display = 'block'; scanT = 0; scanPhase = 0; scanOnDone = onDone; cancelAnimationFrame(scanAnimId); scanAnimId = requestAnimationFrame(drawScanAnim); setTimeout(() => { scanPhase = 1; scanT = 0; }, 400); setTimeout(() => { scanPhase = 2; scanT = 0; }, 900); setTimeout(() => { scanPhase = 3; scanT = 0; }, 2200); setTimeout(() => { scanPhase = 4; scanT = 0; }, 3400); }
 
 // ═══════════════════════════════════════════════
 // ANALYZE CANVAS
 // ═══════════════════════════════════════════════
-const anCv=document.getElementById('analyzeCanvas');
-const anCtx=anCv.getContext('2d');
-let anT=0,anAnimId=null,anRunning=false;
-function drawAnalyze(){
-  if(!anRunning)return;
-  const W=anCv.width,H=anCv.height;anCtx.clearRect(0,0,W,H);anT+=0.025;const cx=W/2,cy=H/2;
-  anCtx.fillStyle='rgba(2,5,9,0.95)';anCtx.fillRect(0,0,W,H);anCtx.strokeStyle='rgba(0,245,255,0.3)';anCtx.lineWidth=1;anCtx.strokeRect(2,2,W-4,H-4);
-  for(let i=0;i<4;i++){const r=25+i*20;const dir=i%2===0?1:-1;anCtx.save();anCtx.translate(cx,cy);anCtx.rotate(anT*dir*(1+i*.3));anCtx.beginPath();anCtx.arc(0,0,r,0,Math.PI*(1.2+.5*i));anCtx.strokeStyle=`rgba(0,245,255,${.6-.1*i})`;anCtx.lineWidth=1.5+i*.2;anCtx.shadowColor='rgba(0,245,255,0.4)';anCtx.shadowBlur=8;anCtx.stroke();anCtx.shadowBlur=0;anCtx.restore();}
-  for(let d=0;d<8;d++){const a=anT*2+d*(Math.PI/4);const r=90+12*Math.sin(anT*3+d);anCtx.beginPath();anCtx.arc(cx+r*Math.cos(a),cy+r*Math.sin(a),2.5,0,Math.PI*2);anCtx.fillStyle=`rgba(0,245,255,${.4+.3*Math.sin(anT*5+d)})`;anCtx.fill();}
-  const pr=6+3*Math.sin(anT*6);const rg=anCtx.createRadialGradient(cx,cy,0,cx,cy,pr*2);rg.addColorStop(0,'rgba(0,245,255,0.9)');rg.addColorStop(1,'rgba(0,245,255,0)');anCtx.beginPath();anCtx.arc(cx,cy,pr,0,Math.PI*2);anCtx.fillStyle=rg;anCtx.fill();
-  anCtx.font='9px Share Tech Mono';const txt='SCANNING·VIRUSTOTAL·GOOGLE-SAFE-BROWSING·HEURISTIC·';
-  for(let i=0;i<txt.length;i++){const a=-Math.PI/2+anT*.5+(i/txt.length)*Math.PI*2;anCtx.save();anCtx.translate(cx+110*Math.cos(a),cy+110*Math.sin(a));anCtx.rotate(a+Math.PI/2);anCtx.fillStyle=`rgba(0,245,255,${.2+.2*Math.sin(anT*3+i*.2)})`;anCtx.fillText(txt[i],0,0);anCtx.restore();}
-  const barW=180,barH=4;const bx=cx-barW/2,by=H-30;anCtx.fillStyle='rgba(0,245,255,0.08)';anCtx.fillRect(bx,by,barW,barH);const fill=((Math.sin(anT*1.5)+1)/2)*barW;const bg=anCtx.createLinearGradient(bx,0,bx+fill,0);bg.addColorStop(0,'rgba(0,245,255,0.8)');bg.addColorStop(1,'rgba(0,255,136,0.8)');anCtx.fillStyle=bg;anCtx.fillRect(bx,by,fill,barH);anCtx.font='10px Share Tech Mono';anCtx.fillStyle='rgba(0,245,255,0.5)';anCtx.fillText('BACKEND SCAN',cx-34,by-8);
-  anAnimId=requestAnimationFrame(drawAnalyze);
+const anCv = document.getElementById('analyzeCanvas');
+const anCtx = anCv.getContext('2d');
+let anT = 0, anAnimId = null, anRunning = false;
+function drawAnalyze() {
+  if (!anRunning) return;
+  const W = anCv.width, H = anCv.height; anCtx.clearRect(0, 0, W, H); anT += 0.025; const cx = W / 2, cy = H / 2;
+  anCtx.fillStyle = 'rgba(2,5,9,0.95)'; anCtx.fillRect(0, 0, W, H); anCtx.strokeStyle = 'rgba(0,245,255,0.3)'; anCtx.lineWidth = 1; anCtx.strokeRect(2, 2, W - 4, H - 4);
+  for (let i = 0; i < 4; i++) { const r = 25 + i * 20; const dir = i % 2 === 0 ? 1 : -1; anCtx.save(); anCtx.translate(cx, cy); anCtx.rotate(anT * dir * (1 + i * .3)); anCtx.beginPath(); anCtx.arc(0, 0, r, 0, Math.PI * (1.2 + .5 * i)); anCtx.strokeStyle = `rgba(0,245,255,${.6 - .1 * i})`; anCtx.lineWidth = 1.5 + i * .2; anCtx.shadowColor = 'rgba(0,245,255,0.4)'; anCtx.shadowBlur = 8; anCtx.stroke(); anCtx.shadowBlur = 0; anCtx.restore(); }
+  for (let d = 0; d < 8; d++) { const a = anT * 2 + d * (Math.PI / 4); const r = 90 + 12 * Math.sin(anT * 3 + d); anCtx.beginPath(); anCtx.arc(cx + r * Math.cos(a), cy + r * Math.sin(a), 2.5, 0, Math.PI * 2); anCtx.fillStyle = `rgba(0,245,255,${.4 + .3 * Math.sin(anT * 5 + d)})`; anCtx.fill(); }
+  const pr = 6 + 3 * Math.sin(anT * 6); const rg = anCtx.createRadialGradient(cx, cy, 0, cx, cy, pr * 2); rg.addColorStop(0, 'rgba(0,245,255,0.9)'); rg.addColorStop(1, 'rgba(0,245,255,0)'); anCtx.beginPath(); anCtx.arc(cx, cy, pr, 0, Math.PI * 2); anCtx.fillStyle = rg; anCtx.fill();
+  anCtx.font = '9px Share Tech Mono'; const txt = 'SCANNING·VIRUSTOTAL·GOOGLE-SAFE-BROWSING·HEURISTIC·';
+  for (let i = 0; i < txt.length; i++) { const a = -Math.PI / 2 + anT * .5 + (i / txt.length) * Math.PI * 2; anCtx.save(); anCtx.translate(cx + 110 * Math.cos(a), cy + 110 * Math.sin(a)); anCtx.rotate(a + Math.PI / 2); anCtx.fillStyle = `rgba(0,245,255,${.2 + .2 * Math.sin(anT * 3 + i * .2)})`; anCtx.fillText(txt[i], 0, 0); anCtx.restore(); }
+  const barW = 180, barH = 4; const bx = cx - barW / 2, by = H - 30; anCtx.fillStyle = 'rgba(0,245,255,0.08)'; anCtx.fillRect(bx, by, barW, barH); const fill = ((Math.sin(anT * 1.5) + 1) / 2) * barW; const bg = anCtx.createLinearGradient(bx, 0, bx + fill, 0); bg.addColorStop(0, 'rgba(0,245,255,0.8)'); bg.addColorStop(1, 'rgba(0,255,136,0.8)'); anCtx.fillStyle = bg; anCtx.fillRect(bx, by, fill, barH); anCtx.font = '10px Share Tech Mono'; anCtx.fillStyle = 'rgba(0,245,255,0.5)'; anCtx.fillText('BACKEND SCAN', cx - 34, by - 8);
+  anAnimId = requestAnimationFrame(drawAnalyze);
 }
-function startAnalyzeAnim(){anRunning=true;anT=0;cancelAnimationFrame(anAnimId);anAnimId=requestAnimationFrame(drawAnalyze);}
-function stopAnalyzeAnim(){anRunning=false;cancelAnimationFrame(anAnimId);}
+function startAnalyzeAnim() { anRunning = true; anT = 0; cancelAnimationFrame(anAnimId); anAnimId = requestAnimationFrame(drawAnalyze); }
+function stopAnalyzeAnim() { anRunning = false; cancelAnimationFrame(anAnimId); }
 
 // ═══════════════════════════════════════════════
-// HEURISTIC (offline fallback, same as before)
+// HEURISTICS (local check cards)
 // ═══════════════════════════════════════════════
-const SUSPICIOUS_TLDS=new Set(['.tk','.ml','.ga','.cf','.gq','.xyz','.top','.club','.work','.click','.link','.live','.online','.site','.info','.biz','.loan','.win','.bid','.trade','.webcam','.science','.review','.country','.cricket','.party','.gdn','.racing','.accountant','.download','.stream','.zip']);
-const BRANDS={paypal:['paypa1','paypa-l','pay-pal','paypall','paypallogin','paypalsecure'],apple:['app1e','apple-id','applehelp','apple-support','icloud-verify','apple-secure'],google:['g00gle','goog1e','google-verify','google-account','gooogle','google-login'],microsoft:['mircosoft','microsoftt','microsoft-secure','ms-login','microsoftverify'],amazon:['amaz0n','amazoon','amazon-secure','amazon-update','amazonlogin'],facebook:['faceb00k','facebok','facebook-login','fb-secure','facebookverify'],netflix:['netfl1x','netflix-secure','netlfix','netflix-billing','netfliix'],bank:['banklogin','bank-secure','mybank','online-banking','banksecure'],coinbase:['c0inbase','coinbase-pro','coinbase-wallet','coinbasesecure'],metamask:['meta-mask','metamask-wallet','metamaskwallet','metamask-secure'],whatsapp:['whatsapp-verify','whatsap','whatsapp-web','whatsappsecure'],instagram:['1nstagram','instagr4m','instagram-verify','instagramlogin']};
-const PHISH_PATHS=[/login/i,/signin/i,/sign-in/i,/log-in/i,/verify/i,/verification/i,/account/i,/secure/i,/update/i,/confirm/i,/validate/i,/wallet/i,/recover/i,/unlock/i,/suspended/i,/limited/i,/click\.php/i,/redirect/i,/[?&]url=/i,/[?&]goto=/i,/[?&]return=/i,/reset/i,/password/i,/credential/i,/auth/i];
-const SHORTENERS=new Set(['bit.ly','tinyurl.com','goo.gl','t.co','ow.ly','short.io','rebrand.ly','cutt.ly','is.gd','v.gd','tiny.cc','buff.ly','000webhostapp.com','netlify.app','github.io','pages.dev','weebly.com','wixsite.com','sites.google.com','glitch.me','repl.co','herokuapp.com','vercel.app','ngrok.io','ngrok.app']);
-const DANGEROUS_SCHEMES=['javascript:','data:','vbscript:','file:'];
-const EXFIL_PARAMS=['token=','pass=','password=','user=','email=','card=','cvv=','ssn=','secret=','key='];
-const IP_RE=/^https?:\/\/(\d{1,3}\.){3}\d{1,3}(:\d+)?\/?/i;
-const CHECK_CARDS_DEF=[
-  {icon:'🎭',title:'BRAND IMPERSONATION',desc:'Detects typosquats for PayPal, Apple, Google, Microsoft, Amazon, Facebook and 6 more.',run(url,p){const lo=url.toLowerCase();const h=p?p.hostname.toLowerCase():lo;for(const[b,vs]of Object.entries(BRANDS)){if(h.includes(b)&&!h.endsWith(b+'.com')&&!h.endsWith('.'+b+'.com'))return['Contains "'+b+'" but NOT official'];for(const v of vs){if(lo.includes(v))return['Typosquat: "'+v+'" → '+b];}}return null;}},
-  {icon:'🌐',title:'RISKY TLD',desc:'Flags 30+ high-abuse domains like .tk .xyz .click .live used in campaigns.',run(url,p){const h=p?p.hostname.toLowerCase():url.toLowerCase();for(const t of SUSPICIOUS_TLDS){if(h.endsWith(t))return['High-risk TLD: '+t];}return null;}},
-  {icon:'🔢',title:'IP ADDRESS URL',desc:'Raw IP addresses in URLs are a classic phishing red flag.',run(url){const m=url.match(IP_RE);return m?['Raw IP: '+m[0]]:null;}},
-  {icon:'🕵️',title:'URL OBFUSCATION',desc:'Identifies percent-encoding, Unicode homoglyphs, punycode attacks.',run(url,p){const hits=[];const n=(url.match(/%[0-9a-f]{2}/gi)||[]).length;if(n>3)hits.push('Heavy percent-encoding ('+n+')');if(p&&p.hostname.includes('xn--'))hits.push('Punycode domain');if(p&&/[^\x00-\x7F]/.test(p.hostname))hits.push('Non-ASCII in domain');return hits.length?hits:null;}},
-  {icon:'📡',title:'SHORTENERS',desc:'Flags bit.ly, ngrok, Heroku and 10+ shorteners hiding real destinations.',run(url,p){if(!p)return null;const h=p.hostname.toLowerCase();for(const s of SHORTENERS){if(h===s||h.endsWith('.'+s))return['Shortener: '+s];}return null;}},
-  {icon:'☠️',title:'DANGEROUS SCHEMES',desc:'Catches javascript:, data:, vbscript: URIs that execute code on open.',run(url){const lo=url.trim().toLowerCase();for(const ds of DANGEROUS_SCHEMES){if(lo.startsWith(ds))return['Dangerous scheme: '+ds];}return null;}}
+const SUSPICIOUS_TLDS = new Set(['.tk', '.ml', '.ga', '.cf', '.gq', '.xyz', '.top', '.club', '.work', '.click', '.link', '.live', '.online', '.site', '.info', '.biz', '.loan', '.win', '.bid', '.trade', '.webcam', '.science', '.review', '.country', '.cricket', '.party', '.gdn', '.racing', '.accountant', '.download', '.stream', '.zip']);
+const BRANDS = { paypal: ['paypa1', 'paypa-l', 'pay-pal', 'paypall', 'paypallogin', 'paypalsecure'], apple: ['app1e', 'apple-id', 'applehelp', 'apple-support', 'icloud-verify', 'apple-secure'], google: ['g00gle', 'goog1e', 'google-verify', 'google-account', 'gooogle', 'google-login'], microsoft: ['mircosoft', 'microsoftt', 'microsoft-secure', 'ms-login', 'microsoftverify'], amazon: ['amaz0n', 'amazoon', 'amazon-secure', 'amazon-update', 'amazonlogin'], facebook: ['faceb00k', 'facebok', 'facebook-login', 'fb-secure', 'facebookverify'], netflix: ['netfl1x', 'netflix-secure', 'netlfix', 'netflix-billing', 'netfliix'], bank: ['banklogin', 'bank-secure', 'mybank', 'online-banking', 'banksecure'], coinbase: ['c0inbase', 'coinbase-pro', 'coinbase-wallet', 'coinbasesecure'], metamask: ['meta-mask', 'metamask-wallet', 'metamaskwallet', 'metamask-secure'], whatsapp: ['whatsapp-verify', 'whatsap', 'whatsapp-web', 'whatsappsecure'], instagram: ['1nstagram', 'instagr4m', 'instagram-verify', 'instagramlogin'] };
+const SHORTENERS = new Set(['bit.ly', 'tinyurl.com', 'goo.gl', 't.co', 'ow.ly', 'short.io', 'rebrand.ly', 'cutt.ly', 'is.gd', 'v.gd', 'tiny.cc', 'buff.ly', '000webhostapp.com', 'netlify.app', 'github.io', 'pages.dev', 'weebly.com', 'wixsite.com', 'sites.google.com', 'glitch.me', 'repl.co', 'herokuapp.com', 'vercel.app', 'ngrok.io', 'ngrok.app']);
+const DANGEROUS_SCHEMES = ['javascript:', 'data:', 'vbscript:', 'file:'];
+const IP_RE = /^https?:\/\/(\d{1,3}\.){3}\d{1,3}(:\d+)?\/?/i;
+const CHECK_CARDS_DEF = [
+  { icon: '🎭', title: 'BRAND IMPERSONATION', desc: 'Detects typosquats for PayPal, Apple, Google, Microsoft, Amazon, Facebook and 6 more.', run(url, p) { const lo = url.toLowerCase(); const h = p ? p.hostname.toLowerCase() : lo; for (const [b, vs] of Object.entries(BRANDS)) { if (h.includes(b) && !h.endsWith(b + '.com') && !h.endsWith('.' + b + '.com')) return ['Contains "' + b + '" but NOT official']; for (const v of vs) { if (lo.includes(v)) return ['Typosquat: "' + v + '" → ' + b]; } } return null; } },
+  { icon: '🌐', title: 'RISKY TLD', desc: 'Flags 30+ high-abuse domains like .tk .xyz .click .live used in campaigns.', run(url, p) { const h = p ? p.hostname.toLowerCase() : url.toLowerCase(); for (const t of SUSPICIOUS_TLDS) { if (h.endsWith(t)) return ['High-risk TLD: ' + t]; } return null; } },
+  { icon: '🔢', title: 'IP ADDRESS URL', desc: 'Raw IP addresses in URLs are a classic phishing red flag.', run(url) { const m = url.match(IP_RE); return m ? ['Raw IP: ' + m[0]] : null; } },
+  { icon: '🕵️', title: 'URL OBFUSCATION', desc: 'Identifies percent-encoding, Unicode homoglyphs, punycode attacks.', run(url, p) { const hits = []; const n = (url.match(/%[0-9a-f]{2}/gi) || []).length; if (n > 3) hits.push('Heavy percent-encoding (' + n + ')'); if (p && p.hostname.includes('xn--')) hits.push('Punycode domain'); if (p && /[^\x00-\x7F]/.test(p.hostname)) hits.push('Non-ASCII in domain'); return hits.length ? hits : null; } },
+  { icon: '📡', title: 'SHORTENERS', desc: 'Flags bit.ly, ngrok, Heroku and 10+ shorteners hiding real destinations.', run(url, p) { if (!p) return null; const h = p.hostname.toLowerCase(); for (const s of SHORTENERS) { if (h === s || h.endsWith('.' + s)) return ['Shortener: ' + s]; } return null; } },
+  { icon: '☠️', title: 'DANGEROUS SCHEMES', desc: 'Catches javascript:, data:, vbscript: URIs that execute code on open.', run(url) { const lo = url.trim().toLowerCase(); for (const ds of DANGEROUS_SCHEMES) { if (lo.startsWith(ds)) return ['Dangerous scheme: ' + ds]; } return null; } },
 ];
 
-function simpleHash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=(h*0x01000193)>>>0;}return h.toString(16).padStart(8,'0');}
+function simpleHash(s) { let h = 0x811c9dc5; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = (h * 0x01000193) >>> 0; } return h.toString(16).padStart(8, '0'); }
 
 // ═══════════════════════════════════════════════
 // html5-qrcode CAMERA
@@ -674,77 +628,65 @@ function simpleHash(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCod
 let html5Qr = null;
 let camScanning = false;
 
-async function startCam(){
+async function startCam() {
   clearErrors();
-  if(camScanning) return;
-  try{
-    if(!html5Qr){
-      html5Qr = new Html5Qrcode('html5-qrcode-reader');
-    }
-    const config = {
-      fps: 10,
-      qrbox: { width: 220, height: 220 },
-      aspectRatio: 1.333
-    };
+  if (camScanning) return;
+  try {
+    if (!html5Qr) html5Qr = new Html5Qrcode('html5-qrcode-reader');
+    const config = { fps: 10, qrbox: { width: 220, height: 220 }, aspectRatio: 1.333 };
     await html5Qr.start(
       { facingMode: 'environment' },
       config,
       async (decodedText) => {
-        // QR detected — stop camera, run backend scan
-        if(camScanning){
+        if (camScanning) {
           camScanning = false;
           await html5Qr.stop();
           camActive = false;
           document.getElementById('startBtn').disabled = false;
           document.getElementById('stopBtn').style.display = 'none';
-          clearErrors();
-          hideResult();
+          clearErrors(); hideResult();
           const t0 = performance.now();
           showLoadingState();
-          try{
+          try {
             const backendData = await callBackend(decodedText);
             const result = mapBackendToResult(backendData, decodedText, t0);
             hideLoadingState();
             renderResult(result);
-          } catch(e){
+          } catch (e) {
             hideLoadingState();
             showErr('camErr', 'Backend error: ' + e.message);
           }
         }
       },
-      (errorMsg) => { /* scan errors are normal, ignore */ }
+      () => {}
     );
-    camActive = true;
-    camScanning = true;
+    camActive = true; camScanning = true;
     document.getElementById('startBtn').disabled = true;
     document.getElementById('stopBtn').style.display = 'inline-flex';
     setTimeout(resizeCamOv, 500);
-  } catch(e){
+  } catch (e) {
     showErr('camErr', 'Camera access denied: ' + e.message);
   }
 }
 
-async function stopCam(){
-  if(html5Qr && camScanning){
-    try{ await html5Qr.stop(); }catch(e){}
-    camScanning = false;
-  }
+async function stopCam() {
+  if (html5Qr && camScanning) { try { await html5Qr.stop(); } catch (e) {} camScanning = false; }
   camActive = false;
   document.getElementById('startBtn').disabled = false;
   document.getElementById('stopBtn').style.display = 'none';
 }
 
 // ═══════════════════════════════════════════════
-// QR DECODE FROM FILE using html5-qrcode
+// QR DECODE FROM FILE
 // ═══════════════════════════════════════════════
-async function decodeFromFile(file){
+async function decodeFromFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = async (e) => {
+    reader.onload = async () => {
       try {
         const result = await Html5Qrcode.scanFile(file, true);
         resolve(result);
-      } catch(err) {
+      } catch (err) {
         reject(new Error('No QR code detected. Ensure QR is clearly visible and well-lit.'));
       }
     };
@@ -754,101 +696,130 @@ async function decodeFromFile(file){
 }
 
 // ═══════════════════════════════════════════════
-// ███████╗ VERDICT ANIMATION ENGINE (unchanged)
+// VERDICT ANIMATION ENGINE
 // ═══════════════════════════════════════════════
-const verdictOverlay=document.getElementById('verdictOverlay');
-const vCv=document.getElementById('verdictCanvas');
-const vCtx=vCv.getContext('2d');
-let vW,vH,vCX,vCY;
-function vResize(){vW=vCv.width=window.innerWidth;vH=vCv.height=window.innerHeight;vCX=vW/2;vCY=vH/2;}
-window.addEventListener('resize',vResize);vResize();
-let vRAF=null,vT=0,vMODE=null,vDONE=false,vParticles=[];
-const vEaseOutExpo=x=>x===1?1:1-Math.pow(2,-10*x);
-const vEaseOutBack=x=>{const c1=1.70158,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2);};
-const vLerp=(a,b,t)=>a+(b-a)*t;
-const vClamp=(v,lo,hi)=>Math.max(lo,Math.min(hi,v));
-const vNorm=(v,lo,hi)=>vClamp((v-lo)/(hi-lo),0,1);
-class VParticle{constructor(x,y,vx,vy,life,size,color,glow=false,text=null){this.x=x;this.y=y;this.vx=vx;this.vy=vy;this.life=life;this.maxLife=life;this.size=size;this.color=color;this.glow=glow;this.text=text;this.gravity=0;this.drag=0.98;}update(){this.x+=this.vx;this.y+=this.vy;this.vy+=this.gravity;this.vx*=this.drag;this.vy*=this.drag;this.life--;return this.life>0;}draw(c){const a=this.life/this.maxLife;c.save();if(this.glow){c.shadowColor=this.color;c.shadowBlur=this.size*3;}c.globalAlpha=a;if(this.text){c.font=`${this.size}px Share Tech Mono`;c.fillStyle=this.color;c.textAlign='center';c.textBaseline='middle';c.fillText(this.text,this.x,this.y);}else{c.beginPath();c.arc(this.x,this.y,this.size,0,Math.PI*2);c.fillStyle=this.color;c.fill();}c.restore();}}
-let safeT=0,shieldSegments=[],checkDone=false,dnaT2=0;
-function initSafeVerdict(){safeT=0;checkDone=false;dnaT2=0;shieldSegments=[];for(let i=0;i<12;i++){const angle=(i/12)*Math.PI*2;const dist=300+Math.random()*100;shieldSegments.push({angle,startX:vCX+Math.cos(angle)*dist,startY:vCY+Math.sin(angle)*dist,startRot:(Math.random()-.5)*Math.PI*2,delay:i*0.04});}for(let i=0;i<60;i++){const a=Math.random()*Math.PI*2;const spd=1+Math.random()*3;vParticles.push(new VParticle(vCX,vCY,Math.cos(a)*spd,Math.sin(a)*spd,60+Math.random()*60,1.5+Math.random()*2,'#00ff88',true));}}
-function drawSafeVerdict(){safeT+=0.018;const p1=vNorm(safeT,0,0.5),p2=vNorm(safeT,0.4,1.1),p3=vNorm(safeT,0.9,1.6),p4=vNorm(safeT,1.4,2.0),p5=vNorm(safeT,1.8,2.5);vCtx.save();vCtx.translate(vCX,vCY);const hexGlow=vEaseOutExpo(p2);for(let h=3;h>=0;h--){const hr=60+h*28;const ha=0.05*(4-h)*hexGlow;vCtx.beginPath();for(let s=0;s<=6;s++){const a=(s/6)*Math.PI*2-Math.PI/6;vCtx.lineTo(hr*Math.cos(a),hr*Math.sin(a));}vCtx.strokeStyle=`rgba(0,255,136,${ha})`;vCtx.lineWidth=h===0?2:1;vCtx.shadowColor='#00ff88';vCtx.shadowBlur=20*hexGlow*ha*10;vCtx.stroke();vCtx.shadowBlur=0;}vCtx.restore();shieldSegments.forEach(seg=>{const p=vClamp(vNorm(safeT,seg.delay,seg.delay+0.5),0,1);const ep=vEaseOutBack(p);const x=vLerp(seg.startX,vCX,ep),y=vLerp(seg.startY,vCY,ep),rot=vLerp(seg.startRot,0,ep);const arcR=52,arcStart=seg.angle-Math.PI/12,arcEnd=seg.angle+Math.PI/12;vCtx.save();vCtx.translate(x,y);vCtx.rotate(rot);vCtx.beginPath();vCtx.arc(0,0,arcR,arcStart,arcEnd);vCtx.arc(0,0,arcR-8,arcEnd,arcStart,true);vCtx.closePath();const g=vCtx.createRadialGradient(0,0,arcR-8,0,0,arcR);g.addColorStop(0,`rgba(0,255,136,${p*0.6})`);g.addColorStop(1,`rgba(0,200,100,${p*0.2})`);vCtx.fillStyle=g;vCtx.strokeStyle=`rgba(0,255,136,${p*0.8})`;vCtx.lineWidth=1;vCtx.shadowColor='#00ff88';vCtx.shadowBlur=15*p;vCtx.fill();vCtx.stroke();vCtx.shadowBlur=0;vCtx.restore();});if(p2>0){dnaT2=safeT*1.5;const dnaR=130,dnaH=200,strands=20;for(let i=0;i<=strands;i++){const frac=i/strands,angle=frac*Math.PI*4+dnaT2,yOff=frac*dnaH-dnaH/2;const ax=vCX+dnaR*Math.cos(angle),ay=vCY+yOff;const bx=vCX+dnaR*Math.cos(angle+Math.PI),by=vCY+yOff;const ba=(0.3+0.3*Math.abs(Math.cos(angle)))*vEaseOutExpo(p2);vCtx.beginPath();vCtx.arc(ax,ay,3,0,Math.PI*2);vCtx.fillStyle=`rgba(0,255,136,${ba})`;vCtx.shadowColor='#00ff88';vCtx.shadowBlur=8;vCtx.fill();vCtx.shadowBlur=0;vCtx.beginPath();vCtx.arc(bx,by,3,0,Math.PI*2);vCtx.fillStyle=`rgba(0,200,255,${ba*0.8})`;vCtx.shadowColor='#00c8ff';vCtx.shadowBlur=8;vCtx.fill();vCtx.shadowBlur=0;if(i%2===0&&i>0){vCtx.beginPath();vCtx.moveTo(ax,ay);vCtx.lineTo(bx,by);vCtx.strokeStyle=`rgba(0,255,136,${0.15*vEaseOutExpo(p2)})`;vCtx.lineWidth=1;vCtx.stroke();}}}if(p2>0&&p2<0.9&&Math.random()<0.3){const angle=Math.random()*Math.PI*4+dnaT2;const yOff=(Math.random()-0.5)*200;const px2=vCX+130*Math.cos(angle);const py2=vCY+yOff;vParticles.push(new VParticle(px2,py2,(Math.random()-.5)*0.5,(Math.random()-.5)*0.5-0.3,40+Math.random()*30,1,'#00ff88',true));}if(p3>0){const scale=42;const px1=vCX-scale*0.55,py1=vCY+scale*0.1,px2=vCX-scale*0.1,py2=vCY+scale*0.55,px3=vCX+scale*0.65,py3=vCY-scale*0.45;const len1=Math.hypot(px2-px1,py2-py1),len2=Math.hypot(px3-px2,py3-py2),total=len1+len2;const drawn=vEaseOutBack(p3)*total;vCtx.save();vCtx.strokeStyle='rgba(0,255,136,0.08)';vCtx.lineWidth=22;vCtx.lineCap='round';vCtx.lineJoin='round';vCtx.beginPath();if(drawn<=len1){const f=drawn/len1;vCtx.moveTo(px1,py1);vCtx.lineTo(px1+(px2-px1)*f,py1+(py2-py1)*f);}else{vCtx.moveTo(px1,py1);vCtx.lineTo(px2,py2);const f=(drawn-len1)/len2;vCtx.lineTo(px2+(px3-px2)*f,py2+(py3-py2)*f);}vCtx.stroke();vCtx.strokeStyle='#00ff88';vCtx.lineWidth=5;vCtx.shadowColor='#00ff88';vCtx.shadowBlur=25;vCtx.beginPath();if(drawn<=len1){const f=drawn/len1;vCtx.moveTo(px1,py1);vCtx.lineTo(px1+(px2-px1)*f,py1+(py2-py1)*f);}else{vCtx.moveTo(px1,py1);vCtx.lineTo(px2,py2);const f=(drawn-len1)/len2;vCtx.lineTo(px2+(px3-px2)*f,py2+(py3-py2)*f);}vCtx.stroke();vCtx.shadowBlur=0;vCtx.restore();if(p3<0.98&&Math.random()<0.5){let tipX,tipY;if(drawn<=len1){const f=drawn/len1;tipX=px1+(px2-px1)*f;tipY=py1+(py2-py1)*f;}else{const f=(drawn-len1)/len2;tipX=px2+(px3-px2)*f;tipY=py2+(py3-py2)*f;}for(let s=0;s<3;s++){const a=Math.random()*Math.PI*2;vParticles.push(new VParticle(tipX,tipY,Math.cos(a)*(0.5+Math.random()*2),Math.sin(a)*(0.5+Math.random()*2),15+Math.random()*15,1+Math.random(),'#00ff88',true));}}}if(p3>0.95&&!checkDone){checkDone=true;for(let i=0;i<120;i++){const a=Math.random()*Math.PI*2;const spd=1.5+Math.random()*5;const col=Math.random()>.5?'#00ff88':'#00c8ff';const pp=new VParticle(vCX,vCY,Math.cos(a)*spd,Math.sin(a)*spd,40+Math.random()*80,1.5+Math.random()*3,col,true);pp.gravity=-0.02;pp.drag=0.97;vParticles.push(pp);}['SAFE','✓','OK','00','FF','A3'].forEach(txt=>{for(let i=0;i<4;i++){const a=Math.random()*Math.PI*2;const spd=2+Math.random()*4;const pp=new VParticle(vCX,vCY,Math.cos(a)*spd,Math.sin(a)*spd,50+Math.random()*60,11,'#00ff88',false,txt);pp.drag=0.96;pp.gravity=-0.03;vParticles.push(pp);}});}if(p4>0){const ep4=vEaseOutBack(p4);vCtx.save();vCtx.translate(vCX,vCY+108);vCtx.scale(vLerp(3,1,ep4),1);vCtx.globalAlpha=p4;vCtx.font=`900 ${vLerp(20,68,ep4)}px Orbitron,sans-serif`;vCtx.textAlign='center';vCtx.textBaseline='middle';for(let l=4;l>=0;l--){vCtx.shadowColor='#00ff88';vCtx.shadowBlur=40-l*6;vCtx.fillStyle=l===0?'#00ff88':`rgba(0,255,136,${0.15-l*0.02})`;vCtx.fillText('SAFE',0,0);}vCtx.shadowBlur=0;vCtx.restore();const scanX=(safeT%0.5)/0.5*vW;vCtx.save();vCtx.globalAlpha=0.12*p4;vCtx.fillStyle='#00ff88';vCtx.fillRect(0,vCY+100,scanX,8);vCtx.restore();for(let r=0;r<3;r++){const rr=190+r*40,speed=[0.3,-0.5,0.2][r];vCtx.save();vCtx.translate(vCX,vCY);vCtx.rotate(safeT*speed);vCtx.setLineDash([20,10,5,10]);vCtx.beginPath();vCtx.arc(0,0,rr,0,Math.PI*2);vCtx.strokeStyle=`rgba(0,255,136,${(0.15-r*0.04)*p4*0.6})`;vCtx.lineWidth=1;vCtx.stroke();vCtx.setLineDash([]);for(let tick=0;tick<12;tick++){const ta=(tick/12)*Math.PI*2;vCtx.beginPath();vCtx.moveTo((rr-5)*Math.cos(ta),(rr-5)*Math.sin(ta));vCtx.lineTo((rr+5)*Math.cos(ta),(rr+5)*Math.sin(ta));vCtx.strokeStyle=`rgba(0,255,136,${0.35*p4*0.6})`;vCtx.lineWidth=1.5;vCtx.stroke();}vCtx.restore();}}if(p5>0){vCtx.save();vCtx.globalAlpha=p5*(0.6+0.4*Math.sin(safeT*6));vCtx.font='11px Share Tech Mono,monospace';vCtx.fillStyle='rgba(0,255,136,0.6)';vCtx.textAlign='center';vCtx.textBaseline='middle';vCtx.fillText('█ THREAT SCAN COMPLETE — ALL CLEAR — CLICK TO DISMISS █',vCX,vCY+165);vCtx.restore();}for(let n=0;n<8;n++){const na=safeT*0.6+n*(Math.PI*2/8);const nr=170+15*Math.sin(safeT*2+n*0.8);vCtx.beginPath();vCtx.arc(vCX+nr*Math.cos(na),vCY+nr*Math.sin(na),3,0,Math.PI*2);vCtx.fillStyle=`rgba(0,255,136,${(0.2+0.2*Math.sin(safeT*3+n))*vEaseOutExpo(p1)})`;vCtx.shadowColor='#00ff88';vCtx.shadowBlur=10;vCtx.fill();vCtx.shadowBlur=0;}if(safeT>3){vDONE=true;document.getElementById('dismissHint').style.display='block';}}
-let dangerT=0,virusNodes=[],corruptLines=[],explodeDone2=false;
-function initDangerVerdict(){dangerT=0;explodeDone2=false;virusNodes=[];corruptLines=[];for(let i=0;i<8;i++)virusNodes.push({angle:(i/8)*Math.PI*2,r:120+Math.random()*30,speed:0.8+Math.random()*0.5,size:6+Math.random()*6,spikes:4+Math.floor(Math.random()*4)});for(let i=0;i<20;i++)corruptLines.push({y:Math.random()*vH,width:50+Math.random()*300,offset:Math.random()*vW,life:Math.random()*60,maxLife:30+Math.random()*60,height:1+Math.random()*4});}
-function drawDangerVerdict(){dangerT+=0.018;const p1=vNorm(dangerT,0,0.6),p2=vNorm(dangerT,0.3,1.2),p3=vNorm(dangerT,1.0,1.8),p4=vNorm(dangerT,1.6,2.4);const shakeAmt=dangerT<1?8*(1-dangerT/1)*Math.sin(dangerT*90):0;const SX=vCX+shakeAmt,SY=vCY+shakeAmt*0.6;if(dangerT<0.4){vCtx.fillStyle=`rgba(255,0,40,${((0.4-dangerT)/0.4)*0.18})`;vCtx.fillRect(0,0,vW,vH);}for(let i=5;i>=0;i--){const delay=i*0.1,pp=vNorm(dangerT,delay,delay+0.8),ep=vEaseOutExpo(pp),r=30+i*70*ep,alpha=(1-ep)*0.4;vCtx.beginPath();vCtx.arc(SX,SY,r,0,Math.PI*2);vCtx.strokeStyle=`rgba(255,0,64,${alpha})`;vCtx.lineWidth=3-i*0.3;vCtx.shadowColor='#ff0040';vCtx.shadowBlur=20*alpha;vCtx.stroke();vCtx.shadowBlur=0;}corruptLines.forEach(cl=>{cl.life--;if(cl.life<=0){cl.life=cl.maxLife;cl.y=Math.random()*vH;cl.width=50+Math.random()*300;cl.offset=Math.random()*vW;}const la=Math.min(1,cl.life/cl.maxLife)*0.1*p1;vCtx.fillStyle=`rgba(255,0,64,${la})`;vCtx.fillRect(cl.offset,cl.y,cl.width,cl.height);vCtx.fillStyle=`rgba(0,255,255,${la*0.5})`;vCtx.fillRect(cl.offset+4,cl.y,cl.width*0.7,cl.height);});if(p2>0){const vr=55*vEaseOutBack(p2);const vg=vCtx.createRadialGradient(SX,SY,0,SX,SY,vr);vg.addColorStop(0,`rgba(255,20,60,${0.7*p2})`);vg.addColorStop(0.5,`rgba(200,0,40,${0.4*p2})`);vg.addColorStop(1,'rgba(255,0,64,0)');vCtx.beginPath();vCtx.arc(SX,SY,vr,0,Math.PI*2);vCtx.fillStyle=vg;vCtx.fill();vCtx.beginPath();vCtx.arc(SX,SY,vr,0,Math.PI*2);vCtx.strokeStyle=`rgba(255,0,64,${0.8*p2})`;vCtx.lineWidth=2;vCtx.shadowColor='#ff0040';vCtx.shadowBlur=30*p2;vCtx.stroke();vCtx.shadowBlur=0;virusNodes.forEach(vn=>{const va=vn.angle+dangerT*vn.speed,vx=SX+vn.r*Math.cos(va),vy=SY+vn.r*Math.sin(va);vCtx.save();vCtx.translate(vx,vy);vCtx.rotate(va);vCtx.beginPath();for(let s=0;s<vn.spikes*2;s++){const sa=(s/(vn.spikes*2))*Math.PI*2,sr=s%2===0?vn.size:vn.size*0.4;vCtx.lineTo(sr*Math.cos(sa),sr*Math.sin(sa));}vCtx.closePath();vCtx.fillStyle=`rgba(255,0,64,${0.6*p2})`;vCtx.strokeStyle=`rgba(255,80,100,${0.8*p2})`;vCtx.lineWidth=1;vCtx.shadowColor='#ff0040';vCtx.shadowBlur=12;vCtx.fill();vCtx.stroke();vCtx.shadowBlur=0;vCtx.restore();if(Math.random()<0.06*p2){const a2=Math.random()*Math.PI*2;vParticles.push(new VParticle(vx,vy,Math.cos(a2)*(0.5+Math.random()*1.5),Math.sin(a2)*(0.5+Math.random()*1.5),20+Math.random()*20,1,'#ff0040',true));}});}for(let ring=0;ring<3;ring++){const rr=[90,125,160][ring],speed=[3,-2,1.5][ring],segs=[5,7,4][ring],col=['rgba(255,0,64','rgba(255,51,102','rgba(200,0,40'][ring];vCtx.save();vCtx.translate(SX,SY);vCtx.rotate(dangerT*speed);for(let s=0;s<segs;s++){const start=(s/segs)*Math.PI*2,end=start+Math.PI/segs*1.3,pulse=0.4+0.4*Math.sin(dangerT*10+s+ring*2);vCtx.beginPath();vCtx.arc(0,0,rr,start,end);vCtx.strokeStyle=`${col},${pulse*p2})`;vCtx.lineWidth=ring===1?3:2;vCtx.shadowColor='#ff0040';vCtx.shadowBlur=ring===1?15:8;vCtx.stroke();vCtx.shadowBlur=0;}vCtx.restore();}if(p2>0.1){const ep=vEaseOutBack(vNorm(dangerT,0.4,1.1));vCtx.save();vCtx.shadowColor='#ff0040';vCtx.shadowBlur=30;const stemH=52*Math.min(1,ep),stemTop=SY-stemH,stemBot=SY+8;if(stemH>1){vCtx.strokeStyle='rgba(255,0,64,0.15)';vCtx.lineWidth=20;vCtx.lineCap='round';vCtx.beginPath();vCtx.moveTo(SX,stemBot);vCtx.lineTo(SX,stemTop);vCtx.stroke();vCtx.strokeStyle='rgba(255,0,64,0.4)';vCtx.lineWidth=12;vCtx.beginPath();vCtx.moveTo(SX,stemBot);vCtx.lineTo(SX,stemTop);vCtx.stroke();vCtx.strokeStyle='#ff0040';vCtx.lineWidth=6;vCtx.beginPath();vCtx.moveTo(SX,stemBot);vCtx.lineTo(SX,stemTop);vCtx.stroke();vCtx.strokeStyle='#ffaaaa';vCtx.lineWidth=2;vCtx.beginPath();vCtx.moveTo(SX,stemBot);vCtx.lineTo(SX,stemTop);vCtx.stroke();}if(ep>0.85){const dp=vNorm(ep,0.85,1);vCtx.beginPath();vCtx.arc(SX,SY+28,7,0,Math.PI*2);vCtx.fillStyle=`rgba(255,0,64,${dp})`;vCtx.shadowBlur=20*dp;vCtx.fill();vCtx.beginPath();vCtx.arc(SX,SY+28,3,0,Math.PI*2);vCtx.fillStyle=`rgba(255,180,180,${dp})`;vCtx.fill();}vCtx.shadowBlur=0;vCtx.restore();if(ep<0.98&&Math.random()<0.6){const ty=SY-stemH;for(let s=0;s<3;s++){const a=Math.random()*Math.PI*2;vParticles.push(new VParticle(SX,ty,Math.cos(a)*(1+Math.random()*3),Math.sin(a)*(1+Math.random()*3),15+Math.random()*20,1.5,'#ff0040',true));}}}if(p2>0.95&&!explodeDone2){explodeDone2=true;for(let i=0;i<200;i++){const a=Math.random()*Math.PI*2,spd=2+Math.random()*7;const col=Math.random()>0.5?'#ff0040':Math.random()>0.5?'#ff6600':'#ff0090';const pp=new VParticle(SX,SY,Math.cos(a)*spd,Math.sin(a)*spd,40+Math.random()*80,1+Math.random()*3,col,true);pp.gravity=0.04;pp.drag=0.96;vParticles.push(pp);}['☠','⚠','XX','!!','ERR','SYS','FAIL','00'].forEach(txt=>{for(let i=0;i<2;i++){const a=Math.random()*Math.PI*2,spd=2+Math.random()*5;const pp=new VParticle(SX,SY,Math.cos(a)*spd,Math.sin(a)*spd,60+Math.random()*60,14,'#ff0040',false,txt);pp.gravity=0.06;pp.drag=0.95;vParticles.push(pp);}});}if(p3>0){const ep3=vEaseOutBack(p3),sz=vLerp(10,66,ep3);const gx=(1-p3)*20*(Math.random()-.5),gy=(1-p3)*10*(Math.random()-.5);vCtx.save();vCtx.translate(SX,SY+110);vCtx.globalAlpha=p3;vCtx.font=`900 ${sz}px Orbitron,sans-serif`;vCtx.textAlign='center';vCtx.textBaseline='middle';vCtx.fillStyle='rgba(0,255,255,0.25)';vCtx.fillText('DANGER',-5+gx,-gy);vCtx.fillStyle='rgba(255,0,180,0.25)';vCtx.fillText('DANGER',5+gx,gy);vCtx.shadowColor='#ff0040';vCtx.shadowBlur=40;vCtx.fillStyle='#ff0040';vCtx.fillText('DANGER',gx*0.3,0);vCtx.shadowBlur=0;vCtx.fillStyle='rgba(255,150,150,0.4)';vCtx.fillText('DANGER',gx*0.1,0);vCtx.restore();if(Math.random()<0.3){vCtx.save();vCtx.globalAlpha=0.15*p3;vCtx.fillStyle='#ff0040';vCtx.fillRect(0,SY+102+Math.random()*16,vW,2+Math.random()*3);vCtx.restore();}}if(p1>0.3){const flash=0.5+0.5*Math.sin(dangerT*10),bpad2=24,blen2=34;vCtx.strokeStyle=`rgba(255,0,64,${flash*p1})`;vCtx.lineWidth=2.5;vCtx.shadowColor='#ff0040';vCtx.shadowBlur=12;vCtx.beginPath();vCtx.moveTo(bpad2+blen2,bpad2);vCtx.lineTo(bpad2,bpad2);vCtx.lineTo(bpad2,bpad2+blen2);vCtx.stroke();vCtx.beginPath();vCtx.moveTo(vW-bpad2-blen2,bpad2);vCtx.lineTo(vW-bpad2,bpad2);vCtx.lineTo(vW-bpad2,bpad2+blen2);vCtx.stroke();vCtx.beginPath();vCtx.moveTo(bpad2+blen2,vH-bpad2);vCtx.lineTo(bpad2,vH-bpad2);vCtx.lineTo(bpad2,vH-bpad2-blen2);vCtx.stroke();vCtx.beginPath();vCtx.moveTo(vW-bpad2-blen2,vH-bpad2);vCtx.lineTo(vW-bpad2,vH-bpad2);vCtx.lineTo(vW-bpad2,vH-bpad2-blen2);vCtx.stroke();vCtx.shadowBlur=0;const barA=0.4+0.3*Math.sin(dangerT*8);vCtx.fillStyle=`rgba(255,0,64,${barA*p1*0.5})`;vCtx.fillRect(0,0,4,vH);vCtx.fillRect(vW-4,0,4,vH);vCtx.fillStyle=`rgba(255,0,64,${barA*p1*0.3})`;vCtx.fillRect(0,0,vW,8);vCtx.fillRect(0,vH-8,vW,8);}if(p4>0){const blink=Math.floor(dangerT*5)%2===0?p4:p4*0.2;vCtx.save();vCtx.globalAlpha=blink;vCtx.font='11px Share Tech Mono,monospace';vCtx.fillStyle='rgba(255,0,64,0.8)';vCtx.textAlign='center';vCtx.textBaseline='middle';vCtx.fillText('⚠ CRITICAL THREAT CONFIRMED — DO NOT PROCEED — CLICK TO DISMISS ⚠',SX,SY+165);vCtx.restore();vCtx.save();vCtx.globalAlpha=0.12*p4;vCtx.font='9px Share Tech Mono';vCtx.fillStyle='#ff0040';for(let i=0;i<12;i++){const hx=((i*73+dangerT*40)%vW);vCtx.fillText(Math.floor(Math.random()*256).toString(16).padStart(2,'0').toUpperCase(),hx,SY+182);}vCtx.restore();}if(dangerT>3){vDONE=true;document.getElementById('dismissHint').style.display='block';}}
-let gridT2=0;
-function pseudoNoise2(x,y,t){return Math.sin(x*0.3+t)*Math.cos(y*0.2+t*0.7)+Math.sin((x+y)*0.15+t*1.3)*0.5;}
-function verdictLoop(){vCtx.clearRect(0,0,vW,vH);vCtx.fillStyle='rgba(2,5,9,0.92)';vCtx.fillRect(0,0,vW,vH);gridT2+=0.003;const gs=80;for(let x=0;x<vW;x+=gs){for(let y=0;y<vH;y+=gs){const n=pseudoNoise2(x,y,gridT2);vCtx.fillStyle=`rgba(0,245,255,${(n+1)*0.01})`;vCtx.fillRect(x,y,1,1);}}vCtx.strokeStyle='rgba(0,245,255,0.03)';vCtx.lineWidth=1;for(let x=0;x<vW;x+=gs){vCtx.beginPath();vCtx.moveTo(x,0);vCtx.lineTo(x,vH);vCtx.stroke();}for(let y=0;y<vH;y+=gs){vCtx.beginPath();vCtx.moveTo(0,y);vCtx.lineTo(vW,y);vCtx.stroke();}if(vMODE==='safe')drawSafeVerdict();else if(vMODE==='danger')drawDangerVerdict();vParticles=vParticles.filter(p=>{const alive=p.update();if(alive)p.draw(vCtx);return alive;});vRAF=requestAnimationFrame(verdictLoop);}
-function showVerdictAnimation(verdictType){vParticles=[];vDONE=false;vResize();document.getElementById('dismissHint').style.display='none';const isSafe=['safe','likely'].includes(verdictType);vMODE=isSafe?'safe':'danger';if(isSafe)initSafeVerdict();else initDangerVerdict();verdictOverlay.classList.add('active');cancelAnimationFrame(vRAF);verdictLoop();}
-function closeVerdictOverlay(){if(!vDONE)return;cancelAnimationFrame(vRAF);vRAF=null;verdictOverlay.classList.remove('active');vCtx.clearRect(0,0,vW,vH);vMODE=null;vParticles=[];}
-verdictOverlay.addEventListener('click',closeVerdictOverlay);
+const verdictOverlay = document.getElementById('verdictOverlay');
+const vCv = document.getElementById('verdictCanvas');
+const vCtx = vCv.getContext('2d');
+let vW, vH, vCX, vCY;
+function vResize() { vW = vCv.width = window.innerWidth; vH = vCv.height = window.innerHeight; vCX = vW / 2; vCY = vH / 2; }
+window.addEventListener('resize', vResize); vResize();
+let vRAF = null, vT = 0, vMODE = null, vDONE = false, vParticles = [];
+const vEaseOutExpo = x => x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const vEaseOutBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const vLerp = (a, b, t) => a + (b - a) * t;
+const vClamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+const vNorm = (v, lo, hi) => vClamp((v - lo) / (hi - lo), 0, 1);
+class VParticle { constructor(x, y, vx, vy, life, size, color, glow = false, text = null) { this.x = x; this.y = y; this.vx = vx; this.vy = vy; this.life = life; this.maxLife = life; this.size = size; this.color = color; this.glow = glow; this.text = text; this.gravity = 0; this.drag = 0.98; } update() { this.x += this.vx; this.y += this.vy; this.vy += this.gravity; this.vx *= this.drag; this.vy *= this.drag; this.life--; return this.life > 0; } draw(c) { const a = this.life / this.maxLife; c.save(); if (this.glow) { c.shadowColor = this.color; c.shadowBlur = this.size * 3; } c.globalAlpha = a; if (this.text) { c.font = `${this.size}px Share Tech Mono`; c.fillStyle = this.color; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(this.text, this.x, this.y); } else { c.beginPath(); c.arc(this.x, this.y, this.size, 0, Math.PI * 2); c.fillStyle = this.color; c.fill(); } c.restore(); } }
+let safeT = 0, shieldSegments = [], checkDone = false, dnaT2 = 0;
+function initSafeVerdict() { safeT = 0; checkDone = false; dnaT2 = 0; shieldSegments = []; for (let i = 0; i < 12; i++) { const angle = (i / 12) * Math.PI * 2; const dist = 300 + Math.random() * 100; shieldSegments.push({ angle, startX: vCX + Math.cos(angle) * dist, startY: vCY + Math.sin(angle) * dist, startRot: (Math.random() - .5) * Math.PI * 2, delay: i * 0.04 }); } for (let i = 0; i < 60; i++) { const a = Math.random() * Math.PI * 2; const spd = 1 + Math.random() * 3; vParticles.push(new VParticle(vCX, vCY, Math.cos(a) * spd, Math.sin(a) * spd, 60 + Math.random() * 60, 1.5 + Math.random() * 2, '#00ff88', true)); } }
+function drawSafeVerdict() {
+  safeT += 0.018;
+  const p1 = vNorm(safeT, 0, 0.5), p2 = vNorm(safeT, 0.4, 1.1), p3 = vNorm(safeT, 0.9, 1.6), p4 = vNorm(safeT, 1.4, 2.0), p5 = vNorm(safeT, 1.8, 2.5);
+  vCtx.save(); vCtx.translate(vCX, vCY);
+  const hexGlow = vEaseOutExpo(p2);
+  for (let h = 3; h >= 0; h--) { const hr = 60 + h * 28; const ha = 0.05 * (4 - h) * hexGlow; vCtx.beginPath(); for (let s = 0; s <= 6; s++) { const a = (s / 6) * Math.PI * 2 - Math.PI / 6; vCtx.lineTo(hr * Math.cos(a), hr * Math.sin(a)); } vCtx.strokeStyle = `rgba(0,255,136,${ha})`; vCtx.lineWidth = h === 0 ? 2 : 1; vCtx.shadowColor = '#00ff88'; vCtx.shadowBlur = 20 * hexGlow * ha * 10; vCtx.stroke(); vCtx.shadowBlur = 0; }
+  vCtx.restore();
+  shieldSegments.forEach(seg => { const p = vClamp(vNorm(safeT, seg.delay, seg.delay + 0.5), 0, 1); const ep = vEaseOutBack(p); const x = vLerp(seg.startX, vCX, ep), y = vLerp(seg.startY, vCY, ep), rot = vLerp(seg.startRot, 0, ep); const arcR = 52, arcStart = seg.angle - Math.PI / 12, arcEnd = seg.angle + Math.PI / 12; vCtx.save(); vCtx.translate(x, y); vCtx.rotate(rot); vCtx.beginPath(); vCtx.arc(0, 0, arcR, arcStart, arcEnd); vCtx.arc(0, 0, arcR - 8, arcEnd, arcStart, true); vCtx.closePath(); const g = vCtx.createRadialGradient(0, 0, arcR - 8, 0, 0, arcR); g.addColorStop(0, `rgba(0,255,136,${p * 0.6})`); g.addColorStop(1, `rgba(0,200,100,${p * 0.2})`); vCtx.fillStyle = g; vCtx.strokeStyle = `rgba(0,255,136,${p * 0.8})`; vCtx.lineWidth = 1; vCtx.shadowColor = '#00ff88'; vCtx.shadowBlur = 15 * p; vCtx.fill(); vCtx.stroke(); vCtx.shadowBlur = 0; vCtx.restore(); });
+  if (p2 > 0) { dnaT2 = safeT * 1.5; const dnaR = 130, dnaH = 200, strands = 20; for (let i = 0; i <= strands; i++) { const frac = i / strands, angle = frac * Math.PI * 4 + dnaT2, yOff = frac * dnaH - dnaH / 2; const ax = vCX + dnaR * Math.cos(angle), ay = vCY + yOff; const bx = vCX + dnaR * Math.cos(angle + Math.PI), by = vCY + yOff; const ba = (0.3 + 0.3 * Math.abs(Math.cos(angle))) * vEaseOutExpo(p2); vCtx.beginPath(); vCtx.arc(ax, ay, 3, 0, Math.PI * 2); vCtx.fillStyle = `rgba(0,255,136,${ba})`; vCtx.shadowColor = '#00ff88'; vCtx.shadowBlur = 8; vCtx.fill(); vCtx.shadowBlur = 0; vCtx.beginPath(); vCtx.arc(bx, by, 3, 0, Math.PI * 2); vCtx.fillStyle = `rgba(0,200,255,${ba * 0.8})`; vCtx.shadowColor = '#00c8ff'; vCtx.shadowBlur = 8; vCtx.fill(); vCtx.shadowBlur = 0; if (i % 2 === 0 && i > 0) { vCtx.beginPath(); vCtx.moveTo(ax, ay); vCtx.lineTo(bx, by); vCtx.strokeStyle = `rgba(0,255,136,${0.15 * vEaseOutExpo(p2)})`; vCtx.lineWidth = 1; vCtx.stroke(); } } if (p2 > 0 && p2 < 0.9 && Math.random() < 0.3) { const angle = Math.random() * Math.PI * 4 + dnaT2; const yOff = (Math.random() - 0.5) * 200; const px2 = vCX + 130 * Math.cos(angle); const py2 = vCY + yOff; vParticles.push(new VParticle(px2, py2, (Math.random() - .5) * 0.5, (Math.random() - .5) * 0.5 - 0.3, 40 + Math.random() * 30, 1, '#00ff88', true)); } }
+  if (p3 > 0) { const scale = 42; const px1 = vCX - scale * 0.55, py1 = vCY + scale * 0.1, px2 = vCX - scale * 0.1, py2 = vCY + scale * 0.55, px3 = vCX + scale * 0.65, py3 = vCY - scale * 0.45; const len1 = Math.hypot(px2 - px1, py2 - py1), len2 = Math.hypot(px3 - px2, py3 - py2), total = len1 + len2; const drawn = vEaseOutBack(p3) * total; vCtx.save(); vCtx.strokeStyle = 'rgba(0,255,136,0.08)'; vCtx.lineWidth = 22; vCtx.lineCap = 'round'; vCtx.lineJoin = 'round'; vCtx.beginPath(); if (drawn <= len1) { const f = drawn / len1; vCtx.moveTo(px1, py1); vCtx.lineTo(px1 + (px2 - px1) * f, py1 + (py2 - py1) * f); } else { vCtx.moveTo(px1, py1); vCtx.lineTo(px2, py2); const f = (drawn - len1) / len2; vCtx.lineTo(px2 + (px3 - px2) * f, py2 + (py3 - py2) * f); } vCtx.stroke(); vCtx.strokeStyle = '#00ff88'; vCtx.lineWidth = 5; vCtx.shadowColor = '#00ff88'; vCtx.shadowBlur = 25; vCtx.beginPath(); if (drawn <= len1) { const f = drawn / len1; vCtx.moveTo(px1, py1); vCtx.lineTo(px1 + (px2 - px1) * f, py1 + (py2 - py1) * f); } else { vCtx.moveTo(px1, py1); vCtx.lineTo(px2, py2); const f = (drawn - len1) / len2; vCtx.lineTo(px2 + (px3 - px2) * f, py2 + (py3 - py2) * f); } vCtx.stroke(); vCtx.shadowBlur = 0; vCtx.restore(); if (p3 < 0.98 && Math.random() < 0.5) { let tipX, tipY; if (drawn <= len1) { const f = drawn / len1; tipX = px1 + (px2 - px1) * f; tipY = py1 + (py2 - py1) * f; } else { const f = (drawn - len1) / len2; tipX = px2 + (px3 - px2) * f; tipY = py2 + (py3 - py2) * f; } for (let s = 0; s < 3; s++) { const a = Math.random() * Math.PI * 2; vParticles.push(new VParticle(tipX, tipY, Math.cos(a) * (0.5 + Math.random() * 2), Math.sin(a) * (0.5 + Math.random() * 2), 15 + Math.random() * 15, 1 + Math.random(), '#00ff88', true)); } } if (p3 > 0.95 && !checkDone) { checkDone = true; for (let i = 0; i < 120; i++) { const a = Math.random() * Math.PI * 2; const spd = 1.5 + Math.random() * 5; const col = Math.random() > .5 ? '#00ff88' : '#00c8ff'; const pp = new VParticle(vCX, vCY, Math.cos(a) * spd, Math.sin(a) * spd, 40 + Math.random() * 80, 1.5 + Math.random() * 3, col, true); pp.gravity = -0.02; pp.drag = 0.97; vParticles.push(pp); } ['SAFE', '✓', 'OK', '00', 'FF', 'A3'].forEach(txt => { for (let i = 0; i < 4; i++) { const a = Math.random() * Math.PI * 2; const spd = 2 + Math.random() * 4; const pp = new VParticle(vCX, vCY, Math.cos(a) * spd, Math.sin(a) * spd, 50 + Math.random() * 60, 11, '#00ff88', false, txt); pp.drag = 0.96; pp.gravity = -0.03; vParticles.push(pp); } }); } }
+  if (p4 > 0) { const ep4 = vEaseOutBack(p4); vCtx.save(); vCtx.translate(vCX, vCY + 108); vCtx.scale(vLerp(3, 1, ep4), 1); vCtx.globalAlpha = p4; vCtx.font = `900 ${vLerp(20, 68, ep4)}px Orbitron,sans-serif`; vCtx.textAlign = 'center'; vCtx.textBaseline = 'middle'; for (let l = 4; l >= 0; l--) { vCtx.shadowColor = '#00ff88'; vCtx.shadowBlur = 40 - l * 6; vCtx.fillStyle = l === 0 ? '#00ff88' : `rgba(0,255,136,${0.15 - l * 0.02})`; vCtx.fillText('SAFE', 0, 0); } vCtx.shadowBlur = 0; vCtx.restore(); const scanX = (safeT % 0.5) / 0.5 * vW; vCtx.save(); vCtx.globalAlpha = 0.12 * p4; vCtx.fillStyle = '#00ff88'; vCtx.fillRect(0, vCY + 100, scanX, 8); vCtx.restore(); for (let r = 0; r < 3; r++) { const rr = 190 + r * 40, speed = [0.3, -0.5, 0.2][r]; vCtx.save(); vCtx.translate(vCX, vCY); vCtx.rotate(safeT * speed); vCtx.setLineDash([20, 10, 5, 10]); vCtx.beginPath(); vCtx.arc(0, 0, rr, 0, Math.PI * 2); vCtx.strokeStyle = `rgba(0,255,136,${(0.15 - r * 0.04) * p4 * 0.6})`; vCtx.lineWidth = 1; vCtx.stroke(); vCtx.setLineDash([]); for (let tick = 0; tick < 12; tick++) { const ta = (tick / 12) * Math.PI * 2; vCtx.beginPath(); vCtx.moveTo((rr - 5) * Math.cos(ta), (rr - 5) * Math.sin(ta)); vCtx.lineTo((rr + 5) * Math.cos(ta), (rr + 5) * Math.sin(ta)); vCtx.strokeStyle = `rgba(0,255,136,${0.35 * p4 * 0.6})`; vCtx.lineWidth = 1.5; vCtx.stroke(); } vCtx.restore(); } }
+  if (p5 > 0) { vCtx.save(); vCtx.globalAlpha = p5 * (0.6 + 0.4 * Math.sin(safeT * 6)); vCtx.font = '11px Share Tech Mono,monospace'; vCtx.fillStyle = 'rgba(0,255,136,0.6)'; vCtx.textAlign = 'center'; vCtx.textBaseline = 'middle'; vCtx.fillText('█ THREAT SCAN COMPLETE — ALL CLEAR — CLICK TO DISMISS █', vCX, vCY + 165); vCtx.restore(); }
+  for (let n = 0; n < 8; n++) { const na = safeT * 0.6 + n * (Math.PI * 2 / 8); const nr = 170 + 15 * Math.sin(safeT * 2 + n * 0.8); vCtx.beginPath(); vCtx.arc(vCX + nr * Math.cos(na), vCY + nr * Math.sin(na), 3, 0, Math.PI * 2); vCtx.fillStyle = `rgba(0,255,136,${(0.2 + 0.2 * Math.sin(safeT * 3 + n)) * vEaseOutExpo(p1)})`; vCtx.shadowColor = '#00ff88'; vCtx.shadowBlur = 10; vCtx.fill(); vCtx.shadowBlur = 0; }
+  if (safeT > 3) { vDONE = true; document.getElementById('dismissHint').style.display = 'block'; }
+}
+let dangerT = 0, virusNodes = [], corruptLines = [], explodeDone2 = false;
+function initDangerVerdict() { dangerT = 0; explodeDone2 = false; virusNodes = []; corruptLines = []; for (let i = 0; i < 8; i++) virusNodes.push({ angle: (i / 8) * Math.PI * 2, r: 120 + Math.random() * 30, speed: 0.8 + Math.random() * 0.5, size: 6 + Math.random() * 6, spikes: 4 + Math.floor(Math.random() * 4) }); for (let i = 0; i < 20; i++) corruptLines.push({ y: Math.random() * vH, width: 50 + Math.random() * 300, offset: Math.random() * vW, life: Math.random() * 60, maxLife: 30 + Math.random() * 60, height: 1 + Math.random() * 4 }); }
+function drawDangerVerdict() {
+  dangerT += 0.018;
+  const p1 = vNorm(dangerT, 0, 0.6), p2 = vNorm(dangerT, 0.3, 1.2), p3 = vNorm(dangerT, 1.0, 1.8), p4 = vNorm(dangerT, 1.6, 2.4);
+  const shakeAmt = dangerT < 1 ? 8 * (1 - dangerT / 1) * Math.sin(dangerT * 90) : 0;
+  const SX = vCX + shakeAmt, SY = vCY + shakeAmt * 0.6;
+  if (dangerT < 0.4) { vCtx.fillStyle = `rgba(255,0,40,${((0.4 - dangerT) / 0.4) * 0.18})`; vCtx.fillRect(0, 0, vW, vH); }
+  for (let i = 5; i >= 0; i--) { const delay = i * 0.1, pp = vNorm(dangerT, delay, delay + 0.8), ep = vEaseOutExpo(pp), r = 30 + i * 70 * ep, alpha = (1 - ep) * 0.4; vCtx.beginPath(); vCtx.arc(SX, SY, r, 0, Math.PI * 2); vCtx.strokeStyle = `rgba(255,0,64,${alpha})`; vCtx.lineWidth = 3 - i * 0.3; vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = 20 * alpha; vCtx.stroke(); vCtx.shadowBlur = 0; }
+  corruptLines.forEach(cl => { cl.life--; if (cl.life <= 0) { cl.life = cl.maxLife; cl.y = Math.random() * vH; cl.width = 50 + Math.random() * 300; cl.offset = Math.random() * vW; } const la = Math.min(1, cl.life / cl.maxLife) * 0.1 * p1; vCtx.fillStyle = `rgba(255,0,64,${la})`; vCtx.fillRect(cl.offset, cl.y, cl.width, cl.height); vCtx.fillStyle = `rgba(0,255,255,${la * 0.5})`; vCtx.fillRect(cl.offset + 4, cl.y, cl.width * 0.7, cl.height); });
+  if (p2 > 0) { const vr = 55 * vEaseOutBack(p2); const vg = vCtx.createRadialGradient(SX, SY, 0, SX, SY, vr); vg.addColorStop(0, `rgba(255,20,60,${0.7 * p2})`); vg.addColorStop(0.5, `rgba(200,0,40,${0.4 * p2})`); vg.addColorStop(1, 'rgba(255,0,64,0)'); vCtx.beginPath(); vCtx.arc(SX, SY, vr, 0, Math.PI * 2); vCtx.fillStyle = vg; vCtx.fill(); vCtx.beginPath(); vCtx.arc(SX, SY, vr, 0, Math.PI * 2); vCtx.strokeStyle = `rgba(255,0,64,${0.8 * p2})`; vCtx.lineWidth = 2; vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = 30 * p2; vCtx.stroke(); vCtx.shadowBlur = 0; virusNodes.forEach(vn => { const va = vn.angle + dangerT * vn.speed, vx = SX + vn.r * Math.cos(va), vy = SY + vn.r * Math.sin(va); vCtx.save(); vCtx.translate(vx, vy); vCtx.rotate(va); vCtx.beginPath(); for (let s = 0; s < vn.spikes * 2; s++) { const sa = (s / (vn.spikes * 2)) * Math.PI * 2, sr = s % 2 === 0 ? vn.size : vn.size * 0.4; vCtx.lineTo(sr * Math.cos(sa), sr * Math.sin(sa)); } vCtx.closePath(); vCtx.fillStyle = `rgba(255,0,64,${0.6 * p2})`; vCtx.strokeStyle = `rgba(255,80,100,${0.8 * p2})`; vCtx.lineWidth = 1; vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = 12; vCtx.fill(); vCtx.stroke(); vCtx.shadowBlur = 0; vCtx.restore(); if (Math.random() < 0.06 * p2) { const a2 = Math.random() * Math.PI * 2; vParticles.push(new VParticle(vx, vy, Math.cos(a2) * (0.5 + Math.random() * 1.5), Math.sin(a2) * (0.5 + Math.random() * 1.5), 20 + Math.random() * 20, 1, '#ff0040', true)); } }); }
+  for (let ring = 0; ring < 3; ring++) { const rr = [90, 125, 160][ring], speed = [3, -2, 1.5][ring], segs = [5, 7, 4][ring], col = ['rgba(255,0,64', 'rgba(255,51,102', 'rgba(200,0,40'][ring]; vCtx.save(); vCtx.translate(SX, SY); vCtx.rotate(dangerT * speed); for (let s = 0; s < segs; s++) { const start = (s / segs) * Math.PI * 2, end = start + Math.PI / segs * 1.3, pulse = 0.4 + 0.4 * Math.sin(dangerT * 10 + s + ring * 2); vCtx.beginPath(); vCtx.arc(0, 0, rr, start, end); vCtx.strokeStyle = `${col},${pulse * p2})`; vCtx.lineWidth = ring === 1 ? 3 : 2; vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = ring === 1 ? 15 : 8; vCtx.stroke(); vCtx.shadowBlur = 0; } vCtx.restore(); }
+  if (p2 > 0.1) { const ep = vEaseOutBack(vNorm(dangerT, 0.4, 1.1)); vCtx.save(); vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = 30; const stemH = 52 * Math.min(1, ep), stemTop = SY - stemH, stemBot = SY + 8; if (stemH > 1) { vCtx.strokeStyle = 'rgba(255,0,64,0.15)'; vCtx.lineWidth = 20; vCtx.lineCap = 'round'; vCtx.beginPath(); vCtx.moveTo(SX, stemBot); vCtx.lineTo(SX, stemTop); vCtx.stroke(); vCtx.strokeStyle = 'rgba(255,0,64,0.4)'; vCtx.lineWidth = 12; vCtx.beginPath(); vCtx.moveTo(SX, stemBot); vCtx.lineTo(SX, stemTop); vCtx.stroke(); vCtx.strokeStyle = '#ff0040'; vCtx.lineWidth = 6; vCtx.beginPath(); vCtx.moveTo(SX, stemBot); vCtx.lineTo(SX, stemTop); vCtx.stroke(); vCtx.strokeStyle = '#ffaaaa'; vCtx.lineWidth = 2; vCtx.beginPath(); vCtx.moveTo(SX, stemBot); vCtx.lineTo(SX, stemTop); vCtx.stroke(); } if (ep > 0.85) { const dp = vNorm(ep, 0.85, 1); vCtx.beginPath(); vCtx.arc(SX, SY + 28, 7, 0, Math.PI * 2); vCtx.fillStyle = `rgba(255,0,64,${dp})`; vCtx.shadowBlur = 20 * dp; vCtx.fill(); vCtx.beginPath(); vCtx.arc(SX, SY + 28, 3, 0, Math.PI * 2); vCtx.fillStyle = `rgba(255,180,180,${dp})`; vCtx.fill(); } vCtx.shadowBlur = 0; vCtx.restore(); if (ep < 0.98 && Math.random() < 0.6) { const ty = SY - stemH; for (let s = 0; s < 3; s++) { const a = Math.random() * Math.PI * 2; vParticles.push(new VParticle(SX, ty, Math.cos(a) * (1 + Math.random() * 3), Math.sin(a) * (1 + Math.random() * 3), 15 + Math.random() * 20, 1.5, '#ff0040', true)); } } }
+  if (p2 > 0.95 && !explodeDone2) { explodeDone2 = true; for (let i = 0; i < 200; i++) { const a = Math.random() * Math.PI * 2, spd = 2 + Math.random() * 7; const col = Math.random() > 0.5 ? '#ff0040' : Math.random() > 0.5 ? '#ff6600' : '#ff0090'; const pp = new VParticle(SX, SY, Math.cos(a) * spd, Math.sin(a) * spd, 40 + Math.random() * 80, 1 + Math.random() * 3, col, true); pp.gravity = 0.04; pp.drag = 0.96; vParticles.push(pp); } ['☠', '⚠', 'XX', '!!', 'ERR', 'SYS', 'FAIL', '00'].forEach(txt => { for (let i = 0; i < 2; i++) { const a = Math.random() * Math.PI * 2, spd = 2 + Math.random() * 5; const pp = new VParticle(SX, SY, Math.cos(a) * spd, Math.sin(a) * spd, 60 + Math.random() * 60, 14, '#ff0040', false, txt); pp.gravity = 0.06; pp.drag = 0.95; vParticles.push(pp); } }); }
+  if (p3 > 0) { const ep3 = vEaseOutBack(p3), sz = vLerp(10, 66, ep3); const gx = (1 - p3) * 20 * (Math.random() - .5), gy = (1 - p3) * 10 * (Math.random() - .5); vCtx.save(); vCtx.translate(SX, SY + 110); vCtx.globalAlpha = p3; vCtx.font = `900 ${sz}px Orbitron,sans-serif`; vCtx.textAlign = 'center'; vCtx.textBaseline = 'middle'; vCtx.fillStyle = 'rgba(0,255,255,0.25)'; vCtx.fillText('DANGER', -5 + gx, -gy); vCtx.fillStyle = 'rgba(255,0,180,0.25)'; vCtx.fillText('DANGER', 5 + gx, gy); vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = 40; vCtx.fillStyle = '#ff0040'; vCtx.fillText('DANGER', gx * 0.3, 0); vCtx.shadowBlur = 0; vCtx.fillStyle = 'rgba(255,150,150,0.4)'; vCtx.fillText('DANGER', gx * 0.1, 0); vCtx.restore(); if (Math.random() < 0.3) { vCtx.save(); vCtx.globalAlpha = 0.15 * p3; vCtx.fillStyle = '#ff0040'; vCtx.fillRect(0, SY + 102 + Math.random() * 16, vW, 2 + Math.random() * 3); vCtx.restore(); } }
+  if (p1 > 0.3) { const flash = 0.5 + 0.5 * Math.sin(dangerT * 10), bpad2 = 24, blen2 = 34; vCtx.strokeStyle = `rgba(255,0,64,${flash * p1})`; vCtx.lineWidth = 2.5; vCtx.shadowColor = '#ff0040'; vCtx.shadowBlur = 12; vCtx.beginPath(); vCtx.moveTo(bpad2 + blen2, bpad2); vCtx.lineTo(bpad2, bpad2); vCtx.lineTo(bpad2, bpad2 + blen2); vCtx.stroke(); vCtx.beginPath(); vCtx.moveTo(vW - bpad2 - blen2, bpad2); vCtx.lineTo(vW - bpad2, bpad2); vCtx.lineTo(vW - bpad2, bpad2 + blen2); vCtx.stroke(); vCtx.beginPath(); vCtx.moveTo(bpad2 + blen2, vH - bpad2); vCtx.lineTo(bpad2, vH - bpad2); vCtx.lineTo(bpad2, vH - bpad2 - blen2); vCtx.stroke(); vCtx.beginPath(); vCtx.moveTo(vW - bpad2 - blen2, vH - bpad2); vCtx.lineTo(vW - bpad2, vH - bpad2); vCtx.lineTo(vW - bpad2, vH - bpad2 - blen2); vCtx.stroke(); vCtx.shadowBlur = 0; const barA = 0.4 + 0.3 * Math.sin(dangerT * 8); vCtx.fillStyle = `rgba(255,0,64,${barA * p1 * 0.5})`; vCtx.fillRect(0, 0, 4, vH); vCtx.fillRect(vW - 4, 0, 4, vH); vCtx.fillStyle = `rgba(255,0,64,${barA * p1 * 0.3})`; vCtx.fillRect(0, 0, vW, 8); vCtx.fillRect(0, vH - 8, vW, 8); }
+  if (p4 > 0) { const blink = Math.floor(dangerT * 5) % 2 === 0 ? p4 : p4 * 0.2; vCtx.save(); vCtx.globalAlpha = blink; vCtx.font = '11px Share Tech Mono,monospace'; vCtx.fillStyle = 'rgba(255,0,64,0.8)'; vCtx.textAlign = 'center'; vCtx.textBaseline = 'middle'; vCtx.fillText('⚠ CRITICAL THREAT CONFIRMED — DO NOT PROCEED — CLICK TO DISMISS ⚠', SX, SY + 165); vCtx.restore(); vCtx.save(); vCtx.globalAlpha = 0.12 * p4; vCtx.font = '9px Share Tech Mono'; vCtx.fillStyle = '#ff0040'; for (let i = 0; i < 12; i++) { const hx = ((i * 73 + dangerT * 40) % vW); vCtx.fillText(Math.floor(Math.random() * 256).toString(16).padStart(2, '0').toUpperCase(), hx, SY + 182); } vCtx.restore(); }
+  if (dangerT > 3) { vDONE = true; document.getElementById('dismissHint').style.display = 'block'; }
+}
+let gridT2 = 0;
+function pseudoNoise2(x, y, t) { return Math.sin(x * 0.3 + t) * Math.cos(y * 0.2 + t * 0.7) + Math.sin((x + y) * 0.15 + t * 1.3) * 0.5; }
+function verdictLoop() { vCtx.clearRect(0, 0, vW, vH); vCtx.fillStyle = 'rgba(2,5,9,0.92)'; vCtx.fillRect(0, 0, vW, vH); gridT2 += 0.003; const gs = 80; for (let x = 0; x < vW; x += gs) { for (let y = 0; y < vH; y += gs) { const n = pseudoNoise2(x, y, gridT2); vCtx.fillStyle = `rgba(0,245,255,${(n + 1) * 0.01})`; vCtx.fillRect(x, y, 1, 1); } } vCtx.strokeStyle = 'rgba(0,245,255,0.03)'; vCtx.lineWidth = 1; for (let x = 0; x < vW; x += gs) { vCtx.beginPath(); vCtx.moveTo(x, 0); vCtx.lineTo(x, vH); vCtx.stroke(); } for (let y = 0; y < vH; y += gs) { vCtx.beginPath(); vCtx.moveTo(0, y); vCtx.lineTo(vW, y); vCtx.stroke(); } if (vMODE === 'safe') drawSafeVerdict(); else if (vMODE === 'danger') drawDangerVerdict(); vParticles = vParticles.filter(p => { const alive = p.update(); if (alive) p.draw(vCtx); return alive; }); vRAF = requestAnimationFrame(verdictLoop); }
+function showVerdictAnimation(verdictType) { vParticles = []; vDONE = false; vResize(); document.getElementById('dismissHint').style.display = 'none'; const isSafe = ['safe', 'likely'].includes(verdictType); vMODE = isSafe ? 'safe' : 'danger'; if (isSafe) initSafeVerdict(); else initDangerVerdict(); verdictOverlay.classList.add('active'); cancelAnimationFrame(vRAF); verdictLoop(); }
+function closeVerdictOverlay() { if (!vDONE) return; cancelAnimationFrame(vRAF); vRAF = null; verdictOverlay.classList.remove('active'); vCtx.clearRect(0, 0, vW, vH); vMODE = null; vParticles = []; }
+verdictOverlay.addEventListener('click', closeVerdictOverlay);
 
 // ═══════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════
-let selectedFile=null,analysisStartTime=0;
+let selectedFile = null, analysisStartTime = 0;
 
 // ═══════════════════════════════════════════════
 // UI HELPERS
 // ═══════════════════════════════════════════════
-function switchTab(tab){
-  document.querySelectorAll('.tbtn').forEach((b,i)=>b.classList.toggle('active',['upload','camera','url'][i]===tab));
-  ['upload','camera','url'].forEach(t=>document.getElementById('panel-'+t).classList.toggle('active',t===tab));
-  if(tab!=='camera')stopCam();
-  clearErrors();hideResult();
+function switchTab(tab) {
+  document.querySelectorAll('.tbtn').forEach((b, i) => b.classList.toggle('active', ['upload', 'camera', 'url'][i] === tab));
+  ['upload', 'camera', 'url'].forEach(t => document.getElementById('panel-' + t).classList.toggle('active', t === tab));
+  if (tab !== 'camera') stopCam();
+  clearErrors(); hideResult();
 }
-function clearErrors(){document.querySelectorAll('.err').forEach(e=>{e.classList.remove('show');e.textContent='';}); }
-function showErr(id,msg){const e=document.getElementById(id);if(e){e.textContent='⚠ '+msg;e.classList.add('show');}}
-function hideResult(){document.getElementById('resultEl').classList.remove('show');}
-function esc(s){return s==null?'':String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function clearErrors() { document.querySelectorAll('.err').forEach(e => { e.classList.remove('show'); e.textContent = ''; }); }
+function showErr(id, msg) { const e = document.getElementById(id); if (e) { e.textContent = '⚠ ' + msg; e.classList.add('show'); } }
+function hideResult() { document.getElementById('resultEl').classList.remove('show'); }
+function esc(s) { return s == null ? '' : String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 
-const SCAN_STEPS=['INITIALIZING SCAN PROTOCOLS...','CONNECTING TO BACKEND...','QUERYING VIRUSTOTAL ENGINE...','CHECKING GOOGLE SAFE BROWSING...','RUNNING HEURISTIC ANALYSIS...','PARSING URL STRUCTURE...','SCORING THREAT INDICATORS...','GENERATING THREAT REPORT...'];
-let stepInterval=null;
-function showLoadingState(){
-  const el=document.getElementById('loadingEl');el.classList.add('show');
-  const stepsEl=document.getElementById('loadSteps');stepsEl.innerHTML='';
-  SCAN_STEPS.forEach(s=>{const d=document.createElement('div');d.className='load-step-row';d.innerHTML='<span class="step-icon">›</span><span>'+s+'</span>';stepsEl.appendChild(d);});
-  const rows=stepsEl.querySelectorAll('.load-step-row');let cur=0;rows[0].classList.add('active');
+const SCAN_STEPS = ['INITIALIZING SCAN PROTOCOLS...', 'CONNECTING TO BACKEND...', 'QUERYING VIRUSTOTAL ENGINE...', 'CHECKING GOOGLE SAFE BROWSING...', 'RUNNING HEURISTIC ANALYSIS...', 'PARSING URL STRUCTURE...', 'SCORING THREAT INDICATORS...', 'GENERATING THREAT REPORT...'];
+let stepInterval = null;
+function showLoadingState() {
+  const el = document.getElementById('loadingEl'); el.classList.add('show');
+  const stepsEl = document.getElementById('loadSteps'); stepsEl.innerHTML = '';
+  SCAN_STEPS.forEach(s => { const d = document.createElement('div'); d.className = 'load-step-row'; d.innerHTML = '<span class="step-icon">›</span><span>' + s + '</span>'; stepsEl.appendChild(d); });
+  const rows = stepsEl.querySelectorAll('.load-step-row'); let cur = 0; rows[0].classList.add('active');
   startAnalyzeAnim();
-  stepInterval=setInterval(()=>{if(cur<rows.length){rows[cur].classList.remove('active');rows[cur].classList.add('done');rows[cur].querySelector('.step-icon').textContent='✓';}cur++;if(cur<rows.length)rows[cur].classList.add('active');},380);
+  stepInterval = setInterval(() => { if (cur < rows.length) { rows[cur].classList.remove('active'); rows[cur].classList.add('done'); rows[cur].querySelector('.step-icon').textContent = '✓'; } cur++; if (cur < rows.length) rows[cur].classList.add('active'); }, 380);
 }
-function hideLoadingState(){document.getElementById('loadingEl').classList.remove('show');stopAnalyzeAnim();if(stepInterval){clearInterval(stepInterval);stepInterval=null;}}
+function hideLoadingState() { document.getElementById('loadingEl').classList.remove('show'); stopAnalyzeAnim(); if (stepInterval) { clearInterval(stepInterval); stepInterval = null; } }
 
-function resetAll(){
-  hideResult();selectedFile=null;upHasFile=false;
-  document.getElementById('scanBtn').disabled=true;
-  document.getElementById('uzPreview').style.display='none';
-  document.getElementById('uploadOverlay').style.display='flex';
-  document.getElementById('fileInput').value='';
-  document.getElementById('urlIn').value='';
-  scanStage.style.display='none';clearErrors();
-  cancelAnimationFrame(upAnimId);upT=0;upAnimId=requestAnimationFrame(drawUploadIdle);
+function resetAll() {
+  hideResult(); selectedFile = null; upHasFile = false;
+  document.getElementById('scanBtn').disabled = true;
+  document.getElementById('uzPreview').style.display = 'none';
+  document.getElementById('uploadOverlay').style.display = 'flex';
+  document.getElementById('fileInput').value = '';
+  document.getElementById('urlIn').value = '';
+  scanStage.style.display = 'none'; clearErrors();
+  cancelAnimationFrame(upAnimId); upT = 0; upAnimId = requestAnimationFrame(drawUploadIdle);
 }
 
 // ═══════════════════════════════════════════════
 // RENDER RESULT
 // ═══════════════════════════════════════════════
-const VM={safe:{e:'✅',l:'SAFE',c:'vc-safe',f:'f-s'},likely:{e:'🟢',l:'LIKELY SAFE',c:'vc-likely',f:'f-l'},suspicious:{e:'⚠️',l:'SUSPICIOUS',c:'vc-suspicious',f:'f-su'},dangerous:{e:'🚨',l:'DANGEROUS',c:'vc-dangerous',f:'f-d'},phishing:{e:'☠️',l:'THREAT CONFIRMED',c:'vc-phishing',f:'f-p'}};
+const VM = { safe: { e: '✅', l: 'SAFE', c: 'vc-safe', f: 'f-s' }, likely: { e: '🟢', l: 'LIKELY SAFE', c: 'vc-likely', f: 'f-l' }, suspicious: { e: '⚠️', l: 'SUSPICIOUS', c: 'vc-suspicious', f: 'f-su' }, dangerous: { e: '🚨', l: 'DANGEROUS', c: 'vc-dangerous', f: 'f-d' }, phishing: { e: '☠️', l: 'THREAT CONFIRMED', c: 'vc-phishing', f: 'f-p' } };
 
-function renderResult(a){
-  const vm=VM[a.verdict]||VM.suspicious;
-  const R=38,C=2*Math.PI*R,offset=C*(1-a.risk_score/100);
-  const fc=a.fc;
-  let findHtml='';
-  if(a.findings.length){
-    findHtml=`<div class="f-hdr">⚑ FINDINGS (${a.findings.length})</div>`;
-    const cls={critical:'f-c bc',high:'f-h bh',medium:'f-m bm',low:'f-l2 bl'};
-    a.findings.forEach(f=>{const[fc2,bc]=(cls[f.sev]||'f-l2 bl').split(' ');findHtml+=`<div class="finding ${fc2}"><div><span class="fbadge ${bc}">${f.sev}</span></div><div style="flex:1"><div class="f-rule">${esc(f.rule)}</div><div class="f-detail">${esc(f.detail)}</div></div><div class="f-pts">+${f.pts}pts</div></div>`;});
-  }else{
-    findHtml=`<div class="f-hdr">✓ ALL CLEAR</div><div class="safe-grid">${['No dangerous schemes','No brand impersonation','No typosquatting','No suspicious TLD','No obfuscation','No phishing patterns'].map(t=>`<div class="safe-item"><span class="sck">✓</span>${t}</div>`).join('')}</div>`;
+function renderResult(a) {
+  const vm = VM[a.verdict] || VM.suspicious;
+  const R = 38, C = 2 * Math.PI * R, offset = C * (1 - a.risk_score / 100);
+  const fc = a.fc;
+  let findHtml = '';
+  if (a.findings.length) {
+    findHtml = `<div class="f-hdr">⚑ FINDINGS (${a.findings.length})</div>`;
+    const cls = { critical: 'f-c bc', high: 'f-h bh', medium: 'f-m bm', low: 'f-l2 bl' };
+    a.findings.forEach(f => { const [fc2, bc] = (cls[f.sev] || 'f-l2 bl').split(' '); findHtml += `<div class="finding ${fc2}"><div><span class="fbadge ${bc}">${f.sev}</span></div><div style="flex:1"><div class="f-rule">${esc(f.rule)}</div><div class="f-detail">${esc(f.detail)}</div></div><div class="f-pts">+${f.pts}pts</div></div>`; });
+  } else {
+    findHtml = `<div class="f-hdr">✓ ALL CLEAR</div><div class="safe-grid">${['No dangerous schemes', 'No brand impersonation', 'No typosquatting', 'No suspicious TLD', 'No obfuscation', 'No phishing patterns'].map(t => `<div class="safe-item"><span class="sck">✓</span>${t}</div>`).join('')}</div>`;
   }
 
-  // extra backend engine row
-  const beRow = a._source==='backend' ? `
-    <div class="mc">🦠 VT Malicious <b>${a._malicious??0}</b></div>
-    <div class="mc">⚠ VT Suspicious <b>${a._suspicious??0}</b></div>
+  const beRow = a._source === 'backend' ? `
+    <div class="mc">🦠 VT Malicious <b>${a._malicious ?? 0}</b></div>
+    <div class="mc">⚠ VT Suspicious <b>${a._suspicious ?? 0}</b></div>
     <div class="mc">🔬 <b>Backend Scan</b></div>` : '';
 
-  document.getElementById('resultBody').innerHTML=`
+  document.getElementById('resultBody').innerHTML = `
   <div class="verdict-card ${vm.c}">
     <div class="vc-scanline"></div>
     <div class="verdict-top">
@@ -875,53 +846,52 @@ function renderResult(a){
   ${findHtml}
   <div class="r-meta">
     <div class="mc">⏱ <b>${a.time}ms</b></div>
-    <div class="mc">🔒 <b>${esc(a.scheme||'?')}://</b></div>
-    <div class="mc">🌐 <b>${esc(a.domain||'?')}</b></div>
+    <div class="mc">🔒 <b>${esc(a.scheme || '?')}://</b></div>
+    <div class="mc">🌐 <b>${esc(a.domain || '?')}</b></div>
     <div class="mc">HASH <b>${a.hash}</b></div>
     ${beRow}
-    <div class="mc">📅 <b>${a.ts.replace('T',' ').slice(0,19)} UTC</b></div>
+    <div class="mc">📅 <b>${a.ts.replace('T', ' ').slice(0, 19)} UTC</b></div>
   </div>`;
 
-  const grid=document.getElementById('checkGrid');grid.innerHTML='';
-  let parsed=null;try{let u=a.url;if(!/^[a-z]+:\/\//i.test(u))u='http://'+u;parsed=new URL(u);}catch(e){}
-  CHECK_CARDS_DEF.forEach((ch,idx)=>{
-    const hits=ch.run(a.url,parsed);const triggered=hits&&hits.length>0;
-    const card=document.createElement('div');card.className='check-card '+(triggered?'triggered':'clear');
-    card.innerHTML=`<span class="cc-st ${triggered?'cst-t':'cst-c'}">${triggered?'⚠ DETECTED':'✓ CLEAR'}</span><span class="cc-ico">${ch.icon}</span><div class="cc-title">${ch.title}</div><div class="cc-desc">${ch.desc}</div>${triggered?`<div class="cc-hits">${hits.map(h=>'→ '+esc(h)).join('<br>')}</div>`:''}`;
-    grid.appendChild(card);setTimeout(()=>card.classList.add('revealed'),idx*80+100);
+  const grid = document.getElementById('checkGrid'); grid.innerHTML = '';
+  let parsed = null; try { parsed = new URL(normalizeUrl(a.url)); } catch (e) {}
+  CHECK_CARDS_DEF.forEach((ch, idx) => {
+    const hits = ch.run(a.url, parsed); const triggered = hits && hits.length > 0;
+    const card = document.createElement('div'); card.className = 'check-card ' + (triggered ? 'triggered' : 'clear');
+    card.innerHTML = `<span class="cc-st ${triggered ? 'cst-t' : 'cst-c'}">${triggered ? '⚠ DETECTED' : '✓ CLEAR'}</span><span class="cc-ico">${ch.icon}</span><div class="cc-title">${ch.title}</div><div class="cc-desc">${ch.desc}</div>${triggered ? `<div class="cc-hits">${hits.map(h => '→ ' + esc(h)).join('<br>')}</div>` : ''}`;
+    grid.appendChild(card); setTimeout(() => card.classList.add('revealed'), idx * 80 + 100);
   });
 
-  const rv=document.getElementById('resultEl');rv.classList.add('show');
-  setTimeout(()=>rv.scrollIntoView({behavior:'smooth',block:'start'}),120);
-  setTimeout(()=>showVerdictAnimation(a.verdict),600);
+  const rv = document.getElementById('resultEl'); rv.classList.add('show');
+  setTimeout(() => rv.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+  setTimeout(() => showVerdictAnimation(a.verdict), 600);
 }
 
 // ═══════════════════════════════════════════════
 // FILE UPLOAD
 // ═══════════════════════════════════════════════
-function handleFile(file){
-  if(!file)return;selectedFile=file;upHasFile=true;
-  const reader=new FileReader();
-  reader.onload=e=>{const img=document.getElementById('previewImg');img.src=e.target.result;document.getElementById('uzPreview').style.display='flex';document.getElementById('uploadOverlay').style.display='none';cancelAnimationFrame(upAnimId);upCtx.clearRect(0,0,upCv.width,upCv.height);};
-  reader.readAsDataURL(file);document.getElementById('scanBtn').disabled=false;
+function handleFile(file) {
+  if (!file) return; selectedFile = file; upHasFile = true;
+  const reader = new FileReader();
+  reader.onload = e => { const img = document.getElementById('previewImg'); img.src = e.target.result; document.getElementById('uzPreview').style.display = 'flex'; document.getElementById('uploadOverlay').style.display = 'none'; cancelAnimationFrame(upAnimId); upCtx.clearRect(0, 0, upCv.width, upCv.height); };
+  reader.readAsDataURL(file); document.getElementById('scanBtn').disabled = false;
 }
 
-async function doUploadScan(){
-  if(!selectedFile)return;clearErrors();hideResult();analysisStartTime=performance.now();
-  startScanAnim(async()=>{
+async function doUploadScan() {
+  if (!selectedFile) return; clearErrors(); hideResult(); analysisStartTime = performance.now();
+  startScanAnim(async () => {
     showLoadingState();
-    try{
-      // 1. Decode QR using html5-qrcode
+    try {
+      // 1. Decode QR from image
       const qrData = await decodeFromFile(selectedFile);
-      // 2. Call backend /check-url
+      // 2. Call backend (normalizeUrl applied inside callBackend)
       const backendData = await callBackend(qrData);
-      // 3. Map response to result format
+      // 3. Build result
       const result = mapBackendToResult(backendData, qrData, analysisStartTime);
-      // Pad loading animation
-      await new Promise(r=>setTimeout(r, Math.max(0, SCAN_STEPS.length*380+400 - (performance.now()-analysisStartTime))));
+      await new Promise(r => setTimeout(r, Math.max(0, SCAN_STEPS.length * 380 + 400 - (performance.now() - analysisStartTime))));
       hideLoadingState();
       renderResult(result);
-    } catch(e){
+    } catch (e) {
       hideLoadingState();
       showErr('uploadErr', e.message);
     }
@@ -929,35 +899,38 @@ async function doUploadScan(){
 }
 
 // ═══════════════════════════════════════════════
-// URL SCAN → backend
+// URL SCAN
 // ═══════════════════════════════════════════════
-async function doUrlScan(){
-  const url=document.getElementById('urlIn').value.trim();
-  if(!url){showErr('urlErr','Enter a URL to analyze');return;}
-  clearErrors();hideResult();analysisStartTime=performance.now();showLoadingState();
-  try{
+async function doUrlScan() {
+  let url = document.getElementById('urlIn').value.trim();
+  if (!url) { showErr('urlErr', 'Enter a URL to analyze'); return; }
+  // Normalize & show normalized URL in input
+  url = normalizeUrl(url);
+  document.getElementById('urlIn').value = url;
+  clearErrors(); hideResult(); analysisStartTime = performance.now();
+  showLoadingState();
+  try {
     const backendData = await callBackend(url);
     const result = mapBackendToResult(backendData, url, analysisStartTime);
-    // Minimum display time for loading animation
-    await new Promise(r=>setTimeout(r, Math.max(0, SCAN_STEPS.length*380+300 - (performance.now()-analysisStartTime))));
+    await new Promise(r => setTimeout(r, Math.max(0, SCAN_STEPS.length * 380 + 300 - (performance.now() - analysisStartTime))));
     hideLoadingState();
     renderResult(result);
-  } catch(e){
+  } catch (e) {
     hideLoadingState();
-    showErr('urlErr','Backend error: ' + e.message + ' — check server is running');
+    showErr('urlErr', e.message + ' — ensure Flask server is running on port 5000');
   }
 }
 
 // ═══════════════════════════════════════════════
 // DnD + PASTE
 // ═══════════════════════════════════════════════
-const dz=document.getElementById('uploadZone');
-dz.addEventListener('dragover',e=>{e.preventDefault();dz.style.borderColor='rgba(0,245,255,0.6)';});
-dz.addEventListener('dragleave',()=>{dz.style.borderColor='';});
-dz.addEventListener('drop',e=>{e.preventDefault();dz.style.borderColor='';const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))handleFile(f);});
-dz.addEventListener('click',e=>{if(e.target!==document.getElementById('fileInput'))document.getElementById('fileInput').click();});
-document.addEventListener('paste',e=>{const items=e.clipboardData.items;for(const item of items){if(item.type.startsWith('image/')){const f=item.getAsFile();if(f){switchTab('upload');handleFile(f);}}}});
-window.addEventListener('load',()=>{resizeUpCv();resizeCamOv();});
+const dz = document.getElementById('uploadZone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.style.borderColor = 'rgba(0,245,255,0.6)'; });
+dz.addEventListener('dragleave', () => { dz.style.borderColor = ''; });
+dz.addEventListener('drop', e => { e.preventDefault(); dz.style.borderColor = ''; const f = e.dataTransfer.files[0]; if (f && f.type.startsWith('image/')) handleFile(f); });
+dz.addEventListener('click', e => { if (e.target !== document.getElementById('fileInput')) document.getElementById('fileInput').click(); });
+document.addEventListener('paste', e => { const items = e.clipboardData.items; for (const item of items) { if (item.type.startsWith('image/')) { const f = item.getAsFile(); if (f) { switchTab('upload'); handleFile(f); } } } });
+window.addEventListener('load', () => { resizeUpCv(); resizeCamOv(); });
 </script>
 </body>
 </html>
