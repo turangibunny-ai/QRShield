@@ -9,7 +9,7 @@ import re
 from urllib.parse import urlparse
 from datetime import datetime
 import tldextract
-import Levenshtein
+from rapidfuzz import fuzz   # ← Levenshtein బదులు ఇది వచ్చింది
 from collections import defaultdict
 import logging
 
@@ -25,19 +25,15 @@ limiter = Limiter(
 )
 
 # ==================== CONFIGURATION ====================
-# API Keys from environment variables
-VT_API = os.getenv("VT_API_KEY", "")  # VirusTotal API key
-GSB_API = os.getenv("GSB_API_KEY", "")  # Google Safe Browsing API key
+VT_API = os.getenv("VT_API_KEY", "")  
+GSB_API = os.getenv("GSB_API_KEY", "")  
 
-# VirusTotal rate limiting (4 requests per minute)
 VT_RATE_LIMIT = 4
 vt_request_timestamps = []
 
-# Cache configuration
 CACHE_TTL = 300
 scan_cache = {}
 
-# Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -58,7 +54,6 @@ PHISHING_KEYWORDS = {
     ]
 }
 
-# Known legitimate brands
 BRAND_DOMAINS = {
     'paypal.com', 'apple.com', 'google.com', 'microsoft.com', 'amazon.com',
     'facebook.com', 'instagram.com', 'twitter.com', 'linkedin.com', 'netflix.com',
@@ -124,14 +119,14 @@ def check_url_status(url):
 # ==================== HEURISTIC ANALYSIS ====================
 def check_brand_similarity(domain):
     extracted = tldextract.extract(domain)
-    domain_name = extracted.domain
+    domain_name = extracted.domain.lower() if extracted.domain else ""
     
     best_match = None
     highest_similarity = 0
     
     for brand in BRAND_DOMAINS:
         brand_extracted = tldextract.extract(brand)
-        brand_name = brand_extracted.domain
+        brand_name = brand_extracted.domain.lower()
         
         if domain_name == brand_name and extracted.subdomain:
             return {
@@ -141,8 +136,8 @@ def check_brand_similarity(domain):
                 'type': 'subdomain_abuse'
             }
         
-        distance = Levenshtein.distance(domain_name, brand_name)
-        similarity = 1 - (distance / max(len(domain_name), len(brand_name)))
+        # rapidfuzz ఉపయోగించి similarity చెక్ (Levenshtein బదులు)
+        similarity = fuzz.ratio(domain_name, brand_name) / 100.0
         
         if similarity > 0.75 and similarity > highest_similarity:
             highest_similarity = similarity
@@ -297,7 +292,6 @@ def check_virustotal(url):
         record_vt_call()
         analysis_id = submit.json()["data"]["id"]
         
-        # Wait for analysis
         for attempt in range(8):
             report = requests.get(
                 f"https://www.virustotal.com/api/v3/analyses/{analysis_id}",
@@ -335,18 +329,15 @@ def calculate_risk_score(vt_data, gsb_data, heuristic_data, url_status):
     total_score = 0
     all_reasons = []
     
-    # VirusTotal contribution
     if vt_data and not vt_data.get('skipped'):
         vt_score = vt_data.get('score', 0)
         total_score += vt_score
         all_reasons.append(f"VirusTotal: {vt_data.get('malicious', 0)} engines flagged as malicious")
     
-    # Google Safe Browsing contribution
     if gsb_data and gsb_data.get('flagged'):
         total_score += 50
         all_reasons.append(f"Google Safe Browsing flagged this URL")
     
-    # Heuristic contribution
     heuristic_score = heuristic_data[0] if isinstance(heuristic_data, tuple) else 0
     heuristic_reasons = heuristic_data[1] if isinstance(heuristic_data, tuple) else []
     
@@ -354,7 +345,6 @@ def calculate_risk_score(vt_data, gsb_data, heuristic_data, url_status):
         total_score += heuristic_score
         all_reasons.extend(heuristic_reasons)
     
-    # URL status contribution
     if url_status is None:
         total_score += 10
         all_reasons.append("Website unreachable or connection issues")
@@ -382,53 +372,29 @@ def set_cache(url, result):
         for k in to_delete:
             del scan_cache[k]
 
-# ==================== ROOT ENDPOINT (FIX FOR RENDER) ====================
+# ==================== ROUTES ====================
 @app.route("/", methods=["GET"])
 def home():
-    """Root endpoint - API information"""
     return jsonify({
         "service": "QRShield URL Scanner API",
         "version": "6.1",
         "status": "active",
-        "timestamp": datetime.now().isoformat(),
-        "endpoints": {
-            "/check-url": {
-                "method": "POST",
-                "description": "Scan a URL for security threats",
-                "example_body": {"url": "https://example.com"}
-            },
-            "/check": {"method": "POST", "description": "Alias for /check-url"},
-            "/health": {"method": "GET", "description": "Service health status"},
-            "/api/stats": {"method": "GET", "description": "Scanning statistics"}
-        },
-        "usage_example": {
-            "curl": "curl -X POST https://your-app.onrender.com/check-url -H 'Content-Type: application/json' -d '{\"url\": \"https://google.com\"}'"
-        }
+        "timestamp": datetime.now().isoformat()
     })
 
-# ==================== MAIN SCAN ENDPOINT ====================
 @app.route("/check-url", methods=["POST"])
 @limiter.limit("30 per minute")
 def check_url():
-    """Main URL scanning endpoint"""
     data = request.get_json(silent=True) or {}
     raw_url = data.get("url", "").strip()
     
     if not raw_url:
-        return jsonify({
-            "status": "error",
-            "message": "No URL provided",
-            "malicious_count": 0
-        }), 400
+        return jsonify({"status": "error", "message": "No URL provided", "malicious_count": 0}), 400
     
     url = normalize_url(raw_url)
     
     if not url or not is_valid_url(url):
-        return jsonify({
-            "status": "error",
-            "message": f"Invalid URL: '{raw_url}'",
-            "malicious_count": 0
-        }), 400
+        return jsonify({"status": "error", "message": f"Invalid URL: '{raw_url}'", "malicious_count": 0}), 400
     
     cached = get_cached(url)
     if cached:
@@ -436,18 +402,15 @@ def check_url():
     
     logger.info(f"Scanning URL: {url}")
     
-    # Run security checks
     url_status = check_url_status(url)
     heuristic_result = advanced_heuristic_check(url)
     gsb_result = check_google_safe_browsing(url)
     vt_result = check_virustotal(url)
     
-    # Calculate risk score
     final_score, all_reasons = calculate_risk_score(
         vt_result, gsb_result, heuristic_result, url_status
     )
     
-    # Determine verdict
     if final_score >= 80:
         status = "Malicious"
         advice = "⚠️ DANGEROUS: Do NOT open this link."
@@ -488,46 +451,23 @@ def check_url():
     set_cache(url, response)
     return jsonify(response)
 
-# ==================== HEALTH CHECK ENDPOINT ====================
 @app.route("/health", methods=["GET"])
 def health():
-    """Health check endpoint"""
     return jsonify({
         "status": "ok",
         "version": "6.1",
         "services": {
-            "virustotal": {
-                "configured": bool(VT_API),
-                "rate_limit": f"{VT_RATE_LIMIT}/min"
-            },
-            "google_safe_browsing": {
-                "configured": bool(GSB_API)
-            }
+            "virustotal": {"configured": bool(VT_API)},
+            "google_safe_browsing": {"configured": bool(GSB_API)}
         },
         "timestamp": datetime.now().isoformat()
     })
 
-# ==================== ALIAS ENDPOINTS ====================
 @app.route("/check", methods=["POST"])
 def check():
-    """Alias for check-url endpoint"""
     return check_url()
 
-# ==================== STATS ENDPOINT ====================
-@app.route("/api/stats", methods=["GET"])
-def stats():
-    """Get scanning statistics"""
-    return jsonify({
-        "cache_size": len(scan_cache),
-        "virustotal_rate_limit": {
-            "max_per_minute": VT_RATE_LIMIT,
-            "current_usage": len(vt_request_timestamps)
-        }
-    })
-
-# ==================== MAIN EXECUTION ====================
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     debug = os.environ.get("DEBUG", "False").lower() == "true"
-    
     app.run(host="0.0.0.0", port=port, debug=debug)
