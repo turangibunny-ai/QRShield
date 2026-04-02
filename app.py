@@ -650,6 +650,39 @@ def set_cache(url, result):
         for k in to_delete:
             del scan_cache[k]
 
+# ==================== ROOT ENDPOINT (FIX FOR RENDER) ====================
+@app.route("/", methods=["GET"])
+def home():
+    """Root endpoint - API information and documentation"""
+    return jsonify({
+        "service": "QRShield URL Scanner API",
+        "version": "6.1",
+        "status": "active",
+        "timestamp": datetime.now().isoformat(),
+        "endpoints": {
+            "/check-url": {
+                "method": "POST",
+                "description": "Scan a URL for security threats",
+                "example_body": {"url": "https://example.com"}
+            },
+            "/check": {
+                "method": "POST", 
+                "description": "Alias for /check-url"
+            },
+            "/health": {
+                "method": "GET",
+                "description": "Service health status"
+            },
+            "/api/stats": {
+                "method": "GET", 
+                "description": "Scanning statistics"
+            }
+        },
+        "usage_example": {
+            "curl": "curl -X POST https://your-app.onrender.com/check-url -H 'Content-Type: application/json' -d '{\"url\": \"https://google.com\"}'"
+        }
+    })
+
 # ==================== MAIN SCAN ENDPOINT ====================
 @app.route("/check-url", methods=["POST"])
 @limiter.limit("30 per minute")
