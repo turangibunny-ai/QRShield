@@ -1,162 +1,147 @@
-const tabs=document.querySelectorAll(".tab");
-const panels=document.querySelectorAll(".panel");
-
-tabs.forEach(tab=>{
-tab.onclick=()=>{
-tabs.forEach(t=>t.classList.remove("active"));
-panels.forEach(p=>p.classList.remove("active"));
-
-tab.classList.add("active");
-document.getElementById(tab.dataset.tab).classList.add("active");
-};
-});
+const API = "/api/v1/check-url"
 
 
-const video=document.getElementById("video");
-const canvas=document.getElementById("canvas");
-const ctx=canvas.getContext("2d");
 
-let scanning=false;
+function openTab(id){
 
-document.getElementById("startCamera").onclick=async()=>{
+document.querySelectorAll(".tabcontent").forEach(e=>e.classList.remove("active"))
 
-const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"}});
-video.srcObject=stream;
-scanning=true;
-scanFrame();
-
-};
-
-function scanFrame(){
-
-if(!scanning) return;
-
-canvas.width=video.videoWidth;
-canvas.height=video.videoHeight;
-
-ctx.drawImage(video,0,0);
-
-const img=ctx.getImageData(0,0,canvas.width,canvas.height);
-
-const code=jsQR(img.data,img.width,img.height);
-
-if(code){
-
-document.getElementById("cameraResult").innerText=code.data;
-
-scanUrl(code.data);
-
-scanning=false;
-
-return;
-
-}
-
-requestAnimationFrame(scanFrame);
+document.getElementById(id).classList.add("active")
 
 }
 
 
 
-document.getElementById("fileInput").addEventListener("change",function(){
+async function sendToBackend(url){
 
-const file=this.files[0];
+document.getElementById("output").innerText="Scanning..."
 
-const reader=new FileReader();
+try{
 
-reader.onload=function(){
+let res = await fetch(API,{
 
-const img=new Image();
+method:"POST",
+
+headers:{
+
+"Content-Type":"application/json"
+
+},
+
+body:JSON.stringify({url:url})
+
+})
+
+let data = await res.json()
+
+displayResult(data)
+
+}
+
+catch(e){
+
+document.getElementById("output").innerText="Server error"
+
+}
+
+}
+
+
+
+function displayResult(data){
+
+let text="URL: "+data.url+"\n\n"
+
+text+="Status: "+data.status+"\n"
+
+text+="Risk Score: "+data.risk_percent+"\n\n"
+
+text+="Advice: "+data.advice+"\n\n"
+
+text+="Reasons:\n"
+
+data.reasons.forEach(r=>{
+
+text+="• "+r+"\n"
+
+})
+
+document.getElementById("output").innerText=text
+
+}
+
+
+
+function scanURL(){
+
+let url=document.getElementById("urlText").value
+
+if(!url) return
+
+sendToBackend(url)
+
+}
+
+
+
+// CAMERA SCANNER
+
+function onScanSuccess(decodedText){
+
+sendToBackend(decodedText)
+
+}
+
+const scanner=new Html5QrcodeScanner(
+
+"reader",
+
+{fps:10,qrbox:250}
+
+)
+
+scanner.render(onScanSuccess)
+
+
+
+// FILE QR
+
+document.getElementById("fileInput").addEventListener("change",function(e){
+
+const file=e.target.files[0]
+
+const img=new Image()
+
+const canvas=document.getElementById("canvas")
+
+const ctx=canvas.getContext("2d")
 
 img.onload=function(){
 
-canvas.width=img.width;
-canvas.height=img.height;
+canvas.width=img.width
 
-ctx.drawImage(img,0,0);
+canvas.height=img.height
 
-const imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
+ctx.drawImage(img,0,0)
 
-const code=jsQR(imgData.data,canvas.width,canvas.height);
+const imageData=ctx.getImageData(0,0,canvas.width,canvas.height)
+
+const code=jsQR(imageData.data,imageData.width,imageData.height)
 
 if(code){
 
-document.getElementById("fileResult").innerText=code.data;
-
-scanUrl(code.data);
+sendToBackend(code.data)
 
 }
 
 else{
 
-alert("QR not found");
+alert("QR not detected")
 
 }
 
-};
-
-img.src=reader.result;
-
-};
-
-reader.readAsDataURL(file);
-
-});
-
-
-
-document.getElementById("scanBtn").onclick=()=>{
-
-const url=document.getElementById("urlInput").value;
-
-scanUrl(url);
-
-};
-
-
-
-async function scanUrl(url){
-
-const res=await fetch("/api/v1/check-url",{
-
-method:"POST",
-
-headers:{"Content-Type":"application/json"},
-
-body:JSON.stringify({url:url})
-
-});
-
-const data=await res.json();
-
-showResults(data);
-
 }
 
+img.src=URL.createObjectURL(file)
 
-
-function showResults(data){
-
-document.getElementById("results").style.display="block";
-
-document.getElementById("statusText").innerText=data.status;
-
-document.getElementById("riskScore").innerText="Risk Score: "+data.risk_score+"%";
-
-document.getElementById("scoreFill").style.width=data.risk_score+"%";
-
-const list=document.getElementById("reasons");
-
-list.innerHTML="";
-
-data.reasons.forEach(r=>{
-
-const li=document.createElement("li");
-li.textContent=r;
-list.appendChild(li);
-
-});
-
-document.getElementById("advice").innerText=data.advice;
-
-}
+})

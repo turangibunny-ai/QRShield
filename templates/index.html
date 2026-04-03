@@ -1,86 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
-<title>QRShield Scanner</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+<title>QR SHIELD | Cyber Scanner</title>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="stylesheet" href="style.css">
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 
 </head>
 
 <body>
 
-<div class="container">
+<div class="main">
 
-<h1 class="title">QR<span>Shield</span></h1>
-<p class="subtitle">Cyber URL Threat Scanner</p>
+<h1 class="logo">QR<span>SHIELD</span></h1>
 
-<div class="tabs">
-
-<button class="tab active" data-tab="camera">📷 Camera</button>
-<button class="tab" data-tab="file">📁 Upload</button>
-<button class="tab" data-tab="url">🔗 URL</button>
-
-</div>
+<p class="tag">AI Powered QR Threat Scanner</p>
 
 
-<div class="panel active" id="camera">
+<div class="options">
 
-<video id="video" autoplay></video>
-<canvas id="canvas"></canvas>
+<button onclick="openTab('camera')" class="tab active">Camera Scan</button>
 
-<button id="startCamera">Start Scan</button>
+<button onclick="openTab('upload')" class="tab">Upload QR</button>
 
-<p id="cameraResult"></p>
+<button onclick="openTab('url')" class="tab">Paste URL</button>
 
 </div>
 
 
+<!-- CAMERA -->
 
-<div class="panel" id="file">
+<div id="camera" class="tabcontent active">
+
+<div id="reader"></div>
+
+<p class="note">Scan QR using camera</p>
+
+</div>
+
+
+<!-- FILE -->
+
+<div id="upload" class="tabcontent">
 
 <input type="file" id="fileInput" accept="image/*">
 
-<p id="fileResult"></p>
+<canvas id="canvas"></canvas>
+
+<p class="note">Upload QR image</p>
+
+</div>
+
+
+<!-- URL -->
+
+<div id="url" class="tabcontent">
+
+<input type="text" id="urlText" placeholder="Paste suspicious URL">
+
+<button class="scanbtn" onclick="scanURL()">Scan URL</button>
 
 </div>
 
 
 
-<div class="panel" id="url">
+<div class="result">
 
-<input type="text" id="urlInput" placeholder="Paste URL here">
+<h3>Scan Result</h3>
 
-<button id="scanBtn">Scan URL</button>
-
-</div>
-
-
-
-<div id="results" class="results">
-
-<h2 id="statusText"></h2>
-
-<div class="scoreBar">
-<div id="scoreFill"></div>
-</div>
-
-<p id="riskScore"></p>
-
-<ul id="reasons"></ul>
-
-<p id="advice"></p>
+<div id="output">Waiting for scan...</div>
 
 </div>
 
 
 </div>
 
-<script src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="script.js"></script>
 
 </body>
 </html>
