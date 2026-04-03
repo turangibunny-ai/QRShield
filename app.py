@@ -6,24 +6,25 @@ import requests
 import time
 import os
 import re
+import math
+from collections import Counter
 from urllib.parse import urlparse
 from datetime import datetime
 import tldextract
 from rapidfuzz import fuzz
 import logging
 
-# ==================== APP INITIALIZATION ====================
+# ==================== APP ====================
 app = Flask(__name__)
 CORS(app)
 
-# Rate limiting
 limiter = Limiter(
-    app=app,
     key_func=get_remote_address,
     default_limits=["200 per day", "50 per hour"]
 )
+limiter.init_app(app)
 
-# ==================== CONFIGURATION ====================
+# ==================== CONFIG ====================
 VT_API = os.getenv("VT_API_KEY", "")
 GSB_API = os.getenv("GSB_API_KEY", "")
 
@@ -36,308 +37,322 @@ scan_cache = {}
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# ==================== PHISHING PATTERNS ====================
-PHISHING_KEYWORDS = {
-    'high': ['login', 'verify', 'secure', 'account', 'update', 'banking', 'paypal', 'icloud', 'signin', 'confirm', 'password', 'wallet'],
-    'medium': ['click', 'redirect', 'recover', 'unlock', 'restore', 'validate', 'payment'],
-    'low': ['offer', 'promotion', 'discount', 'free', 'win', 'prize']
-}
-
+# ==================== PHISHING DATA ====================
 BRAND_DOMAINS = {
-    'paypal.com', 'apple.com', 'google.com', 'microsoft.com', 'amazon.com',
-    'facebook.com', 'instagram.com', 'twitter.com', 'linkedin.com', 'netflix.com',
-    'github.com', 'stackoverflow.com', 'reddit.com', 'youtube.com', 'whatsapp.com'
+    'paypal.com','apple.com','google.com','microsoft.com','amazon.com',
+    'facebook.com','instagram.com','twitter.com','linkedin.com',
+    'netflix.com','github.com','youtube.com','whatsapp.com'
 }
 
-# ==================== UTILITIES ====================
-def can_call_virustotal():
-    global vt_request_timestamps
-    current_time = time.time()
-    vt_request_timestamps = [ts for ts in vt_request_timestamps if current_time - ts < 60]
-    return len(vt_request_timestamps) < VT_RATE_LIMIT
-
-def record_vt_call():
-    global vt_request_timestamps
-    vt_request_timestamps.append(time.time())
+# ==================== UTIL ====================
 
 def normalize_url(url):
     url = url.strip()
-    if not url:
-        return None
     if not re.match(r'^[a-zA-Z]+://', url):
         url = 'https://' + url
     return url
 
 def is_valid_url(url):
     try:
-        result = urlparse(url)
-        return result.scheme in ('http', 'https') and result.netloc
+        r = urlparse(url)
+        return r.scheme in ("http","https") and r.netloc
     except:
         return False
 
-def check_url_status(url):
-    try:
-        response = requests.get(url, timeout=5, allow_redirects=True,
-                                headers={"User-Agent": "QRShield/2.0 Security Scanner"})
-        return response.status_code
-    except:
-        return None
+def calculate_entropy(text):
+    counter = Counter(text)
+    length = len(text)
 
-# ==================== HEURISTIC ANALYSIS ====================
+    entropy = 0
+    for c in counter.values():
+        p = c / length
+        entropy -= p * math.log2(p)
+
+    return entropy
+
+# ==================== VIRUSTOTAL RATE LIMIT ====================
+
+def can_call_virustotal():
+    global vt_request_timestamps
+    current = time.time()
+
+    vt_request_timestamps = [
+        ts for ts in vt_request_timestamps if current - ts < 60
+    ]
+
+    return len(vt_request_timestamps) < VT_RATE_LIMIT
+
+def record_vt_call():
+    vt_request_timestamps.append(time.time())
+
+# ==================== HEURISTIC DETECTION ====================
+
 def check_brand_similarity(domain):
+
     extracted = tldextract.extract(domain)
-    domain_name = extracted.domain.lower() if extracted.domain else ""
+    domain_name = extracted.domain.lower()
 
     best_match = None
-    highest_similarity = 0
+    best_score = 0
 
     for brand in BRAND_DOMAINS:
-        brand_extracted = tldextract.extract(brand)
-        brand_name = brand_extracted.domain.lower()
 
-        if domain_name == brand_name and extracted.subdomain:
-            return {'similar': True, 'brand': brand, 'score': 25, 'type': 'subdomain_abuse'}
+        brand_name = tldextract.extract(brand).domain.lower()
 
-        similarity = fuzz.ratio(domain_name, brand_name) / 100.0
+        similarity = fuzz.ratio(domain_name, brand_name)/100
 
-        if similarity > 0.75 and similarity > highest_similarity:
-            highest_similarity = similarity
+        if similarity > best_score:
+            best_score = similarity
             best_match = brand
 
-    if best_match and highest_similarity > 0.8:
+    if best_score > 0.8:
+
         return {
-            'similar': True,
-            'brand': best_match,
-            'score': min(int(highest_similarity * 35), 35),
-            'similarity': highest_similarity,
-            'type': 'typosquatting'
+            "similar":True,
+            "brand":best_match,
+            "score":int(best_score*35)
         }
 
-    return {'similar': False, 'score': 0}
+    return {"similar":False,"score":0}
 
-def advanced_heuristic_check(url):
+
+def advanced_heuristic(url):
+
     score = 0
     reasons = []
 
     parsed = urlparse(url)
     domain = parsed.netloc.lower()
     path = parsed.path.lower()
-    query = parsed.query.lower()
 
-    # URL Patterns
-    url_patterns = [
-        (r'https?://[^/]+@', 'URL contains @ symbol (credentials in URL)', 35),
-        (r'https?://.*?\.\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', 'Raw IP address used', 30),
-        (r'https?://[^/]+\.(?:tk|ml|ga|cf|gq|top|xyz|club|online|site|click|link|win)', 'Suspicious TLD', 25),
-        (r'xn--', 'Punycode domain (homograph attack)', 25),
-        (r'https?://[^/]+-\w+\.\w+', 'Hyphen in domain', 15),
-        (r'[%][0-9a-fA-F]{2}', 'URL encoding detected', 10),
-    ]
+    # raw ip
+    if re.search(r'\d+\.\d+\.\d+\.\d+', domain):
+        score += 30
+        reasons.append("Raw IP used instead of domain")
 
-    for pattern, reason, points in url_patterns:
-        if re.search(pattern, url):
-            score += points
-            reasons.append(reason)
+    # @ symbol
+    if "@" in url:
+        score += 30
+        reasons.append("@ symbol in URL")
 
-    # Brand Similarity
-    brand_similarity = check_brand_similarity(domain)
-    if brand_similarity['similar']:
-        score += brand_similarity['score']
-        reasons.append(f"Looks similar to known brand: {brand_similarity['brand']}")
+    # suspicious tld
+    if re.search(r'\.(tk|ml|ga|cf|gq|top|xyz|club|online)$', domain):
+        score += 25
+        reasons.append("Suspicious TLD")
 
-    # Other checks
+    # entropy check
+    entropy = calculate_entropy(domain)
+
+    if entropy > 4:
+        score += 10
+        reasons.append("Random looking domain")
+
+    # long domain
     if len(domain) > 35:
         score += 10
-        reasons.append(f"Excessively long domain ({len(domain)} chars)")
+        reasons.append("Very long domain")
 
-    if domain.count('.') > 2:
-        extra = min((domain.count('.') - 2) * 3, 12)
-        score += extra
-        reasons.append(f"Unusual number of subdomains")
+    # multiple subdomains
+    if domain.count('.') > 3:
+        score += 10
+        reasons.append("Too many subdomains")
 
-    if parsed.scheme != 'https':
+    # URL length
+    if len(url) > 120:
+        score += 10
+        reasons.append("Very long URL")
+
+    # base64 detection
+    if re.search(r'[A-Za-z0-9+/]{20,}={0,2}', url):
+        score += 10
+        reasons.append("Encoded payload detected")
+
+    # https check
+    if parsed.scheme != "https":
         score += 15
-        reasons.append("Not using HTTPS encryption")
+        reasons.append("Not using HTTPS")
 
-    # Credential & Redirect checks (kept simple)
-    credential_indicators = ['login', 'signin', 'auth', 'password', 'verify', 'account']
-    credential_count = sum(1 for ind in credential_indicators if ind in path or ind in query)
-    if credential_count > 0:
-        score += min(credential_count * 6, 25)
-        reasons.append(f'Contains {credential_count} credential-related terms')
+    brand = check_brand_similarity(domain)
 
-    redirect_params = ['redirect', 'url=', 'goto=', 'return=', 'next=']
-    if any(param in query for param in redirect_params):
-        score += 12
-        reasons.append('Contains redirect parameters')
+    if brand["similar"]:
+        score += brand["score"]
+        reasons.append(f"Looks similar to {brand['brand']}")
 
-    return min(score, 60), reasons, {}
+    return min(score,60), reasons
 
-# ==================== EXTERNAL APIs ====================
-def check_google_safe_browsing(url):
+
+# ==================== GOOGLE SAFE BROWSING ====================
+
+def check_gsb(url):
+
     if not GSB_API:
-        return {'flagged': False, 'threats': []}
+        return {"flagged":False}
+
     try:
+
         endpoint = f"https://safebrowsing.googleapis.com/v4/threatMatches:find?key={GSB_API}"
+
         payload = {
-            "client": {"clientId": "qrshield", "clientVersion": "2.0"},
-            "threatInfo": {
-                "threatTypes": ["MALWARE", "SOCIAL_ENGINEERING"],
-                "platformTypes": ["ANY_PLATFORM"],
-                "threatEntryTypes": ["URL"],
-                "threatEntries": [{"url": url}]
+            "client":{"clientId":"qrshield","clientVersion":"1.0"},
+            "threatInfo":{
+                "threatTypes":["MALWARE","SOCIAL_ENGINEERING"],
+                "platformTypes":["ANY_PLATFORM"],
+                "threatEntryTypes":["URL"],
+                "threatEntries":[{"url":url}]
             }
         }
-        response = requests.post(endpoint, json=payload, timeout=8)
-        if response.status_code == 200 and 'matches' in response.json():
-            return {'flagged': True, 'threats': [m['threatType'] for m in response.json()['matches']]}
-        return {'flagged': False, 'threats': []}
-    except:
-        return {'flagged': False, 'threats': []}
 
-def check_virustotal(url):
+        r = requests.post(endpoint,json=payload,timeout=8)
+
+        if r.status_code == 200 and "matches" in r.json():
+            return {"flagged":True}
+
+        return {"flagged":False}
+
+    except:
+        return {"flagged":False}
+
+
+# ==================== VIRUSTOTAL ====================
+
+def check_vt(url):
+
     if not VT_API:
-        return {'malicious': 0, 'suspicious': 0, 'score': 0, 'skipped': False}
+        return {"score":0,"malicious":0,"skipped":True}
+
     if not can_call_virustotal():
-        return {'malicious': 0, 'suspicious': 0, 'score': 0, 'skipped': True}
+        return {"score":0,"malicious":0,"skipped":True}
 
     try:
-        headers = {"x-apikey": VT_API}
-        submit = requests.post("https://www.virustotal.com/api/v3/urls", headers=headers, data={"url": url}, timeout=10)
-        if submit.status_code not in (200, 201):
-            return {'malicious': 0, 'suspicious': 0, 'score': 0, 'skipped': False}
+
+        headers={"x-apikey":VT_API}
+
+        submit=requests.post(
+            "https://www.virustotal.com/api/v3/urls",
+            headers=headers,
+            data={"url":url}
+        )
 
         record_vt_call()
-        analysis_id = submit.json()["data"]["id"]
 
-        for _ in range(8):
-            report = requests.get(f"https://www.virustotal.com/api/v3/analyses/{analysis_id}", headers=headers, timeout=10)
-            if report.status_code == 200 and report.json()["data"]["attributes"]["status"] == "completed":
-                break
-            time.sleep(2)
+        analysis=submit.json()["data"]["id"]
 
-        stats = report.json()["data"]["attributes"]["stats"]
-        malicious = stats.get("malicious", 0)
-        total = malicious + stats.get("harmless", 0) + stats.get("undetected", 0)
-        score = int((malicious / total) * 100) if total > 0 else 0
+        time.sleep(3)
 
-        return {'malicious': malicious, 'suspicious': stats.get('suspicious', 0), 'score': score, 'skipped': False}
+        report=requests.get(
+            f"https://www.virustotal.com/api/v3/analyses/{analysis}",
+            headers=headers
+        )
+
+        stats=report.json()["data"]["attributes"]["stats"]
+
+        malicious=stats["malicious"]
+
+        total=sum(stats.values())
+
+        score=int((malicious/total)*100) if total else 0
+
+        return {
+            "score":score,
+            "malicious":malicious,
+            "skipped":False
+        }
+
     except:
-        return {'malicious': 0, 'suspicious': 0, 'score': 0, 'skipped': False}
+        return {"score":0,"malicious":0,"skipped":True}
 
-# ==================== RISK SCORE ====================
-def calculate_risk_score(vt_data, gsb_data, heuristic_data, url_status):
-    total_score = 0
-    all_reasons = []
 
-    if vt_data and not vt_data.get('skipped'):
-        total_score += vt_data.get('score', 0)
-        all_reasons.append(f"VirusTotal: {vt_data.get('malicious', 0)} malicious detections")
+# ==================== RISK ====================
 
-    if gsb_data and gsb_data.get('flagged'):
-        total_score += 50
-        all_reasons.append("Google Safe Browsing flagged this URL")
+def calculate_risk(vt,gsb,heuristic):
 
-    heuristic_score = heuristic_data[0] if isinstance(heuristic_data, tuple) else 0
-    if heuristic_score > 0:
-        total_score += heuristic_score
-        all_reasons.extend(heuristic_data[1])
+    score=0
+    reasons=[]
 
-    if url_status is None or url_status >= 400:
-        total_score += 10
-        all_reasons.append("Website unreachable or returned error")
+    if vt and not vt.get("skipped"):
+        score+=vt["score"]
+        reasons.append(f"VirusTotal detections: {vt['malicious']}")
 
-    return min(total_score, 100), all_reasons
+    if gsb.get("flagged"):
+        score+=50
+        reasons.append("Flagged by Google Safe Browsing")
 
-# ==================== CACHE ====================
-def get_cached(url):
-    if url in scan_cache and time.time() - scan_cache[url]['time'] < CACHE_TTL:
-        return scan_cache[url]['result']
-    return None
+    score+=heuristic[0]
+    reasons+=heuristic[1]
 
-def set_cache(url, result):
-    scan_cache[url] = {'result': result, 'time': time.time()}
+    return min(score,100), reasons
+
 
 # ==================== ROUTES ====================
-@app.route("/", methods=["GET"])
+
+@app.route("/")
 def home():
+
     return jsonify({
-        "service": "QRShield URL Scanner API",
-        "version": "6.1",
-        "status": "active",
-        "message": "Backend is running successfully! Use /check-url for scanning URLs.",
-        "timestamp": datetime.now().isoformat(),
-        "endpoints": {
-            "/check-url": "POST - Scan a URL",
-            "/health": "GET - Health check"
-        }
+        "service":"QRShield URL Scanner API",
+        "status":"active",
+        "version":"7.0",
+        "timestamp":datetime.now().isoformat()
     })
 
-@app.route("/check-url", methods=["POST"])
-@limiter.limit("30 per minute")
-def check_url():
-    data = request.get_json(silent=True) or {}
-    raw_url = data.get("url", "").strip()
 
-    if not raw_url:
-        return jsonify({"status": "error", "message": "No URL provided"}), 400
+@app.route("/check-url",methods=["POST"])
+@limiter.limit("30/minute")
+def scan():
 
-    url = normalize_url(raw_url)
-    if not url or not is_valid_url(url):
-        return jsonify({"status": "error", "message": "Invalid URL"}), 400
+    data=request.get_json()
 
-    cached = get_cached(url)
-    if cached:
-        return jsonify(cached)
+    raw=data.get("url","")
 
-    logger.info(f"Scanning URL: {url}")
+    if not raw:
+        return jsonify({"error":"No URL provided"}),400
 
-    url_status = check_url_status(url)
-    heuristic_result = advanced_heuristic_check(url)
-    gsb_result = check_google_safe_browsing(url)
-    vt_result = check_virustotal(url)
+    url=normalize_url(raw)
 
-    final_score, all_reasons = calculate_risk_score(vt_result, gsb_result, heuristic_result, url_status)
+    if not is_valid_url(url):
+        return jsonify({"error":"Invalid URL"}),400
 
-    if final_score >= 80:
-        status = "Malicious"
-        advice = "⚠️ DANGEROUS: Do NOT open this link."
-    elif final_score >= 60:
-        status = "High Risk"
-        advice = "🔴 HIGH RISK: Strong indicators of malicious intent."
-    elif final_score >= 40:
-        status = "Suspicious"
-        advice = "🟡 SUSPICIOUS: Multiple red flags detected."
+    logger.info(f"Scanning {url}")
+
+    heuristic=advanced_heuristic(url)
+
+    gsb=check_gsb(url)
+
+    vt=check_vt(url)
+
+    score,reasons=calculate_risk(vt,gsb,heuristic)
+
+    if score>=80:
+        status="Malicious"
+    elif score>=60:
+        status="High Risk"
+    elif score>=40:
+        status="Suspicious"
     else:
-        status = "Safe"
-        advice = "✅ SAFE: No significant threats detected."
+        status="Safe"
 
-    response = {
-        "status": status,
-        "risk_score": final_score,
-        "url": url,
-        "domain": urlparse(url).netloc,
-        "reasons": all_reasons[:10],
-        "advice": advice,
-        "timestamp": datetime.now().isoformat()
-    }
-
-    set_cache(url, response)
-    return jsonify(response)
-
-@app.route("/health", methods=["GET"])
-def health():
     return jsonify({
-        "status": "ok",
-        "version": "6.1",
-        "timestamp": datetime.now().isoformat()
+        "url":url,
+        "risk_score":score,
+        "status":status,
+        "reasons":reasons[:10],
+        "timestamp":datetime.now().isoformat()
     })
 
-@app.route("/check", methods=["POST"])
-def check():
-    return check_url()
+
+@app.route("/health")
+def health():
+
+    return jsonify({
+        "status":"ok",
+        "time":datetime.now().isoformat()
+    })
+
+
+# ==================== MAIN ====================
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    debug = os.environ.get("DEBUG", "False").lower() == "true"
-    app.run(host="0.0.0.0", port=port, debug=debug)
+
+    port=int(os.environ.get("PORT",10000))
+
+    app.run(host="0.0.0.0",port=port)

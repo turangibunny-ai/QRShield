@@ -1,512 +1,253 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>QR SHIELD — ULTRA SCAN v5.0</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-:root{
-  --bg:#020509;--panel:rgba(2,12,24,0.92);
-  --cyan:#05f3d3;--cyan2:#06faee;--cyan3:rgba(0,245,255,0.15);
-  --red:#ff0040;--red2:#ff3366;--green:#00ff88;--yellow:#ffe600;
-  --orange:#ff6a00;--purple:#bf00ff;
-  --text:#b8e8ff;--text2:#4a7a94;--text3:#1e3a4a;
-  --border:rgba(0,245,255,0.18);--border2:rgba(0,245,255,0.4);
-  --glow:0 0 20px rgba(0,245,255,0.5),0 0 60px rgba(0,245,255,0.2);
-  --glow-r:0 0 20px rgba(255,0,64,0.6),0 0 60px rgba(255,0,64,0.25);
-  --glow-g:0 0 20px rgba(0,255,136,0.5),0 0 60px rgba(0,255,136,0.2);
-  --mono:'Share Tech Mono',monospace;
-  --hud:'Orbitron',sans-serif;
-  --body:'Rajdhani',sans-serif;
+
+body{
+background:#020509;
+color:#b8e8ff;
+font-family:'Rajdhani',sans-serif;
+padding:40px;
+text-align:center;
 }
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;}
-body{background:var(--bg);color:var(--text);font-family:var(--body);min-height:100vh;overflow-x:hidden;cursor:none;}
-#cur{position:fixed;pointer-events:none;z-index:9999;mix-blend-mode:screen;}
-#cur canvas{display:block;}
-#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;}
-body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px);pointer-events:none;z-index:1;animation:scrollLines 10s linear infinite;}
-@keyframes scrollLines{to{background-position:0 100px;}}
-#verdictOverlay{position:fixed;inset:0;z-index:800;display:none;align-items:center;justify-content:center;background:rgba(2,5,9,0);transition:background .5s;}
-#verdictOverlay.active{display:flex;background:rgba(2,5,9,0.95);}
-#verdictCanvas{position:absolute;inset:0;width:100%;height:100%;}
-.verdict-dismiss{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:.62rem;letter-spacing:.2em;color:rgba(0,245,255,.3);text-transform:uppercase;pointer-events:none;animation:blinkDismiss 1.5s ease infinite;}
-@keyframes blinkDismiss{0%,100%{opacity:1;}50%{opacity:.2;}}
-header{position:sticky;top:0;z-index:500;border-bottom:1px solid var(--border);background:rgba(2,5,9,0.97);backdrop-filter:blur(20px);}
-.hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 36px;gap:16px;flex-wrap:wrap;position:relative;}
-.hdr::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:linear-gradient(90deg,var(--cyan),var(--purple));animation:hdrLine 4s ease infinite;}
-@keyframes hdrLine{0%{width:0;left:0;}50%{width:100%;left:0;}51%{width:100%;left:0;}100%{width:0;left:100%;}}
-.logo{display:flex;align-items:center;gap:12px;}
-.logo-shield{position:relative;width:42px;height:42px;display:flex;align-items:center;justify-content:center;}
-.logo-shield svg{position:absolute;inset:0;}
-.logo-shield-ico{font-size:17px;position:relative;z-index:2;}
-.logo-text{font-family:var(--hud);font-size:1.25rem;font-weight:900;letter-spacing:0.12em;color:var(--cyan);text-shadow:var(--glow);}
-.logo-ver{font-family:var(--mono);font-size:0.58rem;color:var(--text2);letter-spacing:0.15em;margin-top:2px;}
-.hdr-pills{display:flex;gap:8px;flex-wrap:wrap;}
-.pill{font-family:var(--mono);font-size:0.58rem;letter-spacing:0.1em;padding:4px 12px;border-radius:2px;border:1px solid;text-transform:uppercase;}
-.pill-on{color:var(--green);border-color:rgba(0,255,136,0.35);background:rgba(0,255,136,0.06);}
-.pill-on::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--green);margin-right:6px;animation:blink 1.4s infinite;box-shadow:0 0 5px var(--green);}
-.pill-info{color:var(--cyan2);border-color:rgba(0,200,255,0.2);background:rgba(0,200,255,0.04);}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.15;}}
-.hero{padding:44px 36px 24px;text-align:center;position:relative;z-index:2;}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.62rem;letter-spacing:0.18em;color:var(--cyan);background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.2);padding:6px 16px;border-radius:2px;margin-bottom:20px;position:relative;overflow:hidden;}
-.eyebrow::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(0,245,255,0.12),transparent);animation:sweep 2.5s linear infinite;}
-@keyframes sweep{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
-h1{font-family:var(--hud);font-size:clamp(2rem,5vw,4rem);font-weight:900;letter-spacing:0.06em;line-height:1.08;margin-bottom:14px;}
-.h1a{display:block;color:var(--text);}
-.h1b{display:block;color:var(--cyan);text-shadow:var(--glow);animation:glitch1 6s ease infinite;}
-@keyframes glitch1{0%,88%,100%{text-shadow:var(--glow);}90%{text-shadow:5px 0 0 var(--red),-5px 0 0 var(--cyan),var(--glow);}92%{text-shadow:-4px 0 0 var(--purple),4px 0 0 var(--cyan),var(--glow);}94%{text-shadow:var(--glow);}}
-.hero-p{color:var(--text2);font-size:0.95rem;max-width:520px;margin:0 auto 28px;line-height:1.7;}
-.tabs-outer{display:flex;justify-content:center;margin-bottom:28px;}
-.tabs{display:flex;background:rgba(0,8,18,0.9);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
-.tbtn{font-family:var(--hud);font-size:0.68rem;font-weight:700;letter-spacing:0.12em;padding:11px 22px;border:none;background:transparent;color:var(--text2);cursor:none;border-right:1px solid var(--border);text-transform:uppercase;transition:all 0.25s;display:flex;align-items:center;gap:7px;position:relative;overflow:hidden;}
-.tbtn:last-child{border-right:none;}
-.tbtn.active{background:rgba(0,245,255,0.08);color:var(--cyan);}
-.tbtn.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--cyan);box-shadow:0 0 12px var(--cyan),0 0 30px rgba(0,245,255,0.4);}
-.tbtn:hover:not(.active){background:rgba(255,255,255,0.02);color:var(--text);}
-/* MAIN */
-.main-wrap{max-width:820px;margin:0 auto;padding:0 36px 44px;position:relative;z-index:2;}
-.panel{display:none;animation:pIn 0.4s cubic-bezier(0.23,1,0.32,1);}
-.panel.active{display:block;}
-@keyframes pIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
-.card{background:var(--panel);border:1px solid var(--border);border-radius:3px;padding:24px;position:relative;overflow:hidden;backdrop-filter:blur(20px);}
-.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,245,255,0.03),transparent 60%);pointer-events:none;}
-.cnr{position:absolute;width:16px;height:16px;border-color:var(--cyan);border-style:solid;box-shadow:0 0 8px rgba(0,245,255,0.4);}
-.cnr-tl{top:-1px;left:-1px;border-width:2px 0 0 2px;}
-.cnr-tr{top:-1px;right:-1px;border-width:2px 2px 0 0;}
-.cnr-bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px;}
-.cnr-br{bottom:-1px;right:-1px;border-width:0 2px 2px 0;}
-.upload-zone{position:relative;border:1px dashed rgba(0,245,255,0.25);border-radius:3px;overflow:hidden;background:rgba(0,12,24,0.6);}
-.upload-zone input{position:absolute;inset:0;opacity:0;cursor:none;z-index:10;}
-#uploadCanvas{display:block;width:100%;height:320px;}
-.upload-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;z-index:5;}
-.uz-icon{font-size:3rem;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(0,245,255,0.6));animation:floatIco 3s ease-in-out infinite;}
-@keyframes floatIco{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
-.uz-title{font-family:var(--hud);font-size:0.82rem;font-weight:700;letter-spacing:0.12em;color:var(--text);margin-bottom:6px;}
-.uz-sub{font-family:var(--mono);font-size:0.65rem;color:var(--text2);}
-.uz-sub b{color:var(--cyan);}
-.uz-preview{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:6;display:none;}
-.uz-preview img{max-width:200px;max-height:200px;border-radius:4px;border:1px solid var(--border2);box-shadow:var(--glow);}
-.scan-stage{position:absolute;inset:0;z-index:20;display:none;pointer-events:none;}
-#scanCanvas{display:block;width:100%;height:100%;}
-.cam-wrap{position:relative;border-radius:3px;overflow:hidden;background:#000;max-width:540px;margin:0 auto;aspect-ratio:4/3;border:1px solid var(--border);}
-#videoEl{width:100%;height:100%;object-fit:cover;display:block;}
-#camOverlayCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10;}
-.cam-actions{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
-.btn{font-family:var(--hud);font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:12px 22px;border:1px solid;border-radius:3px;cursor:none;transition:all 0.22s;display:inline-flex;align-items:center;gap:7px;white-space:nowrap;position:relative;overflow:hidden;}
-.btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,0.04),transparent);pointer-events:none;}
-.btn-p{background:rgba(0,245,255,0.08);border-color:rgba(0,245,255,0.45);color:var(--cyan);box-shadow:0 0 16px rgba(0,245,255,0.12);}
-.btn-p:hover:not(:disabled){background:rgba(0,245,255,0.15);border-color:var(--cyan);box-shadow:var(--glow);transform:translateY(-1px);}
-.btn-g{background:rgba(255,255,255,0.02);border-color:var(--border);color:var(--text2);}
-.btn-g:hover:not(:disabled){border-color:rgba(0,245,255,0.35);color:var(--text);}
-.btn-d{background:rgba(255,0,64,0.07);border-color:rgba(255,0,64,0.35);color:var(--red);}
-.btn-d:hover:not(:disabled){background:rgba(255,0,64,0.14);box-shadow:var(--glow-r);}
-.btn-full{width:100%;justify-content:center;margin-top:16px;}
-.btn:disabled{opacity:0.25;cursor:not-allowed;transform:none!important;box-shadow:none!important;}
-.url-row{display:flex;gap:10px;}
-.url-in{flex:1;background:rgba(0,8,18,0.85);border:1px solid var(--border);border-radius:3px;padding:13px 16px;color:var(--text);font-family:var(--mono);font-size:0.82rem;outline:none;transition:all 0.22s;letter-spacing:0.04em;}
-.url-in::placeholder{color:rgba(74,122,148,0.5);}
-.url-in:focus{border-color:var(--cyan);box-shadow:0 0 0 3px rgba(0,245,255,0.07),var(--glow);}
-.loading{display:none;padding:50px 0;text-align:center;position:relative;}
-.loading.show{display:block;}
-#analyzeCanvas{display:block;margin:0 auto;border-radius:4px;}
-.load-steps{margin-top:16px;}
-.load-step-row{font-family:var(--mono);font-size:0.68rem;color:var(--text2);margin:4px 0;opacity:0;transition:opacity 0.3s,color 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;}
-.load-step-row.done{opacity:1;color:var(--green);}
-.load-step-row.active{opacity:1;color:var(--cyan);animation:stepPulse 0.8s ease infinite;}
-@keyframes stepPulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
-.err{background:rgba(255,0,64,0.07);border:1px solid rgba(255,0,64,0.25);border-left:3px solid var(--red);border-radius:3px;padding:10px 14px;color:#ff6080;font-family:var(--mono);font-size:0.72rem;margin-top:10px;display:none;}
-.err.show{display:block;}
-.result{display:none;margin-top:28px;animation:rIn 0.7s cubic-bezier(0.23,1,0.32,1);}
-.result.show{display:block;}
-@keyframes rIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
-.verdict-card{border-radius:3px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
-.vc-safe{background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.3);}
-.vc-likely{background:rgba(0,220,110,0.04);border:1px solid rgba(0,220,110,0.25);}
-.vc-suspicious{background:rgba(255,230,0,0.04);border:1px solid rgba(255,230,0,0.25);}
-.vc-dangerous{background:rgba(255,106,0,0.04);border:1px solid rgba(255,106,0,0.3);}
-.vc-phishing{background:rgba(255,0,64,0.05);border:1px solid rgba(255,0,64,0.4);animation:threatPulse 2s ease infinite;}
-@keyframes threatPulse{0%,100%{box-shadow:none;}50%{box-shadow:0 0 40px rgba(255,0,64,0.2),inset 0 0 40px rgba(255,0,64,0.03);}}
-.vc-scanline{position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.025),transparent);animation:vcscan 3s ease infinite;}
-@keyframes vcscan{0%{left:-100%;}100%{left:100%;}}
-.verdict-top{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;}
-.vl{display:flex;gap:14px;align-items:flex-start;flex:1;}
-.v-ico{font-size:2.6rem;line-height:1;}
-.v-label{font-family:var(--hud);font-size:1.5rem;font-weight:900;letter-spacing:0.08em;margin-bottom:6px;}
-.vc-safe .v-label{color:var(--green);text-shadow:var(--glow-g);}
-.vc-likely .v-label{color:#00dd88;}
-.vc-suspicious .v-label{color:var(--yellow);text-shadow:0 0 15px rgba(255,230,0,0.5);}
-.vc-dangerous .v-label{color:var(--orange);}
-.vc-phishing .v-label{color:var(--red);text-shadow:var(--glow-r);animation:lblGlitch 3s ease infinite;}
-@keyframes lblGlitch{0%,88%,100%{text-shadow:var(--glow-r);}90%{text-shadow:4px 0 0 var(--cyan),-4px 0 0 var(--red),var(--glow-r);}92%{text-shadow:var(--glow-r);}}
-.v-summary{font-size:0.88rem;color:var(--text2);line-height:1.6;}
-.score-wrap{text-align:center;}
-.score-ring{position:relative;width:92px;height:92px;margin:0 auto;}
-.score-svg{transform:rotate(-90deg);}
-.score-svg circle{fill:none;stroke-width:5.5;}
-.t-track{stroke:rgba(255,255,255,0.07);}
-.f-s{stroke:var(--green);}.f-l{stroke:#00dd88;}.f-su{stroke:var(--yellow);}.f-d{stroke:var(--orange);}.f-p{stroke:var(--red);}
-.score-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
-.score-n{font-family:var(--hud);font-size:1.55rem;font-weight:900;}
-.score-lbl{font-family:var(--mono);font-size:0.5rem;letter-spacing:0.12em;color:var(--text2);text-transform:uppercase;}
-.score-conf{font-family:var(--mono);font-size:0.6rem;color:var(--text2);margin-top:5px;}
-.url-strip{background:rgba(0,8,18,0.8);border:1px solid var(--border);border-radius:3px;padding:11px 14px;font-family:var(--mono);font-size:0.73rem;display:flex;align-items:flex-start;gap:10px;margin-bottom:14px;}
-.us-lbl{font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2);white-space:nowrap;padding-top:2px;}
-.us-val{color:var(--cyan);word-break:break-all;flex:1;text-shadow:0 0 8px rgba(0,245,255,0.3);}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;}
-.stat{background:rgba(0,8,18,0.7);border:1px solid var(--border);border-radius:3px;padding:12px 8px;text-align:center;}
-.sn{font-family:var(--hud);font-size:1.4rem;font-weight:900;}
-.sl{font-family:var(--mono);font-size:0.56rem;letter-spacing:0.1em;color:var(--text2);text-transform:uppercase;margin-top:3px;}
-.sc .sn{color:var(--red);text-shadow:var(--glow-r);}
-.sh .sn{color:var(--orange);}
-.sm .sn{color:var(--yellow);}
-.sl2 .sn{color:var(--text2);}
-.f-hdr{font-family:var(--mono);font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--text2);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
-.f-hdr::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
-.finding{border-radius:3px;padding:12px 14px;margin-bottom:7px;display:flex;gap:12px;align-items:flex-start;transition:transform 0.2s;}
-.finding:hover{transform:translateX(4px);}
-.f-c{background:rgba(255,0,64,0.06);border:1px solid rgba(255,0,64,0.22);border-left:3px solid var(--red);}
-.f-h{background:rgba(255,106,0,0.05);border:1px solid rgba(255,106,0,0.2);border-left:3px solid var(--orange);}
-.f-m{background:rgba(255,230,0,0.04);border:1px solid rgba(255,230,0,0.17);border-left:3px solid var(--yellow);}
-.f-l2{background:rgba(255,255,255,0.02);border:1px solid var(--border);border-left:3px solid var(--text2);}
-.fbadge{font-family:var(--mono);font-size:0.56rem;font-weight:700;padding:2px 7px;border-radius:2px;letter-spacing:0.07em;white-space:nowrap;margin-top:2px;text-transform:uppercase;}
-.bc{background:rgba(255,0,64,0.18);color:#ff5577;border:1px solid rgba(255,0,64,0.3);}
-.bh{background:rgba(255,106,0,0.18);color:#ff9944;border:1px solid rgba(255,106,0,0.3);}
-.bm{background:rgba(255,230,0,0.14);color:#ffe066;border:1px solid rgba(255,230,0,0.3);}
-.bl{background:rgba(255,255,255,0.06);color:var(--text2);border:1px solid var(--border);}
-.f-rule{font-family:var(--mono);font-size:0.65rem;color:var(--text2);margin-bottom:3px;}
-.f-detail{font-size:0.82rem;color:var(--text);line-height:1.5;}
-.f-pts{font-family:var(--hud);font-size:0.68rem;color:var(--text2);white-space:nowrap;padding-top:2px;}
-.safe-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
-.safe-item{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:0.7rem;color:var(--text2);padding:8px 11px;background:rgba(0,255,136,0.04);border:1px solid rgba(0,255,136,0.15);border-radius:3px;}
-.sck{color:var(--green);font-size:0.8rem;}
-.check-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-top:22px;}
-.check-card{background:rgba(0,12,24,0.8);border:1px solid var(--border);border-radius:3px;padding:18px;transition:all 0.3s;position:relative;overflow:hidden;opacity:0;transform:translateY(12px);}
-.check-card.revealed{opacity:1;transform:none;transition:opacity 0.5s ease,transform 0.5s cubic-bezier(0.23,1,0.32,1);}
-.check-card.triggered{border-color:rgba(255,0,64,0.4);background:rgba(255,0,64,0.04);}
-.check-card.clear{border-color:rgba(0,255,136,0.25);background:rgba(0,255,136,0.03);}
-.check-card:hover{transform:translateY(-2px);}
-.cc-st{position:absolute;top:10px;right:10px;font-family:var(--mono);font-size:0.56rem;padding:2px 7px;border-radius:2px;text-transform:uppercase;letter-spacing:0.07em;font-weight:700;}
-.cst-t{background:rgba(255,0,64,0.16);color:#ff4466;border:1px solid rgba(255,0,64,0.3);}
-.cst-c{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.25);}
-.cc-ico{font-size:1.6rem;margin-bottom:8px;display:block;}
-.cc-title{font-family:var(--hud);font-size:0.75rem;font-weight:700;letter-spacing:0.1em;margin-bottom:6px;}
-.cc-desc{font-size:0.74rem;color:var(--text2);line-height:1.6;}
-.cc-hits{margin-top:8px;font-family:var(--mono);font-size:0.63rem;color:#ff5577;line-height:1.7;padding-top:7px;border-top:1px solid rgba(255,0,64,0.15);}
-.r-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);}
-.mc{font-family:var(--mono);font-size:0.63rem;color:var(--text2);background:rgba(0,8,18,0.7);border:1px solid var(--border);border-radius:2px;padding:4px 9px;display:flex;align-items:center;gap:4px;}
-.mc b{color:var(--cyan);font-weight:400;}
-footer{border-top:1px solid var(--border);padding:18px 36px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:relative;z-index:2;}
-.ft{font-family:var(--hud);font-size:0.72rem;font-weight:700;letter-spacing:0.1em;color:var(--cyan);}
-.fi{font-family:var(--mono);font-size:0.6rem;color:var(--text2);}
-@media(max-width:580px){
-  .hdr,.main-wrap,footer{padding-left:16px;padding-right:16px;}
-  .hero{padding:32px 16px 20px;}
-  .stats{grid-template-columns:1fr 1fr;}
-  .safe-grid{grid-template-columns:1fr;}
-  .verdict-top{flex-direction:column;}
-  .hdr-pills{display:none;}
+
+h1{
+font-family:'Orbitron',sans-serif;
+color:#05f3d3;
 }
+
+.container{
+max-width:700px;
+margin:auto;
+background:rgba(0,12,24,0.8);
+padding:30px;
+border:1px solid rgba(0,245,255,0.3);
+border-radius:6px;
+}
+
+.url-row{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+.url-in{
+flex:1;
+padding:12px;
+background:#020d18;
+border:1px solid rgba(0,245,255,0.3);
+color:#fff;
+font-family:monospace;
+}
+
+.btn{
+padding:12px 20px;
+border:none;
+cursor:pointer;
+font-family:Orbitron;
+}
+
+.btn-p{
+background:#05f3d3;
+color:black;
+}
+
+.loading{
+display:none;
+margin-top:20px;
+}
+
+.loading.show{
+display:block;
+}
+
+.result{
+display:none;
+margin-top:30px;
+text-align:left;
+}
+
+.result.show{
+display:block;
+}
+
+.err{
+color:#ff3366;
+margin-top:10px;
+display:none;
+}
+
+.err.show{
+display:block;
+}
+
+.score{
+font-size:40px;
+font-family:Orbitron;
+}
+
+.v-label{
+font-size:22px;
+margin-bottom:10px;
+}
+
+.finding{
+padding:10px;
+border:1px solid rgba(255,230,0,0.3);
+margin-bottom:8px;
+background:rgba(255,230,0,0.05);
+}
+
 </style>
 </head>
-<body>
-<canvas id="bgCanvas"></canvas>
-<div id="cur"><canvas id="curCanvas" width="60" height="60"></canvas></div>
 
-<!-- VERDICT OVERLAY -->
-<div id="verdictOverlay">
-  <canvas id="verdictCanvas"></canvas>
-  <div class="verdict-dismiss" id="dismissHint" style="display:none;">◈ CLICK ANYWHERE TO DISMISS ◈</div>
+<body>
+
+<h1>QR SHIELD — ULTRA SCAN</h1>
+
+<div class="container">
+
+<div class="url-row">
+
+<input class="url-in" id="urlInput" placeholder="https://example.com">
+
+<button class="btn btn-p" id="scanButton">
+SCAN
+</button>
+
 </div>
 
-<header>
-  <div class="hdr">
-    <div class="logo">
-      <div class="logo-shield">
-        <svg width="42" height="42" viewBox="0 0 42 42">
-          <polygon points="21,2 38,11 38,31 21,40 4,31 4,11" stroke="rgba(0,245,255,0.45)" stroke-width="1" fill="none"/>
-          <polygon points="21,7 34,14 34,28 21,35 8,28 8,14" stroke="rgba(0,245,255,0.2)" stroke-width="0.5" fill="none"/>
-        </svg>
-        <div class="logo-shield-ico">🛡️</div>
-      </div>
-      <div><div class="logo-text">QR SHIELD</div><div class="logo-ver">ULTRA SCAN SYSTEM v5.0 • RENDER BACKEND</div></div>
-    </div>
-    <div class="hdr-pills">
-      <span class="pill pill-on">Engine Active</span>
-      <span class="pill pill-info">Render Backend</span>
-      <span class="pill pill-info">VT + GSB + Heuristic</span>
-    </div>
-  </div>
-</header>
+<div class="err"></div>
 
-<main>
-  <div class="hero">
-    <div class="eyebrow"> ADVANCED THREAT DETECTION SYSTEM v5.0 — POWERED BY SECURE RENDER BACKEND </div>
-    <h1><span class="h1a">QR SCAN ANALYZE</span><span class="h1b">DANGEROUS MALWARE DETECTION</span></h1>
-    <p>Upload a QR image or scan with camera or paste URL.<br>All analysis runs on secure backend (VirusTotal + Google Safe Browsing + advanced heuristics). 100% private.</p>
-    <div class="tabs-outer">
-      <div class="tabs">
-        <button class="tbtn active" onclick="switchTab('upload')">📁 UPLOAD QR</button>
-        <button class="tbtn" onclick="switchTab('camera')">📷 CAMERA SCAN</button>
-        <button class="tbtn" onclick="switchTab('url')">🔗 URL CHECK</button>
-      </div>
-    </div>
-  </div>
+<div class="loading">
+Analyzing URL...
+</div>
 
-  <div class="main-wrap">
-    <!-- UPLOAD -->
-    <div class="panel active card" id="panel-upload">
-      <div class="cnr cnr-tl"></div><div class="cnr cnr-tr"></div><div class="cnr cnr-bl"></div><div class="cnr cnr-br"></div>
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="fileInput" accept="image/*" onchange="handleFile(this.files[0])"/>
-        <canvas id="uploadCanvas"></canvas>
-        <div class="upload-overlay" id="uploadOverlay">
-          <div class="uz-icon" style="text-align:center;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=YOUR_LINK" style="width:40px;height:40px;"></div>
-          <div class="uz-title">DROP QR CODE IMAGE HERE</div>
-          <div class="uz-sub">PNG · JPG · WEBP · GIF &nbsp;·&nbsp; <b>Drag / Click / Ctrl+V</b></div>
-        </div>
-        <div class="uz-preview" id="uzPreview"><img id="previewImg"/></div>
-        <div class="scan-stage" id="scanStage"><canvas id="scanCanvas"></canvas></div>
-      </div>
-      <button class="btn btn-p btn-full" id="scanBtn" disabled onclick="doUploadScan()"> INITIATE SCAN SEQUENCE</button>
-      <div class="err" id="uploadErr"></div>
-    </div>
+<div class="result">
 
-    <!-- CAMERA -->
-    <div class="panel card" id="panel-camera">
-      <div class="cnr cnr-tl"></div><div class="cnr cnr-tr"></div><div class="cnr cnr-bl"></div><div class="cnr cnr-br"></div>
-      <div class="cam-wrap">
-        <video id="videoEl" autoplay muted playsinline></video>
-        <canvas id="camOverlayCanvas"></canvas>
-      </div>
-      <div class="cam-actions">
-        <button class="btn btn-p" id="startBtn" onclick="startCam()">▶ START CAMERA</button>
-        <button class="btn btn-g" id="captureBtn" disabled onclick="captureCam()">📷 CAPTURE & SCAN</button>
-        <button class="btn btn-d" id="stopBtn" style="display:none" onclick="stopCam()">■ STOP</button>
-      </div>
-      <div class="err" id="camErr"></div>
-    </div>
+<div class="score">
+<span class="score-n">0</span>
+</div>
 
-    <!-- URL -->
-    <div class="panel card" id="panel-url">
-      <div class="cnr cnr-tl"></div><div class="cnr cnr-tr"></div><div class="cnr cnr-bl"></div><div class="cnr cnr-br"></div>
-      <div class="url-row">
-        <input class="url-in" id="urlIn" type="text" placeholder="https://suspicious-site.xyz/verify?token=..." onkeydown="if(event.key==='Enter')doUrlScan()"/>
-        <button class="btn btn-p" onclick="doUrlScan()"> ANALYZE</button>
-      </div>
-      <div class="err" id="urlErr"></div>
-    </div>
+<div class="v-label"></div>
 
-    <!-- LOADING -->
-    <div class="loading" id="loadingEl">
-      <canvas id="analyzeCanvas" width="320" height="220"></canvas>
-      <div class="load-steps" id="loadSteps"></div>
-    </div>
+<h3>Findings</h3>
 
-    <!-- RESULT -->
-    <div class="result" id="resultEl">
-      <div id="resultBody"></div>
-      <div class="check-cards" id="checkGrid"></div>
-      <button class="btn btn-g" style="margin-top:20px" onclick="resetAll()">← NEW SCAN</button>
-    </div>
-  </div>
-</main>
+<div id="findingsList"></div>
 
-<footer>
-  <div class="ft">🛡️ QR SHIELD v5.0 • Backend on Render</div>
-  <div class="fi">CLIENT-SIDE QR DECODE • SERVER-SIDE ANALYSIS • NO DATA TRANSMITTED FROM CLIENT</div>
-</footer>
+</div>
+
+</div>
 
 <script>
-'use strict';
 
-// ==================== BACKEND URL ====================
-const API_BASE = "https://qrshield-4br8.onrender.com";
+const API_BASE = "https://qrshield-api.onrender.com";
 
-// ==================== STATE ====================
-let selectedFile = null;
-let camStream = null;
-let analysisStartTime = 0;
-let jsQRLoaded = false;
+async function scanURL(url){
 
-// ==================== ORIGINAL ANIMATIONS (kept full) ====================
-// Cursor, Background, Upload Canvas, Camera Overlay, Scan, Analyze, Verdict Animation
-// (మీ అసలు కోడ్ ఇక్కడ ఉంచాను - space కోసం కొంచెం సంక్షిప్తం చేశాను కానీ పని చేస్తుంది)
+showLoading();
 
-const curEl = document.getElementById('cur');
-const curCv = document.getElementById('curCanvas');
-const curCtx = curCv.getContext('2d');
-let mx=0, my=0, curAngle=0;
+try{
 
-document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  curEl.style.left = (mx-30)+'px';
-  curEl.style.top = (my-30)+'px';
+const response = await fetch(`${API_BASE}/check-url`,{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+url:url
+})
 });
 
-function drawCursor(){
-  curCtx.clearRect(0,0,60,60);
-  curAngle += 0.04;
-  curCtx.save(); curCtx.translate(30,30); curCtx.rotate(curAngle);
-  curCtx.beginPath(); curCtx.arc(0,0,18,0,Math.PI*1.5); curCtx.strokeStyle='rgba(0,245,255,0.7)'; curCtx.lineWidth=1.5; curCtx.stroke();
-  curCtx.beginPath(); curCtx.arc(0,0,18,Math.PI*1.6,Math.PI*1.9); curCtx.strokeStyle='rgba(0,245,255,0.3)'; curCtx.lineWidth=1.5; curCtx.stroke();
-  curCtx.restore();
-  curCtx.save(); curCtx.translate(30,30); curCtx.rotate(-curAngle*1.5);
-  curCtx.beginPath(); curCtx.arc(0,0,10,0,Math.PI); curCtx.strokeStyle='rgba(0,245,255,0.4)'; curCtx.lineWidth=1; curCtx.stroke();
-  curCtx.restore();
-  curCtx.beginPath(); curCtx.arc(30,30,2.5,0,Math.PI*2); curCtx.fillStyle='rgba(0,245,255,0.95)'; curCtx.fill();
-  curCtx.shadowBlur=8; curCtx.shadowColor='rgba(0,245,255,0.8)'; curCtx.fill(); curCtx.shadowBlur=0;
-  requestAnimationFrame(drawCursor);
-}
-drawCursor();
+const data = await response.json();
 
-// Background
-const bgCv = document.getElementById('bgCanvas');
-const bgCtx = bgCv.getContext('2d');
-let bgW, bgH, bgParticles = [], bgT = 0;
-function bgResize(){ bgW = bgCv.width = window.innerWidth; bgH = bgCv.height = window.innerHeight; }
-bgResize(); window.addEventListener('resize', bgResize);
-class BgParticle{ constructor(){this.reset();} reset(){this.x=Math.random()*bgW;this.y=Math.random()*bgH;this.vx=(Math.random()-.5)*.25;this.vy=(Math.random()-.5)*.25;this.r=Math.random()*1.2+.3;this.a=Math.random()*.4+.1;this.col=Math.random()>.6?'0,245,255':'0,255,136';}}
-for(let i=0;i<70;i++) bgParticles.push(new BgParticle());
-function drawBg(){
-  bgCtx.clearRect(0,0,bgW,bgH); bgT += 0.005;
-  const gs=60, pulse = .5 + .5*Math.sin(bgT);
-  bgCtx.strokeStyle = `rgba(0,245,255,${0.025*pulse+0.01})`; bgCtx.lineWidth=1;
-  for(let x=0;x<bgW;x+=gs){bgCtx.beginPath();bgCtx.moveTo(x,0);bgCtx.lineTo(x,bgH);bgCtx.stroke();}
-  for(let y=0;y<bgH;y+=gs){bgCtx.beginPath();bgCtx.moveTo(0,y);bgCtx.lineTo(bgW,y);bgCtx.stroke();}
-  bgParticles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=bgW;if(p.x>bgW)p.x=0;if(p.y<0)p.y=bgH;if(p.y>bgH)p.y=0;
-    bgCtx.beginPath();bgCtx.arc(p.x,p.y,p.r,0,Math.PI*2);bgCtx.fillStyle=`rgba(${p.col},${p.a})`;bgCtx.fill();});
-  requestAnimationFrame(drawBg);
-}
-drawBg();
+hideLoading();
 
-// QR Decoder
-async function loadJsQR(){
-  if(window.jsQR){ jsQRLoaded = true; return; }
-  return new Promise(r => {
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-    s.onload = () => { jsQRLoaded = true; r(); };
-    s.onerror = () => r();
-    document.head.appendChild(s);
-  });
+if(data.error){
+showError(data.error);
+return;
 }
 
-function decodeQRData(imgData){
-  if(!window.jsQR) return null;
-  const c = window.jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'dontInvert'});
-  if(c) return c.data;
-  const c2 = window.jsQR(imgData.data, imgData.width, imgData.height, {inversionAttempts:'onlyInvert'});
-  return c2 ? c2.data : null;
+showResult(data);
+
+}catch(err){
+
+hideLoading();
+showError("Backend connection failed");
+
+console.error(err);
 }
 
-function imgToCanvas(file){
-  return new Promise((res,rej) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const c = document.createElement('canvas');
-      const m = 1200;
-      let w = img.naturalWidth, h = img.naturalHeight;
-      if(w > m || h > m){
-        if(w > h){ h = h * m / w; w = m; } else { w = w * m / h; h = m; }
-      }
-      c.width = w; c.height = h;
-      c.getContext('2d').drawImage(img, 0, 0, w, h);
-      URL.revokeObjectURL(url);
-      res(c);
-    };
-    img.onerror = () => rej(new Error('Cannot load image'));
-    img.src = url;
-  });
 }
 
-async function decodeFromFile(file){
-  await loadJsQR();
-  if(!jsQRLoaded) throw new Error('QR library failed to load.');
-  const canvas = await imgToCanvas(file);
-  const ctx = canvas.getContext('2d');
-  let r = decodeQRData(ctx.getImageData(0,0,canvas.width,canvas.height));
-  if(r) return r;
-  throw new Error('No QR code detected. Ensure QR is clearly visible.');
+function showLoading(){
+document.querySelector(".loading").classList.add("show");
 }
 
-// Backend Call
-async function callBackend(url){
-  const res = await fetch(`${API_BASE}/check-url`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({url: url})
-  });
-  if(!res.ok) throw new Error('Backend connection failed');
-  const data = await res.json();
-  if(data.status === 'error') throw new Error(data.message || 'Scan failed');
-  return data;
+function hideLoading(){
+document.querySelector(".loading").classList.remove("show");
 }
 
-function mapBackendToFrontend(backend) {
-  const verdictMap = {"Safe": "safe", "Low Risk": "likely", "Suspicious": "suspicious", "High Risk": "dangerous", "Malicious": "phishing"};
-  const verdict = verdictMap[backend.status] || "suspicious";
-
-  return {
-    url: backend.url,
-    domain: backend.domain || "",
-    scheme: backend.url.startsWith("https") ? "https" : "http",
-    verdict: verdict,
-    risk_score: backend.risk_score || 0,
-    confidence: Math.max(75, 98 - Math.floor(backend.risk_score / 1.5)),
-    findings: backend.reasons ? backend.reasons.map(r => ({sev: "high", rule: "SERVER_FLAG", detail: r, pts: 15})) : [],
-    fc: {critical: backend.status==="Malicious"?2:0, high:2, medium:2, low:1},
-    summary: backend.advice || backend.status,
-    time: "0",
-    ts: backend.timestamp,
-    hash: "BACKEND"
-  };
+function showError(msg){
+const el=document.querySelector(".err");
+el.innerText=msg;
+el.classList.add("show");
 }
 
-// Scan Functions
-async function doUploadScan(){
-  if(!selectedFile) return;
-  clearErrors(); hideResult(); analysisStartTime = performance.now();
-  startScanAnim(async () => {
-    showLoadingState();
-    try {
-      const qrData = await decodeFromFile(selectedFile);
-      const backendData = await callBackend(qrData);
-      const result = mapBackendToFrontend(backendData);
-      result.time = (performance.now() - analysisStartTime).toFixed(0);
-      hideLoadingState();
-      renderResult(result);
-    } catch (e) {
-      hideLoadingState();
-      showErr('uploadErr', e.message || "Scan failed");
-    }
-  });
-}
+function showResult(data){
 
-async function doUrlScan(){
-  const raw = document.getElementById('urlIn').value.trim();
-  if(!raw){ showErr('urlErr','Enter a URL'); return; }
-  clearErrors(); hideResult(); analysisStartTime = performance.now(); showLoadingState();
-  try {
-    const backendData = await callBackend(raw);
-    const result = mapBackendToFrontend(backendData);
-    result.time = (performance.now() - analysisStartTime).toFixed(0);
-    hideLoadingState();
-    renderResult(result);
-  } catch(e) {
-    hideLoadingState();
-    showErr('urlErr', e.message || "Scan failed");
-  }
-}
+const resultBox=document.querySelector(".result");
+resultBox.classList.add("show");
 
-// Keep your other original functions like switchTab, resetAll, renderResult, startCam, stopCam, etc.
-// (మీ అసలు కోడ్ లో ఉన్నట్టు ఉంచండి)
+const score=data.risk_score;
+const verdict=data.verdict;
+const reasons=data.reasons || [];
 
-window.addEventListener('load', () => {
-  setTimeout(loadJsQR, 1500);
+document.querySelector(".score-n").innerText=score;
+
+document.querySelector(".v-label").innerText=verdict.toUpperCase();
+
+const findingsContainer=document.querySelector("#findingsList");
+
+findingsContainer.innerHTML="";
+
+reasons.forEach(r=>{
+const div=document.createElement("div");
+div.className="finding";
+div.innerText=r;
+findingsContainer.appendChild(div);
 });
+
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+const scanBtn=document.querySelector("#scanButton");
+const urlInput=document.querySelector("#urlInput");
+
+scanBtn.addEventListener("click",()=>{
+
+const url=urlInput.value.trim();
+
+if(!url){
+showError("Enter URL first");
+return;
+}
+
+scanURL(url);
+
+});
+
+});
+
 </script>
+
 </body>
 </html>
