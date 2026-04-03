@@ -1,144 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QRShield - Advanced URL Scanner</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<meta charset="UTF-8">
+<title>QRShield Scanner</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 </head>
+
 <body>
-    <div class="container">
-        <!-- Header -->
-        <header class="header">
-            <div class="logo">
-                <i class="fas fa-shield-alt"></i>
-                <h1>QRShield</h1>
-            </div>
-            <p>URL • QR Camera • File Scanner <span class="live-badge">LIVE</span></p>
-        </header>
 
-        <!-- Scanner Tabs -->
-        <div class="tabs">
-            <button class="tab-btn active" data-tab="url">
-                <i class="fas fa-link"></i> URL
-            </button>
-            <button class="tab-btn" data-tab="qr">
-                <i class="fas fa-qrcode"></i> QR Camera
-            </button>
-            <button class="tab-btn" data-tab="file">
-                <i class="fas fa-file-image"></i> File Upload
-            </button>
-        </div>
+<div class="container">
 
-        <!-- URL Scanner -->
-        <main class="scanner active" id="urlTab">
-            <div class="input-group">
-                <div class="input-wrapper">
-                    <i class="fas fa-link input-icon"></i>
-                    <input type="url" id="urlInput" placeholder="Paste URL or type here..." required>
-                    <button id="scanBtn" class="scan-btn">
-                        <span class="btn-text">SCAN URL</span>
-                        <div class="spinner" id="spinner"></div>
-                    </button>
-                </div>
-                <div class="quick-actions">
-                    <button class="quick-btn" id="pasteBtn" title="Paste from clipboard">
-                        <i class="fas fa-paste"></i>
-                    </button>
-                    <button class="quick-btn" id="clearBtn" title="Clear">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-        </main>
+<h1 class="title">QR<span>Shield</span></h1>
+<p class="subtitle">Cyber URL Threat Scanner</p>
 
-        <!-- QR Camera Scanner -->
-        <main class="scanner" id="qrTab">
-            <div class="qr-container">
-                <video id="qrVideo" class="qr-video" autoplay muted playsinline></video>
-                <canvas id="qrCanvas" class="qr-canvas hidden"></canvas>
-                <div class="qr-overlay">
-                    <div class="scan-frame"></div>
-                    <button id="qrScanBtn" class="qr-toggle-btn">
-                        <i class="fas fa-play"></i>
-                    </button>
-                    <button id="qrTorchBtn" class="qr-torch-btn hidden">
-                        <i class="fas fa-flashlight"></i>
-                    </button>
-                </div>
-                <div id="qrResult" class="qr-result hidden">
-                    <i class="fas fa-check-circle"></i>
-                    <span id="qrUrl"></span>
-                    <button id="scanQrResult" class="scan-btn secondary">SCAN URL</button>
-                </div>
-            </div>
-        </main>
+<div class="tabs">
 
-        <!-- File Upload Scanner -->
-        <main class="scanner" id="fileTab">
-            <div class="file-upload-area" id="fileDropZone">
-                <div class="file-upload-content">
-                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                    <h3>Drop QR Code Image Here</h3>
-                    <p>or click to browse .jpg, .png, .gif, .webp files</p>
-                    <input type="file" id="fileInput" accept="image/*" hidden>
-                    <button id="fileBrowseBtn" class="scan-btn">
-                        <i class="fas fa-folder-open"></i> Browse Files
-                    </button>
-                </div>
-                <div id="fileResult" class="qr-result hidden">
-                    <i class="fas fa-check-circle"></i>
-                    <span id="fileUrl"></span>
-                    <button id="scanFileResult" class="scan-btn secondary">SCAN URL</button>
-                </div>
-            </div>
-        </main>
+<button class="tab active" data-tab="camera">📷 Camera</button>
+<button class="tab" data-tab="file">📁 Upload</button>
+<button class="tab" data-tab="url">🔗 URL</button>
 
-        <!-- Results -->
-        <div id="results" class="results hidden">
-            <div class="score-card">
-                <div class="score-header">
-                    <span id="statusIcon"></span>
-                    <h2 id="statusText">Scanning...</h2>
-                </div>
-                <div class="score-bar">
-                    <div id="scoreFill" class="score-fill"></div>
-                </div>
-                <div class="score-value">
-                    <span id="riskScore">0</span><span id="riskPercent">%</span>
-                </div>
-            </div>
+</div>
 
-            <div class="details-grid">
-                <div class="detail-card services">
-                    <h3><i class="fas fa-cogs"></i> Scan Results</h3>
-                    <div id="servicesList"></div>
-                </div>
-                <div class="detail-card reasons">
-                    <h3><i class="fas fa-exclamation-triangle"></i> Detection Reasons</h3>
-                    <div id="reasonsList"></div>
-                </div>
-            </div>
 
-            <div class="advice-card">
-                <h3><i class="fas fa-lightbulb"></i> Recommendation</h3>
-                <div id="adviceText"></div>
-            </div>
+<div class="panel active" id="camera">
 
-            <div class="meta-info">
-                <span id="scanTime"></span> | 
-                <span>Source: <span id="sourceType">URL</span></span> |
-                <span>Cached: <span id="cachedStatus">No</span></span>
-            </div>
-        </div>
+<video id="video" autoplay></video>
+<canvas id="canvas"></canvas>
 
-        <!-- Error -->
-        <div id="errorMsg" class="error hidden"></div>
-    </div>
+<button id="startCamera">Start Scan</button>
 
-    <!-- QR Library -->
-    <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<p id="cameraResult"></p>
+
+</div>
+
+
+
+<div class="panel" id="file">
+
+<input type="file" id="fileInput" accept="image/*">
+
+<p id="fileResult"></p>
+
+</div>
+
+
+
+<div class="panel" id="url">
+
+<input type="text" id="urlInput" placeholder="Paste URL here">
+
+<button id="scanBtn">Scan URL</button>
+
+</div>
+
+
+
+<div id="results" class="results">
+
+<h2 id="statusText"></h2>
+
+<div class="scoreBar">
+<div id="scoreFill"></div>
+</div>
+
+<p id="riskScore"></p>
+
+<ul id="reasons"></ul>
+
+<p id="advice"></p>
+
+</div>
+
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
 </body>
 </html>

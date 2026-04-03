@@ -1,85 +1,122 @@
-/* Add to existing CSS */
-
-/* Quick Actions */
-.quick-actions {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    margin-top: 15px;
-    opacity: 0.8;
+body{
+background:#0b0f14;
+font-family:monospace;
+color:#d0e7ff;
+margin:0;
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
-.quick-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 12px;
-    width: 45px;
-    height: 45px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.container{
+width:90%;
+max-width:700px;
+background:#111821;
+padding:30px;
+border-radius:10px;
+box-shadow:0 0 25px #00f7ff40;
 }
 
-.quick-btn:hover {
-    background: rgba(0, 212, 255, 0.2);
-    border-color: #00d4ff;
-    transform: scale(1.05);
+.title{
+text-align:center;
+font-size:40px;
+color:#00eaff;
 }
 
-/* File Upload */
-.file-upload-area {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(20px);
-    border: 2px dashed rgba(0, 212, 255, 0.5);
-    border-radius: 25px;
-    padding: 60px 40px;
-    text-align: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.title span{
+color:#ff3c6f;
 }
 
-.file-upload-area:hover,
-.file-upload-area.dragover {
-    background: rgba(0, 212, 255, 0.1);
-    border-color: #00d4ff;
-    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+.subtitle{
+text-align:center;
+margin-bottom:20px;
+color:#8fa8c9;
 }
 
-.upload-icon {
-    font-size: 4rem;
-    color: #00d4ff;
-    margin-bottom: 20px;
+.tabs{
+display:flex;
+justify-content:space-around;
+margin-bottom:20px;
 }
 
-.file-upload-content h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+.tab{
+background:#1b2430;
+border:none;
+padding:10px 20px;
+color:#fff;
+cursor:pointer;
+border-radius:5px;
 }
 
-.file-upload-content p {
-    opacity: 0.8;
-    margin-bottom: 30px;
+.tab.active{
+background:#00eaff;
+color:black;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .tabs { 
-        flex-direction: row;
-        overflow-x: auto;
-        padding-bottom: 10px;
-    }
-    .tab-btn { 
-        flex: 0 0 auto;
-        white-space: nowrap;
-        min-width: 100px;
-    }
+.panel{
+display:none;
+text-align:center;
+}
+
+.panel.active{
+display:block;
+}
+
+video{
+width:100%;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+input{
+width:80%;
+padding:10px;
+background:#0f141b;
+border:1px solid #00eaff;
+color:white;
+border-radius:5px;
+}
+
+button{
+margin-top:10px;
+padding:10px 20px;
+background:#00eaff;
+border:none;
+color:black;
+cursor:pointer;
+border-radius:5px;
+}
+
+button:hover{
+background:#00bcd4;
+}
+
+.results{
+margin-top:30px;
+padding:20px;
+background:#0f141b;
+border-radius:10px;
+}
+
+.scoreBar{
+width:100%;
+height:20px;
+background:#1f2a38;
+border-radius:10px;
+overflow:hidden;
+}
+
+#scoreFill{
+height:100%;
+width:0%;
+background:linear-gradient(90deg,#00ff88,#ff3c6f);
+}
+
+ul{
+text-align:left;
+}
+
+canvas{
+display:none;
 }
