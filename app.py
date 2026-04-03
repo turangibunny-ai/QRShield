@@ -18,8 +18,11 @@ import hashlib
 app = Flask(__name__)
 CORS(app)
 
-limiter = Limiter(key_func=get_remote_address)
-limiter.init_app(app)
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    storage_uri="memory://"
+)
 
 # ================= REDIS CACHE =================
 redis_client = None
