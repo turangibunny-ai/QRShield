@@ -1,87 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>QR SHIELD | Cyber Scanner</title>
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR SHIELD — Threat Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
-
-<script src="https://unpkg.com/html5-qrcode"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
-
 </head>
-
 <body>
 
-<div class="main">
+<!-- SCANLINES OVERLAY -->
+<div class="scanlines"></div>
 
-<h1 class="logo">QR<span>SHIELD</span></h1>
+<!-- GRID BG -->
+<div class="grid-bg"></div>
 
-<p class="tag">AI Powered QR Threat Scanner</p>
+<!-- PARTICLES -->
+<canvas id="particles"></canvas>
 
+<!-- MAIN WRAPPER -->
+<div class="shell">
 
-<div class="options">
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+          <rect x="6" y="6" width="6" height="6" fill="currentColor"/>
+          <rect x="24" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+          <rect x="28" y="6" width="6" height="6" fill="currentColor"/>
+          <rect x="2" y="24" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+          <rect x="6" y="28" width="6" height="6" fill="currentColor"/>
+          <rect x="24" y="24" width="6" height="6" fill="currentColor"/>
+          <rect x="34" y="24" width="6" height="6" fill="currentColor"/>
+          <rect x="24" y="34" width="6" height="6" fill="currentColor"/>
+          <rect x="34" y="34" width="6" height="6" fill="currentColor"/>
+          <line x1="20" y1="2" x2="20" y2="38" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.3"/>
+          <line x1="2" y1="20" x2="38" y2="20" stroke="currentColor" stroke-width="1" stroke-dasharray="3 3" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <span class="logo-main">QR<span class="accent">SHIELD</span></span>
+        <span class="logo-sub">// THREAT INTELLIGENCE SYSTEM v2.0</span>
+      </div>
+    </div>
+    <div class="hdr-status">
+      <span class="status-dot"></span>
+      <span class="status-text">SYSTEM ONLINE</span>
+    </div>
+  </header>
 
-<button onclick="openTab('camera')" class="tab active">Camera Scan</button>
+  <!-- HERO TAGLINE -->
+  <div class="hero">
+    <div class="hero-line">
+      <span class="glitch" data-text="SCAN. DETECT. PROTECT.">SCAN. DETECT. PROTECT.</span>
+    </div>
+    <p class="hero-sub">Heuristic analysis + Google Safe Browsing + VirusTotal — triple-layer threat detection</p>
+  </div>
 
-<button onclick="openTab('upload')" class="tab">Upload QR</button>
+  <!-- SCAN MODES -->
+  <div class="modes">
+    <button class="mode-btn active" data-mode="camera" onclick="switchMode('camera')">
+      <span class="mode-icon">⬡</span>
+      <span class="mode-label">CAMERA SCAN</span>
+      <span class="mode-desc">Live QR detection</span>
+    </button>
+    <button class="mode-btn" data-mode="file" onclick="switchMode('file')">
+      <span class="mode-icon">⬡</span>
+      <span class="mode-label">FILE UPLOAD</span>
+      <span class="mode-desc">Upload QR image</span>
+    </button>
+    <button class="mode-btn" data-mode="url" onclick="switchMode('url')">
+      <span class="mode-icon">⬡</span>
+      <span class="mode-label">URL INPUT</span>
+      <span class="mode-desc">Direct URL scan</span>
+    </button>
+  </div>
 
-<button onclick="openTab('url')" class="tab">Paste URL</button>
+  <!-- PANELS -->
+  <div class="panel-zone">
+
+    <!-- CAMERA PANEL -->
+    <div class="panel active" id="panel-camera">
+      <div class="panel-header">
+        <span class="panel-title">▶ CAMERA QR SCAN</span>
+        <span class="panel-badge">HTML5</span>
+      </div>
+      <div class="cam-wrap">
+        <div class="cam-corners">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <video id="video" autoplay playsinline muted></video>
+        <canvas id="cam-canvas" style="display:none"></canvas>
+        <div class="cam-overlay" id="cam-overlay">
+          <div class="cam-idle">
+            <div class="cam-icon">📷</div>
+            <p>Camera not active</p>
+          </div>
+        </div>
+        <div class="scan-line" id="scan-line"></div>
+        <div class="cam-reticle" id="cam-reticle"></div>
+      </div>
+      <div class="cam-controls">
+        <button class="btn-primary" id="btn-start-cam" onclick="startCamera()">
+          <span>INITIALIZE CAMERA</span>
+        </button>
+        <button class="btn-danger" id="btn-stop-cam" onclick="stopCamera()" style="display:none">
+          <span>TERMINATE FEED</span>
+        </button>
+      </div>
+      <div class="cam-hint">Position QR code within the reticle for automatic detection</div>
+    </div>
+
+    <!-- FILE PANEL -->
+    <div class="panel" id="panel-file">
+      <div class="panel-header">
+        <span class="panel-title">▶ FILE UPLOAD SCAN</span>
+        <span class="panel-badge">DECODE</span>
+      </div>
+      <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()"
+           ondragover="event.preventDefault(); this.classList.add('drag-over')"
+           ondragleave="this.classList.remove('drag-over')"
+           ondrop="handleDrop(event)">
+        <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFile(this.files[0])">
+        <canvas id="file-canvas" style="display:none"></canvas>
+        <div class="drop-content" id="drop-content">
+          <div class="drop-icon">⬡</div>
+          <p class="drop-title">DROP QR IMAGE HERE</p>
+          <p class="drop-sub">or click to browse — PNG, JPG, WEBP supported</p>
+        </div>
+        <img id="preview-img" style="display:none; max-height:200px; border-radius:4px; border:1px solid var(--accent)" alt="preview">
+      </div>
+      <div class="file-hint">QR code will be decoded client-side, URL extracted and analyzed</div>
+    </div>
+
+    <!-- URL PANEL -->
+    <div class="panel" id="panel-url">
+      <div class="panel-header">
+        <span class="panel-title">▶ DIRECT URL SCAN</span>
+        <span class="panel-badge">INPUT</span>
+      </div>
+      <div class="url-form">
+        <div class="url-input-wrap">
+          <span class="url-prefix">TARGET://</span>
+          <input type="text" id="url-input" placeholder="paste or type URL here..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" onkeydown="if(event.key==='Enter')scanUrl()">
+          <button class="url-clear" onclick="document.getElementById('url-input').value=''">✕</button>
+        </div>
+        <button class="btn-primary" onclick="scanUrl()">
+          <span>EXECUTE SCAN</span>
+        </button>
+      </div>
+      <div class="url-hint">Supports http://, https://, or raw domain — protocol auto-detected</div>
+    </div>
+
+  </div>
+
+  <!-- SCANNING STATE -->
+  <div class="scanning-state" id="scanning-state" style="display:none">
+    <div class="scan-anim">
+      <div class="scan-ring r1"></div>
+      <div class="scan-ring r2"></div>
+      <div class="scan-ring r3"></div>
+      <div class="scan-core">⬡</div>
+    </div>
+    <div class="scan-log" id="scan-log">
+      <p class="log-line active" id="log1">▶ Initializing heuristic engine...</p>
+      <p class="log-line" id="log2">▶ Querying Google Safe Browsing...</p>
+      <p class="log-line" id="log3">▶ Connecting to VirusTotal...</p>
+      <p class="log-line" id="log4">▶ Compiling threat report...</p>
+    </div>
+  </div>
+
+  <!-- RESULT CARD -->
+  <div class="result-card" id="result-card" style="display:none">
+    <div class="result-header">
+      <div class="result-status-wrap">
+        <div class="result-icon" id="result-icon">⬡</div>
+        <div>
+          <div class="result-status" id="result-status">—</div>
+          <div class="result-url" id="result-url">—</div>
+        </div>
+      </div>
+      <div class="result-score-wrap">
+        <div class="score-ring-wrap">
+          <svg class="score-ring" viewBox="0 0 80 80">
+            <circle class="ring-bg" cx="40" cy="40" r="34"/>
+            <circle class="ring-fill" id="ring-fill" cx="40" cy="40" r="34"/>
+          </svg>
+          <div class="score-val" id="score-val">0</div>
+        </div>
+        <div class="score-label">RISK SCORE</div>
+      </div>
+    </div>
+
+    <div class="result-advice" id="result-advice">—</div>
+
+    <div class="result-body">
+      <div class="threats-col">
+        <div class="col-title">// THREAT INDICATORS</div>
+        <ul class="threat-list" id="threat-list"></ul>
+      </div>
+      <div class="meta-col">
+        <div class="col-title">// SCAN METADATA</div>
+        <div class="meta-grid" id="meta-grid"></div>
+      </div>
+    </div>
+
+    <button class="btn-reset" onclick="resetScan()">◀ NEW SCAN</button>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="ftr">
+    <span>QR SHIELD © 2025</span>
+    <span class="ftr-sep">|</span>
+    <span>Powered by Heuristics + GSB + VT</span>
+    <span class="ftr-sep">|</span>
+    <span id="ftr-time"></span>
+  </footer>
 
 </div>
 
-
-<!-- CAMERA -->
-
-<div id="camera" class="tabcontent active">
-
-<div id="reader"></div>
-
-<p class="note">Scan QR using camera</p>
-
-</div>
-
-
-<!-- FILE -->
-
-<div id="upload" class="tabcontent">
-
-<input type="file" id="fileInput" accept="image/*">
-
-<canvas id="canvas"></canvas>
-
-<p class="note">Upload QR image</p>
-
-</div>
-
-
-<!-- URL -->
-
-<div id="url" class="tabcontent">
-
-<input type="text" id="urlText" placeholder="Paste suspicious URL">
-
-<button class="scanbtn" onclick="scanURL()">Scan URL</button>
-
-</div>
-
-
-
-<div class="result">
-
-<h3>Scan Result</h3>
-
-<div id="output">Waiting for scan...</div>
-
-</div>
-
-
-</div>
-
-<script src="script.js"></script>
-
+<!-- JSQR for QR decode -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
