@@ -5,3 +5,4 @@ requests==2.31.0
 tldextract==3.6.0
 rapidfuzz
 gunicorn==21.2.0
+redis==5.0.1

@@ -1,253 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>QR SHIELD — ULTRA SCAN v5.0</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-
-body{
-background:#020509;
-color:#b8e8ff;
-font-family:'Rajdhani',sans-serif;
-padding:40px;
-text-align:center;
-}
-
-h1{
-font-family:'Orbitron',sans-serif;
-color:#05f3d3;
-}
-
-.container{
-max-width:700px;
-margin:auto;
-background:rgba(0,12,24,0.8);
-padding:30px;
-border:1px solid rgba(0,245,255,0.3);
-border-radius:6px;
-}
-
-.url-row{
-display:flex;
-gap:10px;
-margin-top:20px;
-}
-
-.url-in{
-flex:1;
-padding:12px;
-background:#020d18;
-border:1px solid rgba(0,245,255,0.3);
-color:#fff;
-font-family:monospace;
-}
-
-.btn{
-padding:12px 20px;
-border:none;
-cursor:pointer;
-font-family:Orbitron;
-}
-
-.btn-p{
-background:#05f3d3;
-color:black;
-}
-
-.loading{
-display:none;
-margin-top:20px;
-}
-
-.loading.show{
-display:block;
-}
-
-.result{
-display:none;
-margin-top:30px;
-text-align:left;
-}
-
-.result.show{
-display:block;
-}
-
-.err{
-color:#ff3366;
-margin-top:10px;
-display:none;
-}
-
-.err.show{
-display:block;
-}
-
-.score{
-font-size:40px;
-font-family:Orbitron;
-}
-
-.v-label{
-font-size:22px;
-margin-bottom:10px;
-}
-
-.finding{
-padding:10px;
-border:1px solid rgba(255,230,0,0.3);
-margin-bottom:8px;
-background:rgba(255,230,0,0.05);
-}
-
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QRShield - Advanced URL Scanner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 </head>
-
 <body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-shield-alt"></i>
+                <h1>QRShield</h1>
+            </div>
+            <p>URL • QR Camera • File Scanner <span class="live-badge">LIVE</span></p>
+        </header>
 
-<h1>QR SHIELD — ULTRA SCAN</h1>
+        <!-- Scanner Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="url">
+                <i class="fas fa-link"></i> URL
+            </button>
+            <button class="tab-btn" data-tab="qr">
+                <i class="fas fa-qrcode"></i> QR Camera
+            </button>
+            <button class="tab-btn" data-tab="file">
+                <i class="fas fa-file-image"></i> File Upload
+            </button>
+        </div>
 
-<div class="container">
+        <!-- URL Scanner -->
+        <main class="scanner active" id="urlTab">
+            <div class="input-group">
+                <div class="input-wrapper">
+                    <i class="fas fa-link input-icon"></i>
+                    <input type="url" id="urlInput" placeholder="Paste URL or type here..." required>
+                    <button id="scanBtn" class="scan-btn">
+                        <span class="btn-text">SCAN URL</span>
+                        <div class="spinner" id="spinner"></div>
+                    </button>
+                </div>
+                <div class="quick-actions">
+                    <button class="quick-btn" id="pasteBtn" title="Paste from clipboard">
+                        <i class="fas fa-paste"></i>
+                    </button>
+                    <button class="quick-btn" id="clearBtn" title="Clear">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
 
-<div class="url-row">
+        <!-- QR Camera Scanner -->
+        <main class="scanner" id="qrTab">
+            <div class="qr-container">
+                <video id="qrVideo" class="qr-video" autoplay muted playsinline></video>
+                <canvas id="qrCanvas" class="qr-canvas hidden"></canvas>
+                <div class="qr-overlay">
+                    <div class="scan-frame"></div>
+                    <button id="qrScanBtn" class="qr-toggle-btn">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button id="qrTorchBtn" class="qr-torch-btn hidden">
+                        <i class="fas fa-flashlight"></i>
+                    </button>
+                </div>
+                <div id="qrResult" class="qr-result hidden">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="qrUrl"></span>
+                    <button id="scanQrResult" class="scan-btn secondary">SCAN URL</button>
+                </div>
+            </div>
+        </main>
 
-<input class="url-in" id="urlInput" placeholder="https://example.com">
+        <!-- File Upload Scanner -->
+        <main class="scanner" id="fileTab">
+            <div class="file-upload-area" id="fileDropZone">
+                <div class="file-upload-content">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3>Drop QR Code Image Here</h3>
+                    <p>or click to browse .jpg, .png, .gif, .webp files</p>
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    <button id="fileBrowseBtn" class="scan-btn">
+                        <i class="fas fa-folder-open"></i> Browse Files
+                    </button>
+                </div>
+                <div id="fileResult" class="qr-result hidden">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="fileUrl"></span>
+                    <button id="scanFileResult" class="scan-btn secondary">SCAN URL</button>
+                </div>
+            </div>
+        </main>
 
-<button class="btn btn-p" id="scanButton">
-SCAN
-</button>
+        <!-- Results -->
+        <div id="results" class="results hidden">
+            <div class="score-card">
+                <div class="score-header">
+                    <span id="statusIcon"></span>
+                    <h2 id="statusText">Scanning...</h2>
+                </div>
+                <div class="score-bar">
+                    <div id="scoreFill" class="score-fill"></div>
+                </div>
+                <div class="score-value">
+                    <span id="riskScore">0</span><span id="riskPercent">%</span>
+                </div>
+            </div>
 
-</div>
+            <div class="details-grid">
+                <div class="detail-card services">
+                    <h3><i class="fas fa-cogs"></i> Scan Results</h3>
+                    <div id="servicesList"></div>
+                </div>
+                <div class="detail-card reasons">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Detection Reasons</h3>
+                    <div id="reasonsList"></div>
+                </div>
+            </div>
 
-<div class="err"></div>
+            <div class="advice-card">
+                <h3><i class="fas fa-lightbulb"></i> Recommendation</h3>
+                <div id="adviceText"></div>
+            </div>
 
-<div class="loading">
-Analyzing URL...
-</div>
+            <div class="meta-info">
+                <span id="scanTime"></span> | 
+                <span>Source: <span id="sourceType">URL</span></span> |
+                <span>Cached: <span id="cachedStatus">No</span></span>
+            </div>
+        </div>
 
-<div class="result">
+        <!-- Error -->
+        <div id="errorMsg" class="error hidden"></div>
+    </div>
 
-<div class="score">
-<span class="score-n">0</span>
-</div>
-
-<div class="v-label"></div>
-
-<h3>Findings</h3>
-
-<div id="findingsList"></div>
-
-</div>
-
-</div>
-
-<script>
-
-const API_BASE = "https://qrshield-api.onrender.com";
-
-async function scanURL(url){
-
-showLoading();
-
-try{
-
-const response = await fetch(`${API_BASE}/check-url`,{
-method:"POST",
-headers:{
-"Content-Type":"application/json"
-},
-body:JSON.stringify({
-url:url
-})
-});
-
-const data = await response.json();
-
-hideLoading();
-
-if(data.error){
-showError(data.error);
-return;
-}
-
-showResult(data);
-
-}catch(err){
-
-hideLoading();
-showError("Backend connection failed");
-
-console.error(err);
-}
-
-}
-
-function showLoading(){
-document.querySelector(".loading").classList.add("show");
-}
-
-function hideLoading(){
-document.querySelector(".loading").classList.remove("show");
-}
-
-function showError(msg){
-const el=document.querySelector(".err");
-el.innerText=msg;
-el.classList.add("show");
-}
-
-function showResult(data){
-
-const resultBox=document.querySelector(".result");
-resultBox.classList.add("show");
-
-const score=data.risk_score;
-const verdict=data.verdict;
-const reasons=data.reasons || [];
-
-document.querySelector(".score-n").innerText=score;
-
-document.querySelector(".v-label").innerText=verdict.toUpperCase();
-
-const findingsContainer=document.querySelector("#findingsList");
-
-findingsContainer.innerHTML="";
-
-reasons.forEach(r=>{
-const div=document.createElement("div");
-div.className="finding";
-div.innerText=r;
-findingsContainer.appendChild(div);
-});
-
-}
-
-document.addEventListener("DOMContentLoaded",()=>{
-
-const scanBtn=document.querySelector("#scanButton");
-const urlInput=document.querySelector("#urlInput");
-
-scanBtn.addEventListener("click",()=>{
-
-const url=urlInput.value.trim();
-
-if(!url){
-showError("Enter URL first");
-return;
-}
-
-scanURL(url);
-
-});
-
-});
-
-</script>
-
+    <!-- QR Library -->
+    <script src="https://unpkg.com/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>
